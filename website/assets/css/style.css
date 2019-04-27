@@ -26,6 +26,7 @@ footer{
 	width: 100%;
 	color: #A0A0A0;
 	text-align: center;
+	margin-top: 60px;
 	margin-bottom: 10px;
 }
 /* footer span{
@@ -59,6 +60,8 @@ footer a{
 	border: 3px #1E80FF solid;
 	opacity: 0.9;
 }
-#mainContent{
-	margin-bottom: 60px;
+#searchResult{
+	margin-top: 40px;
+	padding-top: 20px;
+	border-top: 2px #BCBCBC solid;
 }

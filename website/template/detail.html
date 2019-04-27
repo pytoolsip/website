@@ -6,8 +6,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP</title>
-		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<title>{{toolInfo.name}}</title>
+		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
+		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
 		<link rel="stylesheet" href="../assets/css/style.css" />
 	</head>
 	<body>
@@ -33,46 +34,54 @@
 					</div>
 				</div>
 			</nav>
-			<div class="jumbotron">
-				<div class="container">
-					<h1>PyToolsIP</h1>
-					<p>Python工具集成平台</p>
-					<p><a class="btn btn-info btn-lg" href="http://jimdreamheart.club/gitbook/PyToolsIP/" target="_blank" role="button"> 开发文档 &raquo;</a></p>
-				</div>
-			</div>
 		</header>
-		<div id="mainContent" class="container">
+		
+		<div class="container">
 			<div class="row">
-				<div class="col-md-4">
-					<h3>工具名称</h3>
+				<div class="col-md-10">
+					<h2>工具名称</h2>
+					<h4>
+						ID:&nbsp;&nbsp;
+						<span style="color: green;">ac6116b2555f703585a8b7abca84b1bf</span>
+						<button class="btn btn-xs btn-default">复制</button>
+					</h4>
 					<p>[工具类别]</p>
-					<p>ID:&nbsp;<span style="color: #868686;">ac6116b2555f703585a8b7abca84b1bf</span></p>
-					<p>工具描述</p>
-					<p><a class="btn btn-primary" href="#" role="button">详情 &raquo;</a></p>
-					<p style="color: #A0A0A0;"><span>下载量：0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：5.0</span></p>
-					<p style="color: #A0A0A0;"><span>上传者：梦心DH</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：2019-02-28</span></p>
-				</div>
-				<!-- {% for toolInfo in toolInfoList %}
-					<div class="col-md-4">
-						<h3>{{toolInfo.name}}</h3>
-						<p>[{{toolInfo.category}}]</p>
-						<p>ID:&nbsp;<span style="color: #868686;">{{toolInfo.tkey}}</span></p>
-						<p>{{toolInfo.description}}</p>
-						<p><a class="btn btn-primary" href="#" role="button">详情&raquo;</a></p>
-						<p style="color: #A0A0A0;"><span>下载量：{{toolInfo.downloadCount}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{toolInfo.score}}</span></p>
-						<p style="color: #A0A0A0;"><span>上传者：{{toolInfo.author}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{toolInfo.uploadTime}}</span></p>
+					<p style="color: #A0A0A0;">
+						<span>上传者：梦心DH</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>上传时间：2019-02-28</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>下载量：0</span>
+					</p>
+					<blockquote style="margin-top: 30px;margin-bottom: 30px;">
+						<p>工具描述。</p>
+					</blockquote>
+					<div id="toolCommont" style="border-top: 1px #BCBCBC solid; padding-top: 20px;">
+						<form role="form">
+							<textarea class="form-control" rows="3" placeholder="评论内容"></textarea>
+							<input id="commontScore" type="number" class="rating" min=0 max=5 step=0.5 data-size="lg" >
+							<button type="submit" class="btn btn-success right" >评论</button>
+						</form>
 					</div>
-				{% endfor %} -->
+				</div>
+				<div class="col-md-2 navbar-right text-center" style="padding-top: 40px;padding-bottom: 40px;">
+					<a class="btn btn-lg btn-primary" href="javascript:void();" target="_blank" title="">&nbsp;&nbsp;下载工具&nbsp;&nbsp;</a>
+				</div>
 			</div>
 		</div>
+		
 		<div id="toTop"><a href="javascript:void();" title="回到顶部">╱╲</a></div>
 		<footer>
 			<div class="container">
-				<span>Copyright &copy; 2019 </span>
+				<span>Copyright&nbsp;&copy;&nbsp;2019&nbsp;</span>
 				<a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
 			</div>
 		</footer>
 		<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+		<script src="http://jimdreamheart.club/resource/bootstrap-star-rating/js/star-rating.min.js"></script>
+		<script language="JavaScript">
+			$("#commontScore").rating();
+		</script>
 	</body>
 </html>
