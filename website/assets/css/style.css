@@ -35,29 +35,38 @@ footer{
 footer a{
 	font-size: 8px;
 }
-#toTop>a{
-	display: block;
-	width: 54px;
-	height: 56px;
-	font-size: 19px;
-	font-weight: 560;
+.fixdRight{
 	font-family: "宋体";
 	color: #000000;
 	z-index: 1;
 	position: fixed;
 	right: 4%;
 	bottom: 10%;
-	padding-top: 12px;
-	padding-left: 5px;
-	border: 3px #BCBCBC solid;
-	border-radius: 8px;
-	background-color: #FFFFFF;
 	opacity: 0.5;
+	background-color: #FFFFFF;
 }
-#toTop>a:hover{
+#user{
+	margin-bottom: 4px;
+}
+#user a{
+	padding-top: 0px;
+	padding-left: 8px;
+	font-size: 24px;
+}
+.fixdRight a{
+	display: block;
+	width: 36px;
+	height: 36px;
+	font-size: 12px;
+	padding-top: 9px;
+	padding-left: 6px;
+	border: 1px #BCBCBC solid;
+	border-radius: 2px;
+}
+.fixdRight a:hover{
 	color: #FFFFFF;
 	background-color: #1E80FF;
-	border: 3px #1E80FF solid;
+	border: 1px #1E80FF solid;
 	opacity: 0.9;
 }
 #searchResult{
