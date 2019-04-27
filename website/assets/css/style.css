@@ -45,14 +45,6 @@ footer a{
 	opacity: 0.5;
 	background-color: #FFFFFF;
 }
-#user{
-	margin-bottom: 4px;
-}
-#user a{
-	padding-top: 0px;
-	padding-left: 8px;
-	font-size: 24px;
-}
 .fixdRight a{
 	display: block;
 	width: 36px;
@@ -68,6 +60,13 @@ footer a{
 	background-color: #1E80FF;
 	border: 1px #1E80FF solid;
 	opacity: 0.9;
+}
+#user{
+	margin-bottom: 4px;
+}
+#user a{
+	padding: 0px;
+	font-size: 24px;
 }
 #searchResult{
 	margin-top: 40px;
