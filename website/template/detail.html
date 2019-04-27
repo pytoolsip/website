@@ -42,8 +42,8 @@
 					<h2>工具名称</h2>
 					<h4>
 						ID:&nbsp;&nbsp;
-						<span style="color: green;">ac6116b2555f703585a8b7abca84b1bf</span>
-						<button class="btn btn-xs btn-default">复制</button>
+						<span id="IDText" style="color: green;">ac6116b2555f703585a8b7abca84b1bf</span>
+						<button id="copyID" class="btn btn-xs btn-default" data-clipboard-target="#IDText">复制</button>
 					</h4>
 					<p>[工具类别]</p>
 					<p style="color: #A0A0A0;">
@@ -122,6 +122,7 @@
 		<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-star-rating/js/star-rating.min.js"></script>
+		<script src="http://jimdreamheart.club/resource/clipboard/dist/clipboard.min.js"></script>
 		<script src="../assets/js/main.js"></script>
 		<script language="JavaScript">
 			$("#commontScore").rating({
@@ -137,7 +138,11 @@
 				starCaptionClasses:function(val){
 					return "label label-success";
 				},
-			}).rating('update',0);
+			});
+			var idClipboard = new ClipboardJS("#copyID");
+			idClipboard.on('success', function(e) {
+				e.clearSelection();
+			})
 		</script>
 	</body>
 </html>
