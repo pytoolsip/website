@@ -54,13 +54,13 @@
 				</div> -->
 				{% for toolInfo in toolInfoList %}
 					<div class="col-md-4">
-						<h3>{{toolInfo["name"]}}</h3>
-						<p>[{{toolInfo["category"]}}]</p>
-						<p>ID:&nbsp;<span style="color: #868686;">{{toolInfo["tkey"]}}</span></p>
-						<p>{{toolInfo["description"]}}</p>
+						<h3>{{ toolInfo.name }}</h3>
+						<p>[{{ toolInfo.category }}]</p>
+						<p>ID:&nbsp;<span style="color: #868686;">{{ toolInfo.tkey }}</span></p>
+						<p>{{ toolInfo.description }}</p>
 						<p><a class="btn btn-primary" href="#" role="button">详情&raquo;</a></p>
-						<p style="color: #A0A0A0;"><span>下载量：{{toolInfo["downloadCount"]}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{toolInfo["score"]}}</span></p>
-						<p style="color: #A0A0A0;"><span>上传者：{{toolInfo["author"]}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{toolInfo["uploadTime"]}</span></p>
+						<p style="color: #A0A0A0;"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+						<p style="color: #A0A0A0;"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime }}</span></p>
 					</div>
 				{% endfor %}
 			</div>
