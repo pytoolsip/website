@@ -75,6 +75,7 @@ footer a{
 }
 /* toolInfo style */
 .tool-info-item{
+	padding-bottom: 10px;
 	border: 1px #E1E1E1 solid;
 }
 .tool-info-tittle{
