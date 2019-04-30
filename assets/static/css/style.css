@@ -73,3 +73,26 @@ footer a{
 	padding-top: 20px;
 	border-top: 2px #BCBCBC solid;
 }
+/* toolInfo style */
+.tool-info-item{
+	border: 1px #E1E1E1 solid;
+}
+.tool-info-tittle{
+	display: block;
+}
+.tool-info-tittle>h3{
+	display: inline-block;
+}
+.tool-info-id>span{
+	color: #868686;
+}
+.tool-info-desc{
+	font-size: 14px
+}
+.tool-info-detail>a{
+	display: block;
+}
+.tool-info-ex-info{
+	color: #A0A0A0;
+	margin-bottom: 2px;
+}

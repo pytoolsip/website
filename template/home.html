@@ -43,24 +43,14 @@
 		</header>
 		<div id="mainContent" class="container">
 			<div class="row">
-				<!-- <div class="col-md-4">
-					<h3>工具名称</h3>
-					<p>[工具类别]</p>
-					<p>ID:&nbsp;<span style="color: #868686;">ac6116b2555f703585a8b7abca84b1bf</span></p>
-					<p>工具描述</p>
-					<p><a class="btn btn-primary" href="#" role="button">详情 &raquo;</a></p>
-					<p style="color: #A0A0A0;"><span>下载量：0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：5.0</span></p>
-					<p style="color: #A0A0A0;"><span>上传者：梦心DH</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：2019-02-28</span></p>
-				</div> -->
 				{% for toolInfo in toolInfoList %}
-					<div class="col-md-4">
-						<h3>{{ toolInfo.name }}</h3>
-						<p>[{{ toolInfo.category }}]</p>
-						<p>ID:&nbsp;<span style="color: #868686;">{{ toolInfo.tkey }}</span></p>
-						<p>{{ toolInfo.description }}</p>
-						<p><a class="btn btn-primary" href="#" role="button">详情&raquo;</a></p>
-						<p style="color: #A0A0A0;"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
-						<p style="color: #A0A0A0;"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime }}</span></p>
+					<div class="col-md-4 tool-info-item">
+						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+						<p class="tool-info-detail"><a class="btn btn-primary" href="#" role="button">点击详情&nbsp;&raquo;</a></p>
+						<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+						<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
 					</div>
 				{% endfor %}
 			</div>

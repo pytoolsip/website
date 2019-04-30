@@ -16,8 +16,9 @@ Including another URLconf
 
 from django.conf.urls import url
 from django.urls import path
-from . import view
+
+from DBModel import views
 
 urlpatterns = [
-    url(r'^$', view.home),
+    url(r'^$', views.home),
 ]
