@@ -32,44 +32,43 @@
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<h4 class="text-center">PyToolsIP Tools Search</h4>
-					<div class="input-group">
+					<form id="searchForm" class="input-group">
 						<div class="input-group-btn form-group">
-							<select id="searchSelect" class="form-control" style="width: auto;">
-								<option>名称</option>
-								<option>ID</option>
-								<option>作者</option>
+							<select name="s" class="form-control" style="width: auto;">
+								<option value="name">名称</option>
+								<option value="id">ID</option>
+								<option value="author">作者</option>
 							</select>
 						</div>
-						<input type="text" placeholder="Search" class="form-control">
+						<input name="t" type="text" placeholder="Search" class="form-control">
 						<div class="input-group-btn">
 							<button type="submit" class="btn btn-success">Search</button>
 						</div>
-					</div>
+					</form>
 				</div>
 			</div>
 			
 			<div id="searchResult" class="row">
-				<p class="text-center hidden">未搜索到[<b>{{searchSelect}}</b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的工具&nbsp;~</p>
-				<div class="col-md-4">
-					<h3>工具名称</h3>
-					<p>[工具类别]</p>
-					<p>ID:&nbsp;<span style="color: #868686;">ac6116b2555f703585a8b7abca84b1bf</span></p>
-					<p>工具描述</p>
-					<p><a class="btn btn-primary" href="#" role="button">详情 &raquo;</a></p>
-					<p style="color: #A0A0A0;"><span>下载量：0</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：5.0</span></p>
-					<p style="color: #A0A0A0;"><span>上传者：梦心DH</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：2019-02-28</span></p>
-				</div>
-				<!-- {% for toolInfo in toolInfoList %}
-					<div class="col-md-4">
-						<h2>{{toolInfo.name}}</h2>
-						<p>[{{toolInfo.category}}]</p>
-						<p>ID:&nbsp;<span style="color: #868686;">{{toolInfo.tkey}}</span></p>
-						<p>{{toolInfo.description}}</p>
-						<p><a class="btn btn-primary" href="#" role="button">详情&raquo;</a></p>
-						<p style="color: #A0A0A0;"><span>下载量：{{toolInfo.downloadCount}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{toolInfo.score}}</span></p>
-						<p style="color: #A0A0A0;"><span>上传者：{{toolInfo.author}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{toolInfo.uploadTime}}</span></p>
+				{% if isSearchNone %}
+					<p class="text-center">未搜索到[<b>{{searchSelect}}</b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的工具&nbsp;~</p>
+				{% endif %}
+				{% for toolInfo in toolInfoList %}
+					<div class="col-md-4 tool-info-item">
+						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+						<p class="tool-info-detail"><a class="btn btn-primary" href="#" role="button">点击详情&nbsp;&raquo;</a></p>
+						<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+						<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
 					</div>
-				{% endfor %} -->
+				{% endfor %}
+				{% for userInfo in userInfoList %}
+					<div class="col-md-4 tool-info-item">
+						<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3></div>
+						<blockquote class="tool-info-desc">{{ userInfo.email }}</blockquote>
+						<p class="tool-info-detail"><a class="btn btn-primary" href="#" role="button">点击详情&nbsp;&raquo;</a></p>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 		<div class="fixdRight">
