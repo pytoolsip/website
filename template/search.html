@@ -34,13 +34,13 @@
 					<h4 class="text-center">PyToolsIP Tools Search</h4>
 					<form id="searchForm" class="input-group">
 						<div class="input-group-btn form-group">
-							<select name="s" class="form-control" style="width: auto;">
+							<select id="searchSelect" name="s" class="form-control" style="width: auto;">
 								<option value="name">名称</option>
 								<option value="id">ID</option>
 								<option value="author">作者</option>
 							</select>
 						</div>
-						<input name="t" type="text" placeholder="Search" class="form-control">
+						<input id="searchText" name="t" type="text" placeholder="Search" class="form-control">
 						<div class="input-group-btn">
 							<button type="submit" class="btn btn-success">Search</button>
 						</div>
@@ -50,7 +50,7 @@
 			
 			<div id="searchResult" class="row">
 				{% if isSearchNone %}
-					<p class="text-center">未搜索到[<b>{{searchSelect}}</b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的工具&nbsp;~</p>
+					<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
 				{% endif %}
 				{% for toolInfo in toolInfoList %}
 					<div class="col-md-4 tool-info-item">
@@ -64,9 +64,8 @@
 				{% endfor %}
 				{% for userInfo in userInfoList %}
 					<div class="col-md-4 tool-info-item">
-						<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3></div>
-						<blockquote class="tool-info-desc">{{ userInfo.email }}</blockquote>
-						<p class="tool-info-detail"><a class="btn btn-primary" href="#" role="button">点击详情&nbsp;&raquo;</a></p>
+						<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3><span>&nbsp;[{{ userInfo.email }}]</span></div>
+						<a class="btn btn-info" href="?s=author&q=tools&t={{ userInfo.name }}" role="button">查看该用户上传的工具&nbsp;&raquo;</a>
 					</div>
 				{% endfor %}
 			</div>
@@ -84,5 +83,11 @@
 		<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src="http://jimdreamheart.club/static/pytoolsip/js/main.js"></script>
+		<script language="JavaScript">
+			var $selectOption = $("#searchSelect").find("option[value='{{ searchSelect }}']");
+			$selectOption.attr("selected",true); // 选中选项
+			$("#searchText").attr("placeholder", "{{ searchText }}"); // 搜索值
+			$("#searchSelectOption").text($selectOption.text()); // 搜索选项值
+		</script>
 	</body>
 </html>

@@ -24,13 +24,13 @@ def search(request):
     request.encoding = "utf-8";
     s = request.GET.get("s", "name");
     t = request.GET.get("t", "");
-    result = {"isSearchNone" : False, "searchSelect" : s, "searchText" : t, "toolInfoList" : [], "userInfoList" : []};
+    result = {"isSearchNone" : False, "searchSelect" : s, "searchText" : t, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
     # 校验提交的数据
-    if not s:
+    if not t:
         return render(request, "search.html", result);
     # 从数据库中查找数据
     if s == "id":
-        toolInfos = models.Tool.objects.get(tkey == t);
+        toolInfos = models.Tool.objects.filter(tkey = t);
         if len(toolInfos) > 0:
             toolInfo = toolInfos[0];
             result["toolInfoList"].append({
@@ -43,14 +43,30 @@ def search(request):
                 "author" :  toolInfo.uid.name,
                 "uploadTime" :  toolInfo.time,
             });
-    elif t == "author":
-        userInfoList = models.User.objects.get(name__icontains == t);
-        result["userInfoList"].extend([{
-            "name" : userInfo.name,
-            "email" : userInfo.email,
-        } for userInfo in userInfoList]);
+    elif s == "author":
+        if request.GET.get("q", "") == "tools":
+            userInfos = models.User.objects.filter(name = t);
+            if len(userInfos) > 0:
+                toolInfoList = models.Tool.objects.filter(uid = userInfos[0].id);
+                result["toolInfoList"].extend([{
+                    "name" : toolInfo.name,
+                    "category" : toolInfo.category,
+                    "tkey" : toolInfo.tkey,
+                    "description" : toolInfo.description,
+                    "downloadCount" : toolInfo.download or 0,
+                    "score" : toolInfo.score or 0.0,
+                    "author" :  toolInfo.uid.name,
+                    "uploadTime" :  toolInfo.time,
+                } for toolInfo in toolInfoList]);
+        else:
+            userInfoList = models.User.objects.filter(name__icontains = t);
+            result["userInfoList"].extend([{
+                "name" : userInfo.name,
+                "email" : userInfo.email,
+            } for userInfo in userInfoList]);
+            result["searchObject"] = "用户";
     else:
-        toolInfoList = models.Tool.objects.get(name__icontains == t);
+        toolInfoList = models.Tool.objects.filter(name__icontains = t);
         result["toolInfoList"].extend([{
             "name" : toolInfo.name,
             "category" : toolInfo.category,
