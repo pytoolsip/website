@@ -81,6 +81,9 @@ footer a{
 .tool-info-tittle{
 	display: block;
 }
+.tool-info-tittle>h2{
+	display: inline-block;
+}
 .tool-info-tittle>h3{
 	display: inline-block;
 }

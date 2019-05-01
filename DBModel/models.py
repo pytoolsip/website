@@ -2,7 +2,7 @@ from django.db import models
 
 class Collection(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey')
+    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
 
     class Meta:
         managed = False
@@ -11,7 +11,7 @@ class Collection(models.Model):
 
 class Comment(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey')
+    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
     version = models.CharField(max_length=255)
     score = models.FloatField()
     content = models.TextField()
@@ -24,7 +24,7 @@ class Comment(models.Model):
 
 class Tool(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    tkey = models.CharField(max_length=255)
+    tkey = models.CharField(max_length=255, unique=True)
     category = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     version = models.CharField(max_length=255)

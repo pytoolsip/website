@@ -37,21 +37,23 @@
 		</header>
 		
 		<div class="container">
+			{% if hasTool %}
 			<div class="row">
 				<div class="col-md-8">
-					<h2>工具名称</h2>
+					<div class="tool-info-tittle"><h2>{{ toolInfo.name }}</h2><span>&nbsp;[{{ toolInfo.category }}]</span></div>
 					<h4>
 						ID:&nbsp;&nbsp;
-						<span id="IDText" style="color: green;">ac6116b2555f703585a8b7abca84b1bf</span>
+						<span id="IDText" style="color: green;">{{ toolInfo.tkey }}</span>
 						<button id="copyID" class="btn btn-xs btn-default" data-clipboard-target="#IDText">复制</button>
 					</h4>
-					<p>[工具类别]</p>
 					<p style="color: #A0A0A0;">
-						<span>上传者：梦心DH</span>
+						<span>上传者：{{ toolInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>上传时间：2019-02-28</span>
+						<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>下载量：0</span>
+						<span>下载量：{{ toolInfo.downloadCount }}</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>评分：{{ toolInfo.score }}</span>
 					</p>
 				</div>
 				<div class="col-md-2 col-md-offset-1" style="padding-top: 40px;">
@@ -59,59 +61,38 @@
 				</div>
 				<div class="col-md-12">
 					<blockquote style="margin-top: 30px;margin-bottom: 40px;">
-						<p>工具描述。</p>
+						<p>{{ toolInfo.description }}</p>
 					</blockquote>
-					<div id="toolCommont" style="border-top: 1px #BCBCBC solid; padding-top: 30px;">
+					<div id="toolComment" style="border-top: 1px #BCBCBC solid; padding-top: 30px;">
 						<form role="form">
-							<textarea class="form-control" rows="3" placeholder="评论内容"></textarea>
-							<input id="commontScore" type="number" class="rating" />
-							<button type="submit" class="btn btn-success right" >评论</button>
+							<textarea  id="commentContent" name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
+							<input id="commentScore" name="score" type="number" class="rating" />
+							<button id="commentButton" type="button" class="btn btn-success right" >评论</button>
 						</form>
 						<ul class="row" style="margin-top: 50px;border-bottom: 1px #BCBCBC dashed;">
+							{% for commentInfo in commentInfoList %}
 							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
 								<div class="col-md-3 text-center">
-									<p>评论者</p>
-									<p style="color: #A0A0A0;">2019-02-28 00:00:00</p>
+									<p>{{ commentInfo.user }}</p>
+									<p style="color: #A0A0A0;">{{ commentInfo.time }}</p>
 								</div>
 								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">0.0</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">这是条评论。</span></p>
+									<p>评分：<span style="color: darkgoldenrod;">{{ commentInfo.score }}</span></p>
+									<p>评论内容：<span style="color: #A0A0A0;">{{ commentInfo.content }}</span></p>
 								</div>
 							</li>
-							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
-								<div class="col-md-3 text-center">
-									<p>评论者</p>
-									<p style="color: #A0A0A0;">2019-02-28 00:00:00</p>
-								</div>
-								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">0.0</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">这是条评论。</span></p>
-								</div>
-							</li>
-							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
-								<div class="col-md-3 text-center">
-									<p>评论者</p>
-									<p style="color: #A0A0A0;">2019-02-28 00:00:00</p>
-								</div>
-								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">0.0</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">这是条评论。</span></p>
-								</div>
-							</li>
-							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
-								<div class="col-md-3 text-center">
-									<p>评论者</p>
-									<p style="color: #A0A0A0;">2019-02-28 00:00:00</p>
-								</div>
-								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">0.0</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">这是条评论。</span></p>
-								</div>
-							</li>
+							{% endfor %}
 						</ul>
 					</div>
 				</div>
 			</div>
+			{% else %}
+			<div class="row">
+				<div class="col-md-12 text-center">
+					<h1>没找到相应工具信息</h1>
+				</div>
+			</div>
+			{% endif %}
 		</div>
 		<div class="fixdRight">
 			<div id="user"><a class="btn btn-default text-center" href="javascript:void();" title="个人中心"><span class="glyphicon glyphicon-user"></span></a></div>
@@ -123,7 +104,8 @@
 				<a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
 			</div>
 		</footer>
-		<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+		<script src="http://jimdreamheart.club/resource/jquery/jquery-3.4.0.min.js"></script>
+		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-star-rating/js/star-rating.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/clipboard/dist/clipboard.min.js"></script>
@@ -147,6 +129,27 @@
 			idClipboard.on('success', function(e) {
 				e.clearSelection();
 			})
+			$("#commentButton").click(function(){
+				var $uid = $.cookie("uid");
+				if ($uid == undefined) {
+					alert("必须登陆后才能评论！");
+					return;
+				}
+				var $content = $("#commentContent").val();
+				if ($content == "") {
+					alert("评论内容不能为空！");
+					return;
+				}
+				$.post("http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}",{
+					uid : $uid,
+					content : $content,
+					score : $("#commentScore").val(),
+				}, function(data,status){
+					if (status != "success") {
+						alert("提交评论失败，请重新提交！")
+					}
+				});
+			});
 		</script>
 	</body>
 </html>
