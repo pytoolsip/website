@@ -85,7 +85,7 @@ footer a{
 	display: inline-block;
 }
 .tool-info-id>span{
-	color: #868686;
+	color: green;
 }
 .tool-info-desc{
 	font-size: 14px
