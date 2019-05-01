@@ -86,7 +86,7 @@
 		<script language="JavaScript">
 			var $selectOption = $("#searchSelect").find("option[value='{{ searchSelect }}']");
 			$selectOption.attr("selected",true); // 选中选项
-			$("#searchText").attr("placeholder", "{{ searchText }}"); // 搜索值
+			$("#searchText").val("{{ searchText }}"); // 搜索值
 			$("#searchSelectOption").text($selectOption.text()); // 搜索选项值
 		</script>
 	</body>
