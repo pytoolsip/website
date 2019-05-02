@@ -8,7 +8,7 @@ $(function(){
 			<div class='container'>\
 				<div class='row'>\
 					<div class='dialog-background col-md-4 col-md-offset-4'>\
-						<a id='closeDialogPage' href='javascript:void();' title='关闭登陆弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
+						<a id='closeDialogPage' href='javascript:void(0);' title='关闭登陆弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
 						" + content + "\
 					</div>\
 				</div>\
@@ -59,7 +59,7 @@ $(function(){
 				}, function(data, status){
 					if (status == "success" && data.isSuccess) {
 						console.log("登陆成功。");
-						$.cookie("uid", data.uid, {expires: 1, path: "/pytoolsip", domain: "http://jimdreamheart.club"});
+						$.cookie("uid", data.uid, {expires: 1, path: "/"});
 						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
