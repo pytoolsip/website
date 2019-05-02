@@ -20,11 +20,13 @@
 							<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 						</button>
 					</div>
-					<ul class="nav navbar-nav">
-						<li><a href="javascript:void();" target="_blank" title="开发工具">开发工具</a></li>
-						<li><a href="javascript:void();" target="_blank" title="产品工具">产品工具</a></li>
-						<li><a href="javascript:void();" target="_blank" title="娱乐工具">娱乐工具</a></li>
-					</ul>
+					<div id="searchNavCollapse" class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="javascript:void();" target="_blank" title="开发工具">开发工具</a></li>
+							<li><a href="javascript:void();" target="_blank" title="产品工具">产品工具</a></li>
+							<li><a href="javascript:void();" target="_blank" title="娱乐工具">娱乐工具</a></li>
+						</ul>
+					</div>
 				</div>
 			</nav>
 		</header>
@@ -57,7 +59,7 @@
 						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
 						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
 						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-						<p class="tool-info-detail"><a class="btn btn-primary" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" role="button">点击详情&nbsp;&raquo;</a></p>
+						<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" role="button">点击详情&nbsp;&raquo;</a></p>
 						<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
 						<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
 					</div>

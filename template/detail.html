@@ -21,12 +21,12 @@
 							<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 						</button>
 					</div>
-					<ul class="nav navbar-nav">
-						<li><a href="javascript:void();" target="_blank" title="开发工具">开发工具</a></li>
-						<li><a href="javascript:void();" target="_blank" title="产品工具">产品工具</a></li>
-						<li><a href="javascript:void();" target="_blank" title="娱乐工具">娱乐工具</a></li>
-					</ul>
 					<div id="searchNavCollapse" class="navbar-collapse collapse">
+						<ul class="nav navbar-nav">
+							<li><a href="javascript:void();" target="_blank" title="开发工具">开发工具</a></li>
+							<li><a href="javascript:void();" target="_blank" title="产品工具">产品工具</a></li>
+							<li><a href="javascript:void();" target="_blank" title="娱乐工具">娱乐工具</a></li>
+						</ul>
 						<form action="http://jimdreamheart.club/pytoolsip/search" class="navbar-form navbar-right">
 							<input name="t" type="text" placeholder="搜索工具名称" class="form-control">
 							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
@@ -91,7 +91,7 @@
 						<form role="form">
 							<textarea  id="commentContent" name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
 							<input id="commentScore" name="score" type="number" class="rating" />
-							<button id="commentButton" type="button" class="btn btn-success right" >评论</button>
+							<button id="commentButton" type="button" class="btn btn-info right" >评论</button>
 						</form>
 						<ul class="row" style="margin-top: 60px;border-bottom: 1px #BCBCBC dashed;">
 							{% for commentInfo in commentInfoList %}
@@ -146,7 +146,7 @@
 					return val+"分";
 				},
 				starCaptionClasses:function(val){
-					return "label label-success";
+					return "label label-info";
 				},
 			});
 			var idClipboard = new ClipboardJS("#copyID");
