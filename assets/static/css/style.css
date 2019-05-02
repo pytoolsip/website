@@ -140,6 +140,7 @@ footer a{
 	background-color: #BCBCBC;
 }
 #closeDialogPage:hover{
+	color: darkblue;
 	background-color: #E1E1E1;
 }
 .dialog-content{

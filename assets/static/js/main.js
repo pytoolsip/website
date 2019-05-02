@@ -59,7 +59,7 @@ $(function(){
 				}, function(data, status){
 					if (status == "success" && data.isSuccess) {
 						console.log("登陆成功。");
-						$.cookie("uid", data.uid, {expires: 1, path: "/", domain: "http://jimdreamheart.club/pytoolsip"});
+						$.cookie("uid", data.uid, {expires: 1, path: "/pytoolsip", domain: "http://jimdreamheart.club"});
 						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
