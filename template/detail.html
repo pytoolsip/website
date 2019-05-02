@@ -49,27 +49,52 @@
 					<p style="color: #A0A0A0;">
 						<span>上传者：{{ toolInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>下载量：{{ toolInfo.downloadCount }}</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span>评分：{{ toolInfo.score }}</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>总下载量：{{ toolInfo.downloadCount }}</span>
 					</p>
 				</div>
-				<div class="col-md-2 col-md-offset-1" style="padding-top: 40px;">
-					<a class="btn btn-lg btn-primary" href="javascript:void();" target="_blank" title="">&nbsp;&nbsp;<span class="glyphicon glyphicon-download-alt"></span>下载工具&nbsp;&nbsp;</a>
+				<div class="col-md-4" style="padding-top: 40px;">
+					<a class="btn btn-lg btn-primary" href="{{ toolInfo.url }}" target="_blank" title="">
+						<p><span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;v{{ toolInfo.version }}</p>
+						<p>(common:v{{ toolInfo.commonVersion }})</p>
+					</a>
 				</div>
 				<div class="col-md-12">
 					<blockquote style="margin-top: 30px;margin-bottom: 40px;">
 						<p>{{ toolInfo.description }}</p>
 					</blockquote>
-					<div id="toolComment" style="border-top: 1px #BCBCBC solid; padding-top: 30px;">
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>版本号</th>
+									<th>common版本号</th>
+									<th>版本描述</th>
+									<th>上传时间</th>
+									<th>下载量</th>
+									<th>下载</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>{{ toolInfo.version }}</td>
+									<td>{{ toolInfo.commonVersion }}</td>
+									<td>{{ toolInfo.description }}</td>
+									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
+									<td>{{ toolInfo.downloadCount }}</td>
+									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="toolComment" style="border-top: 1px #BCBCBC solid;padding-top: 40px;margin-top: 40px;">
 						<form role="form">
 							<textarea  id="commentContent" name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
 							<input id="commentScore" name="score" type="number" class="rating" />
 							<button id="commentButton" type="button" class="btn btn-success right" >评论</button>
 						</form>
-						<ul class="row" style="margin-top: 50px;border-bottom: 1px #BCBCBC dashed;">
+						<ul class="row" style="margin-top: 60px;border-bottom: 1px #BCBCBC dashed;">
 							{% for commentInfo in commentInfoList %}
 							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
 								<div class="col-md-3 text-center">

@@ -121,6 +121,9 @@ def detail(request):
                 "score" : toolInfo.score or 0.0,
                 "author" :  toolInfo.uid.name,
                 "uploadTime" :  toolInfo.time,
+                "version" : toolInfo.version,
+                "commonVersion" : toolInfo.common_version,
+                "url" : toolInfo.url,
             },
             "commentInfoList" : [],
         };
