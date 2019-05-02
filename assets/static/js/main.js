@@ -58,7 +58,7 @@ $(function(){
 					password : $("#loginPassword").val(),
 				}, function(data, status){
 					if (status == "success") {
-						console.log("登陆成功。")
+						console.log("登陆成功。", data)
 						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
