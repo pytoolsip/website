@@ -74,7 +74,11 @@ footer a{
 	border-top: 2px #BCBCBC solid;
 }
 .jumbotron-content{
-	padding: 20px 0px;
+	padding: 24px 0px;
+}
+.jumbotron-content>p{
+	margin: 10px;
+	padding: 0px;
 }
 .jumbotron-btn-group>li{
 	display: inline-block;
