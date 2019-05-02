@@ -25,7 +25,7 @@ $(function(){
 		});
 		// 更新弹窗页尺寸方法
 		function updateDialogPageSize(){
-			if ($('#dialogPage').length() > 0) {
+			if ($('#dialogPage').length > 0) {
 				$('#dialogPage').width(Math.max($(window).width(), $("body").width()));
 				$('#dialogPage').height(Math.max($(window).height(), $("body").height()));
 			}
@@ -59,7 +59,7 @@ $(function(){
 				}, function(data, status){
 					if (status == "success") {
 						console.log("登陆成功。")
-						if ($('#dialogPage').length() > 0) 	{
+						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
 					} else {
