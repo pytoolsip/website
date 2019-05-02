@@ -130,7 +130,7 @@ footer a{
 	padding: 0px;
 	margin-top: 100px;
 }
-.dialog-background>.glyphicon-remove{
+#closeDialogPage{
 	float: right;
 	top: -20px;
 	right: 0px;
@@ -139,7 +139,7 @@ footer a{
 	color: #000000;
 	background-color: #BCBCBC;
 }
-.dialog-background>.glyphicon-remove:hover{
+#closeDialogPage:hover{
 	background-color: #E1E1E1;
 }
 .dialog-content{

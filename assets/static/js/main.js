@@ -8,7 +8,7 @@ $(function(){
 			<div class='container'>\
 				<div class='row'>\
 					<div class='dialog-background col-md-4 col-md-offset-4'>\
-						<a id='closeDialogPage' class='glyphicon glyphicon-remove' href='javascript:void();' title='关闭登陆弹窗'>关闭</a>\
+						<a id='closeDialogPage' href='javascript:void();' title='关闭登陆弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
 						" + content + "\
 					</div>\
 				</div>\
@@ -49,7 +49,7 @@ $(function(){
 							<input id='loginUserName' class='form-control' type='text' placeholder='用户名' required autofocus />\
 							<input id='loginPassword' class='form-control' type='password' placeholder='密码' required />\
 							<label id='loginRemember'><input type='checkbox'> 记住密码</label>\
-							<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>登陆</button>\
+							<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
 						</form>");
 			// 绑定登陆按钮的点击事件
 			$("#loginButton").on("click",function(){
@@ -57,8 +57,9 @@ $(function(){
 					name : $("#loginUserName").val(),
 					password : $("#loginPassword").val(),
 				}, function(data, status){
-					if (status == "success") {
-						console.log("登陆成功。", data)
+					if (status == "success" && data.isSuccess) {
+						console.log("登陆成功。");
+						$.cookie("uid", data.uid, {expires: 1, path: "/", domain: "http://jimdreamheart.club/pytoolsip"});
 						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
@@ -76,12 +77,12 @@ $(function(){
 				uid : $uid,
 			}, function(data, status){
 				console.log("data", data)
-				if (status == "success") {
+				if (status == "success" && data.isSuccess) {
 					createDialogPage("\
 								<div class='dialog-content'>\
 									<h2>玩家信息</h2>\
-									<p>用户名：<span>xxx</span></p>\
-									<p>邮箱：<span>xxx</span></p>\
+									<p>用户名：<span>" + data.name + "</span></p>\
+									<p>邮箱：<span>" + data.email + "</span></p>\
 								</div>");
 				} else {
 					createLoginDialog();
