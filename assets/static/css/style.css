@@ -73,16 +73,16 @@ footer a{
 	padding-top: 20px;
 	border-top: 2px #BCBCBC solid;
 }
+.jumbotron-content{
+	padding: 20px 0px;
+}
 .jumbotron-btn-group>li{
 	display: inline-block;
-	padding: 0px 40px;
+	margin: 10px 40px;
 }
 .jumbotron-btn-group>li>a{
 	padding-left: 30px;
 	padding-right: 30px;
-}
-.jumbotron-btn-group>li+li{
-	margin-left: 30px;
 }
 /* toolInfo style */
 .tool-info-item{
