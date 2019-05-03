@@ -98,14 +98,21 @@ $(function(){
 			createLoginDialog();
 		});
 	}
-	// 点击用户事件
-	$("#user").on("click",function(){
+	// 获取玩家ID
+	function getUid() {
 		var $uid = $.cookie("uid");
 		if ($uid == undefined || $uid == "null") {
 			$uid = $.session.get("uid");
 		}
-		console.log("uid:", $uid);
 		if ($uid == undefined || $uid == "null") {
+			return null;
+		}
+		return $uid;
+	}
+	// 点击用户事件
+	$("#user").on("click",function(){
+		var $uid = getUid();
+		if ($uid == undefined) {
 			createLoginDialog();
 		} else {
 			$.post(loginUrl, {
@@ -122,7 +129,7 @@ $(function(){
 	});
 	// 评论按钮点击事件
 	$("#commentButton").click(function(){
-		var $uid = $.cookie("uid");
+		var $uid = getUid();
 		if ($uid == undefined) {
 			createLoginDialog();
 			return;
