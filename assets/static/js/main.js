@@ -50,6 +50,7 @@ $(function(){
 							<input id='loginPassword' class='form-control' type='password' placeholder='密码' required />\
 							<label id='loginRemember'><input type='checkbox'> 记住密码</label>\
 							<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
+							<label>注：本平台暂不支持网页注册。如需注册，请通过<a href='http://jimdreamheart.club/pytoolsip'>首页</a>下载并运行PyToolsIP，选择【用户>注册】进行注册。</label>\
 						</form>");
 			// 绑定登陆按钮的点击事件
 			$("#loginButton").on("click",function(){
@@ -69,8 +70,26 @@ $(function(){
 				});
 			});
 		}
+		var createLogoutDialog = function(data){
+			// 创建弹窗
+			createDialogPage("<div class='dialog-content text-center'>\
+								<h2>玩家信息</h2>\
+								<p>用户名：<span>" + data.name + "</span></p>\
+								<p>邮箱：<span>" + data.email + "</span></p>\
+								<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;注销账号</button>\
+							</div>");
+			// 绑定注销按钮的点击事件
+			$("#logoutButton").on("click",function(){
+				$.cookie("uid", null, {expires: 1, path: "/"});
+				if ($('#dialogPage').length > 0) 	{
+					$('#dialogPage').remove();
+				}
+				// 创建登陆弹窗
+				createLoginDialog();
+			});
+		}
 		var $uid = $.cookie("uid");
-		if ($uid == undefined) {
+		if ($uid == undefined || $uid == null) {
 			createLoginDialog();
 		} else {
 			$.post(loginUrl, {
@@ -78,12 +97,7 @@ $(function(){
 			}, function(data, status){
 				console.log("data", data)
 				if (status == "success" && data.isSuccess) {
-					createDialogPage("\
-								<div class='dialog-content'>\
-									<h2>玩家信息</h2>\
-									<p>用户名：<span>" + data.name + "</span></p>\
-									<p>邮箱：<span>" + data.email + "</span></p>\
-								</div>");
+					createLogoutDialog(data);
 				} else {
 					createLoginDialog();
 				}

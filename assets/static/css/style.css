@@ -132,16 +132,14 @@ footer a{
 }
 #closeDialogPage{
 	float: right;
-	top: -20px;
 	right: 0px;
-	font-size: 14px;
-	padding: 3px;
+	font-size: 13px;
+	padding: 2px;
 	color: #000000;
 	background-color: #BCBCBC;
 }
 #closeDialogPage:hover{
-	color: darkblue;
-	background-color: #E1E1E1;
+	color: red;
 }
 .dialog-content{
 	padding: 40px;
@@ -153,6 +151,17 @@ footer a{
 	margin-top: 0px;
 	margin-bottom: 20px;
 	border-bottom: 1px #DCDCDC solid;
+}
+.dialog-content>p{
+	font-size:16px;
+	color:#232323;
+}
+.dialog-content>p>span{
+	color:#646464;
+}
+#logoutButton:hover{
+	color: #FFFFFF;
+	background-color: red;
 }
 /* login-form style */
 .login-form>.form-control{
