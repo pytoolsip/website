@@ -48,19 +48,26 @@ $(function(){
 							<h2>登陆PyToolsIP</h2>\
 							<input id='loginUserName' class='form-control' type='text' placeholder='用户名' required autofocus />\
 							<input id='loginPassword' class='form-control' type='password' placeholder='密码' required />\
-							<label id='loginRemember'><input type='checkbox'> 记住密码</label>\
+							<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>\
 							<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
 							<label>注：本平台暂不支持网页注册。如需注册，请通过<a href='http://jimdreamheart.club/pytoolsip'>首页</a>下载并运行PyToolsIP，选择【用户>注册】进行注册。</label>\
 						</form>");
 			// 绑定登陆按钮的点击事件
 			$("#loginButton").on("click",function(){
+				$.session.set("isRememberMe", $("#loginRemember>input[type='checkbox']").is(":checked"));
+				console.log("isRememberMe:", $.session.get("isRememberMe"))
 				$.post(loginUrl, {
 					name : $("#loginUserName").val(),
 					password : $("#loginPassword").val(),
 				}, function(data, status){
 					if (status == "success" && data.isSuccess) {
 						console.log("登陆成功。");
-						$.cookie("uid", data.uid, {expires: 1, path: "/"});
+						if ($.session.get("isRememberMe") == true) {
+							$.cookie("uid", data.uid, {expires: 1, path: "/"});
+						} else {
+							$.session.set("uid", data.uid);
+							console.log("session uid:", $.session.get("uid"));
+						}
 						if ($('#dialogPage').length > 0) 	{
 							$('#dialogPage').remove();
 						}
@@ -81,6 +88,7 @@ $(function(){
 			// 绑定注销按钮的点击事件
 			$("#logoutButton").on("click",function(){
 				$.cookie("uid", null, {expires: 1, path: "/"});
+				$.session.remove("uid");
 				if ($('#dialogPage').length > 0) 	{
 					$('#dialogPage').remove();
 				}
@@ -89,6 +97,10 @@ $(function(){
 			});
 		}
 		var $uid = $.cookie("uid");
+		if ($uid == undefined || $uid == null) {
+			$uid = $.session.get("uid");
+		}
+		console.log("uid:", uid);
 		if ($uid == undefined || $uid == null) {
 			createLoginDialog();
 		} else {
