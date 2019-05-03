@@ -130,6 +130,7 @@
 		</footer>
 		<script src="http://jimdreamheart.club/resource/jquery/jquery-3.4.0.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
+		<script src="http://jimdreamheart.club/resource/jquery/jquerysession.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-star-rating/js/star-rating.min.js"></script>
 		<script src="http://jimdreamheart.club/resource/clipboard/dist/clipboard.min.js"></script>
@@ -153,27 +154,6 @@
 			idClipboard.on('success', function(e) {
 				e.clearSelection();
 			})
-			$("#commentButton").click(function(){
-				var $uid = $.cookie("uid");
-				if ($uid == undefined) {
-					alert("必须登陆后才能评论！");
-					return;
-				}
-				var $content = $("#commentContent").val();
-				if ($content == "") {
-					alert("评论内容不能为空！");
-					return;
-				}
-				$.post("http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}",{
-					uid : $uid,
-					content : $content,
-					score : $("#commentScore").val(),
-				}, function(data,status){
-					if (status != "success") {
-						alert("提交评论失败，请重新提交！")
-					}
-				});
-			});
 		</script>
 	</body>
 </html>
