@@ -97,11 +97,11 @@ $(function(){
 			});
 		}
 		var $uid = $.cookie("uid");
-		if ($uid == undefined || $uid == null) {
+		if ($uid == undefined || $uid == "null") {
 			$uid = $.session.get("uid");
 		}
 		console.log("uid:", $uid);
-		if ($uid == undefined || $uid == null) {
+		if ($uid == undefined || $uid == "null") {
 			createLoginDialog();
 		} else {
 			$.post(loginUrl, {
