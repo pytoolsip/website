@@ -52,7 +52,7 @@
 				<div id="downloadList" class="col-md-12">
 					<h2>下载列表</h2>
 					<div class="table-responsive">
-						<table class="table table-striped" style="word-break:break-all; word-wrap:break-all;">
+						<table class="table table-striped">
 							<thead>
 								<tr>
 									<th>版本号</th>
@@ -66,7 +66,7 @@
 								{% for ptipInfo in ptipInfoList %}
 									<tr>
 										<td>{{ ptipInfo.version }}</td>
-										<td>{{ ptipInfo.description }}</td>
+										<td style="width:50%">{{ ptipInfo.description }}</td>
 										<td>{{ ptipInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
 										<td>{{ ptipInfo.downloadCount }}</td>
 										<td><a href="{{ ptipInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
