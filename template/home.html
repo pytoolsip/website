@@ -9,6 +9,16 @@
 		<title>PyToolsIP</title>
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="http://jimdreamheart.club/static/pytoolsip/css/style.css" />
+		<style>
+			.col-md-12>h2{
+				margin-bottom: 20px;
+			}
+			#downloadList{
+				padding-bottom: 20px;
+				margin-bottom: 40px;
+				border-bottom: 1px #DCDCDC solid;
+			}
+		</style>
 	</head>
 	<body>
 		<header id = "header">
@@ -41,7 +51,7 @@
 						<p>在使用工具时，除了可使用本平台自带的工具外，还允许<b>用户开发自定义功能</b>的工具，而用户可选择将所开发的工具上传到本平台，以共享给其他人下载使用。</p>
 					</div>
 					<ul class="jumbotron-btn-group">
-						<li><a id="downloadBtn" class="btn btn-primary btn-lg" href="{{ newestPtip.url }}" role="button"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestPtip.version }}]</a></li>
+						<li><a class="btn btn-primary btn-lg" href="{{ newestPtip.url }}" role="button"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestPtip.version }}]</a></li>
 						<li><a class="btn btn-default btn-lg" href="http://jimdreamheart.club/gitbook/PyToolsIP/" target="_blank" role="button"><span class="glyphicon glyphicon-book"></span>&nbsp;开发文档</a></li>
 					</ul>
 				</div>
