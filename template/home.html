@@ -53,7 +53,7 @@
 						<p>在使用工具时，除了可使用本平台自带的工具外，还允许<b>用户开发自定义功能</b>的工具，而用户可选择将所开发的工具上传到本平台，以共享给其他人下载使用。</p>
 					</div>
 					<ul class="jumbotron-btn-group">
-						<li><a class="btn btn-primary btn-lg" href="{{ newestPtip.url }}" role="button"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestPtip.version }}]</a></li>
+						<li><a class="btn btn-primary btn-lg" href="{{ newestPtip.url }}" target="_blank" role="button"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestPtip.version }}]</a></li>
 						<li><a class="btn btn-default btn-lg" href="http://jimdreamheart.club/gitbook/PyToolsIP/" target="_blank" role="button"><span class="glyphicon glyphicon-book"></span>&nbsp;开发文档</a></li>
 					</ul>
 				</div>
@@ -95,7 +95,7 @@
 							<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
 							<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
 							<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-							<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" role="button">点击详情&nbsp;&raquo;</a></p>
+							<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
 							<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
 							<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
 						</div>
