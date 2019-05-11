@@ -21,13 +21,13 @@ def home(request):
             "author" :  toolInfo.uid.name,
             "uploadTime" :  toolInfo.time,
         } for toolInfo in toolInfoList],
-        "ptipInfoList" : [
+        "ptipInfoList" : [{
             "version" : "v1.0.0",
             "description" : "使用方式：下载后进行解压，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。\n注意：初次运行程序时，需要安装拉取模块，请保持网络能正常连接！",
             "uploadTime" : time.strptime("2019-5-11 19:37:59", "%Y-%m-%d %H:%M:%S"),
             "downloadCount" : 0,
             "url" : "http://jimdreamheart.club/release/pytoolsip/PyToolsIP-v1.0.0.zip",
-        ],
+        }],
     });
 
 # 搜索页
