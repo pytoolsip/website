@@ -85,7 +85,7 @@ $(function(){
 							<h2>玩家信息</h2>\
 							<p>用户名：<span>" + data.name + "</span></p>\
 							<p>邮箱：<span>" + data.email + "</span></p>\
-							<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;注销账号</button>\
+							<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
 						</div>");
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
