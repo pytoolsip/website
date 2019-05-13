@@ -150,21 +150,21 @@ $(function(){
 		});
 	});
 	
-	// 节日祝福
-	if ($('.jumbotron').length > 0) {
-		var seconds = 3;
-		createDialogPage("<div class='dialog-content text-center'><h2>母亲节快乐~</h2><h3>祝愿天下的所有母亲，节日快乐。</h3><p style='margin-top:30px;font-size:10px'><span id='countDown' style='color:red'>3</span>&nbsp;秒后自动关闭</p></div>");
-		var intervalId = window.setInterval(function(){
-			seconds--
-			if (seconds <= 0) {
-				window.clearInterval(intervalId);
-				if ($('#dialogPage').length > 0) 	{
-					$('#dialogPage').remove();
-				}
-			}
-			if ($('#countDown').length > 0) 	{
-				$('#countDown').html(seconds);
-			}
-		}, seconds*500);
-	}
+//	// 节日祝福
+//	if ($('.jumbotron').length > 0) {
+//		var seconds = 3;
+//		createDialogPage("<div class='dialog-content text-center'><h2>母亲节快乐~</h2><h3>祝愿天下的所有母亲，节日快乐。</h3><p style='margin-top:30px;font-size:10px'><span id='countDown' style='color:red'>3</span>&nbsp;秒后自动关闭</p></div>");
+//		var intervalId = window.setInterval(function(){
+//			seconds--
+//			if (seconds <= 0) {
+//				window.clearInterval(intervalId);
+//				if ($('#dialogPage').length > 0) 	{
+//					$('#dialogPage').remove();
+//				}
+//			}
+//			if ($('#countDown').length > 0) 	{
+//				$('#countDown').html(seconds);
+//			}
+//		}, seconds*500);
+//	}
 })
