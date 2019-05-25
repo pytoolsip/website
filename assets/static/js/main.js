@@ -85,7 +85,7 @@ $(function(){
 							<h2>玩家信息</h2>\
 							<p>用户名：<span>" + data.name + "</span></p>\
 							<p>邮箱：<span>" + data.email + "</span></p>\
-							<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;注销账号</button>\
+							<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
 						</div>");
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
@@ -150,21 +150,21 @@ $(function(){
 		});
 	});
 	
-	// 节日祝福
-	if ($('.jumbotron').length > 0) {
-		var seconds = 3;
-		createDialogPage("<div class='dialog-content text-center'><h2>母亲节快乐~</h2><h3>祝愿天下的所有母亲，节日快乐。</h3><p style='margin-top:30px;font-size:10px'><span id='countDown' style='color:red'>3</span>&nbsp;秒后自动关闭</p></div>");
-		var intervalId = window.setInterval(function(){
-			seconds--
-			if (seconds <= 0) {
-				window.clearInterval(intervalId);
-				if ($('#dialogPage').length > 0) 	{
-					$('#dialogPage').remove();
-				}
-			}
-			if ($('#countDown').length > 0) 	{
-				$('#countDown').html(seconds);
-			}
-		}, seconds*500);
-	}
+//	// 节日祝福
+//	if ($('.jumbotron').length > 0) {
+//		var seconds = 3;
+//		createDialogPage("<div class='dialog-content text-center'><h2>母亲节快乐~</h2><h3>祝愿天下的所有母亲，节日快乐。</h3><p style='margin-top:30px;font-size:10px'><span id='countDown' style='color:red'>3</span>&nbsp;秒后自动关闭</p></div>");
+//		var intervalId = window.setInterval(function(){
+//			seconds--
+//			if (seconds <= 0) {
+//				window.clearInterval(intervalId);
+//				if ($('#dialogPage').length > 0) 	{
+//					$('#dialogPage').remove();
+//				}
+//			}
+//			if ($('#countDown').length > 0) 	{
+//				$('#countDown').html(seconds);
+//			}
+//		}, seconds*500);
+//	}
 })
