@@ -21,23 +21,33 @@ class Comment(models.Model):
         managed = False
         db_table = 'comment'
 
-
 class Tool(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.CharField(max_length=255, unique=True)
     category = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
-    version = models.CharField(max_length=255)
-    common_version = models.CharField(max_length=255)
     description = models.TextField()
-    url = models.CharField(max_length=255)
-    time = models.DateTimeField()
     score = models.FloatField(blank=True, null=True)
     download = models.IntegerField(blank=True, null=True)
+    time = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'tool'
+        unique_together = (('id', 'tkey'),)
+
+
+class ToolDetail(models.Model):
+    tkey = models.ForeignKey(Tool, models.DO_NOTHING, db_column='tkey', to_field='tkey')
+    version = models.CharField(max_length=255)
+    common_version = models.CharField(max_length=255)
+    changelog = models.TextField()
+    url = models.CharField(max_length=255)
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'tool_detail'
 
 
 class User(models.Model):

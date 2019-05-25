@@ -40,28 +40,30 @@
 			{% if hasTool %}
 			<div class="row">
 				<div class="col-md-8">
-					<div class="tool-info-tittle"><h2>{{ toolInfo.name }}</h2><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+					<div class="tool-info-tittle"><h2>{{ baseInfo.name }}</h2><span>&nbsp;[{{ baseInfo.category }}]</span></div>
 					<h4>
 						ID:&nbsp;&nbsp;
-						<span id="IDText" style="color: green;">{{ toolInfo.tkey }}</span>
+						<span id="IDText" style="color: green;">{{ baseInfo.tkey }}</span>
 						<button id="copyID" class="btn btn-xs btn-default" data-clipboard-target="#IDText">复制</button>
 					</h4>
 					<p style="color: #A0A0A0;">
-						<span>上传者：{{ toolInfo.author }}</span>
+						<span>上传者：{{ baseInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>评分：{{ toolInfo.score }}</span>
+						<span>评分：{{ baseInfo.score }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>总下载量：{{ toolInfo.downloadCount }}</span>
+						<span>总下载量：{{ baseInfo.downloadCount }}</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span>最近上传：{{ baseInfo.time|date:"Y-m-d H:i:s" }}</span>
 					</p>
 				</div>
 				<div class="col-md-4" style="padding-top: 40px;">
-					<a class="btn btn-lg btn-primary" href="javascript:void(0);" target="_blank" title="目前暂不支持网页下载，请复制ID到PyToolsIP程序，选择【工具>下载工具】进行下载。">
-						&nbsp;<span class="glyphicon glyphicon-download-alt"></span>&nbsp;&nbsp;<b>v{{ toolInfo.version }}</b>&nbsp;[common:v{{ toolInfo.commonVersion }}]&nbsp;
+					<a class="btn btn-lg btn-info" href="javascript:void(0);" target="_blank" title="收藏功能正在开发中...">
+						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;点击收藏&nbsp;&nbsp;
 					</a>
 				</div>
 				<div class="col-md-12">
 					<blockquote style="margin-top: 30px;margin-bottom: 40px;">
-						<p>{{ toolInfo.description }}</p>
+						<p>{{ baseInfo.description }}</p>
 					</blockquote>
 					<div class="table-responsive">
 						<table class="table table-striped">
@@ -69,21 +71,21 @@
 								<tr>
 									<th>版本号</th>
 									<th>common版本号</th>
-									<th>版本描述</th>
+									<th>更新日志</th>
 									<th>上传时间</th>
-									<th>下载量</th>
 									<th>下载</th>
 								</tr>
 							</thead>
 							<tbody>
+								{% for toolInfo in toolInfoList %}
 								<tr>
 									<td>{{ toolInfo.version }}</td>
 									<td>{{ toolInfo.commonVersion }}</td>
-									<td>{{ toolInfo.description }}</td>
+									<td>{{ toolInfo.changelog }}</td>
 									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
-									<td>{{ toolInfo.downloadCount }}</td>
 									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
 								</tr>
+								{% endfor %}
 							</tbody>
 						</table>
 					</div>

@@ -99,45 +99,68 @@ def search(request):
 @csrf_exempt
 def detail(request):
     request.encoding = "utf-8";
-    t = request.GET.get("t", "");
-    # 保存评论内容
+    uid, t = -1, request.GET.get("t", "");
+    # 收藏、评论处理
     if request.POST:
-        isSave = True;
-        for k in ["uid", "score", "content"]:
-            if k not in request.POST:
-                isSave = False;
-                break;
-        if isSave:
-            try:
-                user = models.User.objects.get(id = request.POST["uid"]);
-                tool = models.Tool.objects.get(tkey = t);
+        # 保存uid
+        uid = request.POST.get("uid", -1);
+        try:
+            user = models.User.objects.get(id = uid);
+            tool = models.Tool.objects.get(tkey = t);
+            # 保存收藏
+            if "isCollect" in request.POST:
+                collections = models.Collection.objects.filter(uid = uid, tkey = t);
+                if request.POST["isCollect"] and len(collections) == 0:
+                    c = models.Collection(uid = user, tkey = tool);
+                    c.save();
+                elif not request.POST["isCollect"] and len(collections) > 0:
+                    collections.delete();
+            # 保存评论
+            isSave = True;
+            for k in ["uid", "score", "content"]:
+                if k not in request.POST:
+                    isSave = False;
+                    break;
+            if isSave:
                 c = models.Comment(uid = user, tkey = tool, version = "1.0.0", score = request.POST["score"], content = request.POST["content"], time = timezone.now());
                 c.save();
-            except Exception as e:
-                print(e);
+        except Exception as e:
+            print(e);
     # 获取工具信息
     result = {"hasTool" : False};
-    toolInfos = models.Tool.objects.filter(tkey = t);
+    toolInfos = models.ToolDetail.objects.filter(tkey = t).order_by('time');
     if len(toolInfos) > 0:
-        toolInfo = toolInfos[0];
+        baseInfo = toolInfos[0].tkey;
         result = {
             "hasTool" : True,
-            "toolInfo" : {
-                "name" : toolInfo.name,
-                "category" : toolInfo.category,
-                "tkey" : toolInfo.tkey,
-                "description" : toolInfo.description,
-                "downloadCount" : toolInfo.download or 0,
-                "score" : toolInfo.score or 0.0,
-                "author" :  toolInfo.uid.name,
-                "uploadTime" :  toolInfo.time,
-                "version" : toolInfo.version,
-                "commonVersion" : toolInfo.common_version,
-                "url" : toolInfo.url,
+            "isCollected" : False,
+            "baseInfo" : {
+                "name" : baseInfo.name,
+                "category" : baseInfo.category,
+                "tkey" : baseInfo.tkey,
+                "description" : baseInfo.description,
+                "downloadCount" : baseInfo.download or 0,
+                "score" : baseInfo.score or 0.0,
+                "author" :  baseInfo.uid.name,
+                "time" :  baseInfo.time,
             },
+            "toolInfoList" : [],
             "commentInfoList" : [],
         };
-        commentInfos = toolInfo.comment_set.all();
+        # 是否收藏了工具
+        collections = models.Collection.objects.filter(uid = uid, tkey = t);
+        if len(collections) > 0:
+            result["isCollected"] = True;
+        # 工具列表
+        result["toolInfoList"].extend([{
+            "version" : toolInfo.version,
+            "commonVersion" : toolInfo.common_version,
+            "url" : toolInfo.url,
+            "changelog" : toolInfo.changelog,
+            "uploadTime" :  toolInfo.time,
+        } for toolInfo in toolInfos]);
+        # 评论信息
+        commentInfos = baseInfo.comment_set.all();
         result["commentInfoList"].extend([{
             "user" : commentInfo.uid.name,
             "time" : commentInfo.time,
