@@ -68,7 +68,7 @@
 							<thead>
 								<tr>
 									<th>版本号</th>
-									<th>版本描述</th>
+									<th>更新日志</th>
 									<th>上传时间</th>
 									<th>下载量</th>
 									<th>下载</th>
@@ -78,7 +78,7 @@
 								{% for ptipInfo in ptipInfoList %}
 									<tr>
 										<td>{{ ptipInfo.version }}</td>
-										<td style="width:50%">{{ ptipInfo.description }}</td>
+										<td style="width:50%">{{ ptipInfo.changelog }}</td>
 										<td>{{ ptipInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
 										<td>{{ ptipInfo.downloadCount }}</td>
 										<td><a href="{{ ptipInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>

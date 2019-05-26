@@ -9,13 +9,16 @@ from DBModel import models
 # Create your views here.
 # 首页
 def home(request):
+    # 平台信息列表
+    ptipInfos = models.Ptip.objects.order_by('time');
     ptipInfoList = [{
-            "version" : "v1.0.0",
-            "description" : "下载后进行解压，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。需要注意的是：初次运行程序时，为确保成功拉取依赖模块，请保证网络能正常连接！",
-            "uploadTime" : datetime.datetime(2019, 5, 11, 19, 37),
-            "downloadCount" : 0,
-            "url" : "http://jimdreamheart.club/release/pytoolsip/PyToolsIP-v1.0.0.zip",
-    }];
+            "version" : ptipInfo.version,
+            "url" : ptipInfo.url,
+            "changelog" : ptipInfo.changelog,
+            "uploadTime" : ptipInfo.time,
+            "downloadCount" : ptipInfo.download_count,
+    } for ptipInfo in ptipInfos];
+    # 工具信息列表
     toolInfoList = models.Tool.objects.order_by('time');
     return render(request, "home.html", {
         "toolInfoList" : [{
@@ -29,7 +32,7 @@ def home(request):
             "uploadTime" :  toolInfo.time,
         } for toolInfo in toolInfoList],
         "ptipInfoList" : ptipInfoList,
-        "newestPtip" : ptipInfoList[0],
+        "newestPtip" : ptipInfoList[-1],
     });
 
 # 搜索页
@@ -122,7 +125,7 @@ def detail(request):
                     isSave = False;
                     break;
             if isSave:
-                c = models.Comment(uid = user, tkey = tool, version = "1.0.0", score = request.POST["score"], content = request.POST["content"], time = timezone.now());
+                c = models.Comment(uid = user, tkey = tool, score = request.POST["score"], content = request.POST["content"], time = timezone.now());
                 c.save();
         except Exception as e:
             print(e);

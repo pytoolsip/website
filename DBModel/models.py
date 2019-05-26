@@ -12,7 +12,6 @@ class Collection(models.Model):
 class Comment(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
-    version = models.CharField(max_length=255)
     score = models.FloatField()
     content = models.TextField()
     time = models.DateTimeField()
@@ -20,6 +19,21 @@ class Comment(models.Model):
     class Meta:
         managed = False
         db_table = 'comment'
+
+
+class Ptip(models.Model):
+    id = models.IntegerField(primary_key=True)
+    version = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    changelog = models.TextField()
+    time = models.DateTimeField()
+    download_count = models.IntegerField()
+    download_type = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'ptip'
+
 
 class Tool(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
