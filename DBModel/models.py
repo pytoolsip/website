@@ -40,7 +40,7 @@ class Tool(models.Model):
 class ToolDetail(models.Model):
     tkey = models.ForeignKey(Tool, models.DO_NOTHING, db_column='tkey', to_field='tkey')
     version = models.CharField(max_length=255)
-    common_version = models.CharField(max_length=255)
+    ip_version = models.CharField(max_length=255)
     changelog = models.TextField()
     url = models.CharField(max_length=255)
     time = models.DateTimeField()
