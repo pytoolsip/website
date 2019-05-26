@@ -157,7 +157,7 @@ def detail(request):
         # 工具列表
         result["toolInfoList"].extend([{
             "version" : toolInfo.version,
-            "commonVersion" : toolInfo.common_version,
+            "IPVersion" : toolInfo.ip_version,
             "url" : toolInfo.url,
             "changelog" : toolInfo.changelog,
             "uploadTime" :  toolInfo.time,

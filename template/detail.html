@@ -70,7 +70,7 @@
 							<thead>
 								<tr>
 									<th>版本号</th>
-									<th>common版本号</th>
+									<th>平台版本</th>
 									<th>更新日志</th>
 									<th>上传时间</th>
 									<th>下载</th>
@@ -80,7 +80,7 @@
 								{% for toolInfo in toolInfoList %}
 								<tr>
 									<td>{{ toolInfo.version }}</td>
-									<td>{{ toolInfo.commonVersion }}</td>
+									<td>{{ toolInfo.IPVersion }}</td>
 									<td>{{ toolInfo.changelog }}</td>
 									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
 									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
