@@ -214,7 +214,6 @@ def manage(request):
     except Exception as e:
         print(e);
         return render(request, "login_manager.html", {"requestFailedTips" : "用户名和密码不匹配！"});
-    print("user:::", user.name)
     # 网页键值跳转判断
     ptipKeyList, ptKeyList = manage_view.PtipKeyList, manage_view.PtKeyList;
     # 获取请求键值
@@ -226,4 +225,5 @@ def manage(request):
             mkey = ptKeyList[0];
         else:
             mkey = ptipKeyList[0];
+    print("mkey:::", mkey)
     return manage_view.manage(request, user, mkey);

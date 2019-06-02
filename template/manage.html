@@ -76,11 +76,13 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div id="sidebar" class="col-sm-3 col-md-2 sidebar">
+					{% if isShowIpOption %}
 					<ul class="nav nav-sidebar">
 						<li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">PTIP平台</a></li>
 						<li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台运行程序</a></li>
 						<li><a class="_slideItem_" href="javascript:void(0);" data-target="update_exe">平台更新程序</a></li>
 					</ul>
+					{% endif %}
 					<ul class="nav nav-sidebar">
 						<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_new_script">上传新工具</a></li>
 						<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_ol_script">更新线上工具</a></li>
@@ -130,6 +132,13 @@
 		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 		<script src={% static "js/manage.js" %}></script>
+		<script language="JavaScript">
+			$(function(){
+				// 更新当前项
+				$("#sidebar li.active").toggleClass("active");
+				$("#sidebar ._slideItem_[data-target='{{mkey}}']").parent().toggleClass("active");
+				console.log("mkey::", '{{mkey}}')
+			})
 		</script>
 	</body>
 </html>

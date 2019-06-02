@@ -38,30 +38,6 @@
 		<script src={% static "js/manage.js" %}></script>
 		<script language="JavaScript">
 			$(function(){
-				$("#loginButton").on("click",function(){
-					$.post(window.location.href, {
-						isLogin : true,
-						uname : $("#loginUserName").val(),
-						upwd : $("#loginPassword").val(),
-					}, function(data, status){
-						if (status == "success" && data.isSuccess) {
-							$.cookie("ptip_mg_username", data.name, {expires: 0.5, path: "/"});
-							$.cookie("ptip_mg_userpwd", data.pwd, {expires: 0.5, path: "/"});
-							$.post(window.location.href, {
-								uname : data.name,
-								upwd : data.pwd,
-							}, function(data, status){
-								if (status == "success") {
-									var newDoc = document.open("text/html", "replace");
-									newDoc.write(data);
-									newDoc.close();
-								}
-							})
-						} else {
-							alert("登陆失败！")
-						}
-					});
-				});
 				// 请求登陆
 				requestManage({});
 			})
