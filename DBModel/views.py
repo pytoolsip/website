@@ -1,10 +1,11 @@
-import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse
 
 from DBModel import models
+
+from DBModel import manage_view
 
 # Create your views here.
 # 首页
@@ -13,7 +14,7 @@ def home(request):
     ptipInfos = models.Ptip.objects.order_by('time');
     ptipInfoList = [{
             "version" : ptipInfo.version,
-            "url" : ptipInfo.url,
+            "url" : ptipInfo.file_path.url,
             "changelog" : ptipInfo.changelog,
             "uploadTime" : ptipInfo.time,
             "downloadCount" : ptipInfo.download_count,
@@ -151,14 +152,14 @@ def detail(request):
             "commentInfoList" : [],
         };
         # 是否收藏了工具
-        collections = models.Collection.objects.filter(uid = uid, tkey = t);
+        collections = models.Collection.objects.filter(uid = baseInfo.uid, tkey = t);
         if len(collections) > 0:
             result["isCollected"] = True;
         # 工具列表
         result["toolInfoList"].extend([{
             "version" : toolInfo.version,
             "IPVersion" : toolInfo.ip_version,
-            "url" : toolInfo.url,
+            "url" : toolInfo.file_path.url,
             "changelog" : toolInfo.changelog,
             "uploadTime" :  toolInfo.time,
         } for toolInfo in toolInfos]);
@@ -194,3 +195,35 @@ def login(request):
     except Exception as e:
         print(e);
     return JsonResponse(result);
+
+# 后台管理页
+@csrf_exempt
+def manage(request):
+    print("manage get", request.GET)
+    print("manage post", request.POST)
+    if not request.POST or "uname" not in request.POST or "upwd" not in request.POST:
+        return render(request, "login_manager.html", {"requestFailedTips" : "用户名或密码不能为空！"});
+    try:
+        user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
+        if request.POST.get("isLogin", False):
+            return JsonResponse({
+                "isSuccess" : True,
+                "name" : user.name,
+                "pwd" : user.password,
+            });
+    except Exception as e:
+        print(e);
+        return render(request, "login_manager.html", {"requestFailedTips" : "用户名和密码不匹配！"});
+    print("user:::", user.name)
+    # 网页键值跳转判断
+    ptipKeyList, ptKeyList = manage_view.PtipKeyList, manage_view.PtKeyList;
+    # 获取请求键值
+    mkey = request.POST.get("mk", "");
+    # 判断是否重定向
+    if (mkey not in ptipKeyList and mkey not in ptKeyList) or (mkey in ptipKeyList and user.authority == 0):
+        # 重置mkey
+        if user.authority == 0:
+            mkey = ptKeyList[0];
+        else:
+            mkey = ptipKeyList[0];
+    return manage_view.manage(request, user, mkey);

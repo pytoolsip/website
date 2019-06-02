@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -8,7 +9,7 @@
 		<meta name="author" content="JimDreamHeart">
 		<title>PyToolsIP</title>
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="http://jimdreamheart.club/static/pytoolsip/css/style.css" />
+		<link rel="stylesheet" href= {% static "css/style.css" %} />
 		<style>
 			.col-md-12>h2{
 				padding: 10px 0px;
@@ -117,6 +118,6 @@
 		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
 		<script src="http://jimdreamheart.club/resource/jquery/jquerysession.js"></script>
 		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-		<script src="http://jimdreamheart.club/static/pytoolsip/js/main.js"></script>
+		<script src={% static "js/main.js" %}></script>
 	</body>
 </html>

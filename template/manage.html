@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="PyToolsIP[Python工具集成平台]">
+		<meta name="author" content="JimDreamHeart">
+		<title>PyToolsIP-管理后台</title>
+		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
+		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
+		<link rel="stylesheet" href= {% static "css/style.css" %} />
+		<style>
+			a{
+				color: #232323;
+			}
+			a:hover{
+				color: #428BCA;
+			}
+			.sidebar {
+				position: fixed;
+				top: 51px;
+				bottom: 0;
+				z-index: 1000;
+				display: block;
+				padding: 20px;
+				overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+				background-color: #F5F5F5;
+				border-right: 1px solid #EEEEEE;
+			}
+			.nav-sidebar {
+				margin-right: -20px;
+				margin-left: -20px;
+				padding: 10px 0px;
+				border-top: 1px #E1E1E1 solid;
+			}
+			.nav-sidebar > .active > a,
+			.nav-sidebar > .active > a:hover,
+			.nav-sidebar > .active > a:focus {
+				font-size: 18px;
+				color: #FFFFFF;
+				background-color: #428BCA;
+			}
+			.content > h2{
+				color: #2069A8;
+				border-bottom: 1px #DCDCDC solid;
+			}
+			.form-group > h3 {
+				color: #008000;
+				padding: 10px;
+				margin: 20px 0px;
+				border-bottom: 1px #E1E1E1 solid;
+			}
+			.form-group > .input-group {
+				margin: 20px 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<header id = "header">
+			<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid navbar-header">
+					<a class="navbar-brand" href="http://jimdreamheart.club/pytoolsip" title="首页">PyToolsIP</a>
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#userNavCollapse">
+						<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+					</button>
+				</div>
+				<div id="userNavCollapse" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right" style="margin:0px">
+						<li><a href="javascript:void(0);" title="用户中心"><span class="glyphicon glyphicon-user">{{ userInfo.name }}</span></a></li>
+					</ul>
+				</div>
+			</nav>
+		</header>
+		<div class="container-fluid">
+			<div class="row">
+				<div id="sidebar" class="col-sm-3 col-md-2 sidebar">
+					<ul class="nav nav-sidebar">
+						<li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">PTIP平台</a></li>
+						<li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台运行程序</a></li>
+						<li><a class="_slideItem_" href="javascript:void(0);" data-target="update_exe">平台更新程序</a></li>
+					</ul>
+					<ul class="nav nav-sidebar">
+						<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_new_script">上传新工具</a></li>
+						<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_ol_script">更新线上工具</a></li>
+					</ul>
+				</div>
+				<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+					<h2>线上版本</h2>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>版本号</th>
+								<th>更新日志</th>
+								<th>发布时间</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th>1.0.0</th>
+								<th>无</th>
+								<th>00:00:00</th>
+							</tr>
+						</tbody>
+					</table>
+					<h2>上传版本</h2>
+					<form class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form">
+						<h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
+						<div class="input-group">
+							<label class="input-group-addon" for="version">版本号</label>
+							<input name="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
+						</div>
+						<div class="input-group">
+							<label class="input-group-addon" for="version">更新包(zip格式)：</label>
+							<input name="file" class="form-control" type="file" />
+						</div>
+						<input name="submit" class="form-control btn btn-success" type="submit" value="上传更新包" />
+					</form>
+				</div>
+			</div>
+		</div>
+		<footer style="position: fixed;bottom: 0px;">
+			<div class="container">
+				<span>Copyright&nbsp;&copy;&nbsp;2019&nbsp;</span>
+				<a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
+			</div>
+		</footer>
+		<script src="http://jimdreamheart.club/resource/jquery/jquery-3.4.0.min.js"></script>
+		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
+		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+		<script src={% static "js/manage.js" %}></script>
+		</script>
+	</body>
+</html>
