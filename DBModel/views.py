@@ -202,7 +202,7 @@ def manage(request):
     print("manage get", request.GET)
     print("manage post", request.POST)
     if not request.POST or "uname" not in request.POST or "upwd" not in request.POST:
-        return render(request, "login_manager.html", {"requestFailedTips" : "用户名或密码不能为空！"});
+        return render(request, "manage/index.html");
     try:
         user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
         if request.POST.get("isLogin", False):
@@ -211,9 +211,14 @@ def manage(request):
                 "name" : user.name,
                 "pwd" : user.password,
             });
+        if request.POST.get("isAfterLogin", False):
+            return manage_view.manage(request, user, "");
     except Exception as e:
         print(e);
-        return render(request, "login_manager.html", {"requestFailedTips" : "用户名和密码不匹配！"});
+        ret = {};
+        if request.POST["uname"] and request.POST["upwd"]:
+            ret = {"requestFailedTips" : "用户名和密码不匹配！"};
+        return render(request, "manage/login.html", ret);
     # 网页键值跳转判断
     ptipKeyList, ptKeyList = manage_view.PtipKeyList, manage_view.PtKeyList;
     # 获取请求键值
@@ -225,5 +230,4 @@ def manage(request):
             mkey = ptKeyList[0];
         else:
             mkey = ptipKeyList[0];
-    print("mkey:::", mkey)
     return manage_view.manage(request, user, mkey);

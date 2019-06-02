@@ -1,0 +1,43 @@
+a{
+    color: #232323;
+}
+a:hover{
+    color: #428BCA;
+}
+.sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #F5F5F5;
+    border-right: 1px solid #EEEEEE;
+}
+.nav-sidebar {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding: 10px 0px;
+    border-top: 1px #E1E1E1 solid;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+    font-size: 18px;
+    color: #FFFFFF;
+    background-color: #428BCA;
+}
+.content > h2{
+    color: #2069A8;
+    border-bottom: 1px #DCDCDC solid;
+}
+.form-group > h3 {
+    color: #008000;
+    padding: 10px;
+    margin: 20px 0px;
+    border-bottom: 1px #E1E1E1 solid;
+}
+.form-group > .input-group {
+    margin: 20px 0px;
+}

@@ -1,0 +1,87 @@
+<div class="container-fluid">
+	<div class="row">
+		<div id="sidebar" class="col-sm-3 col-md-2 sidebar">
+			{% if isShowIpOption %}
+			<ul class="nav nav-sidebar">
+				<li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">PTIP平台</a></li>
+				<li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台运行程序</a></li>
+				<li><a class="_slideItem_" href="javascript:void(0);" data-target="update_exe">平台更新程序</a></li>
+			</ul>
+			{% endif %}
+			<ul class="nav nav-sidebar">
+				<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_new_script">上传新工具</a></li>
+				<li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_ol_script">更新线上工具</a></li>
+			</ul>
+		</div>
+		<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+			<h2>线上版本</h2>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>版本号</th>
+						<th>更新日志</th>
+						<th>发布时间</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<th>1.0.0</th>
+						<th>无</th>
+						<th>00:00:00</th>
+					</tr>
+				</tbody>
+			</table>
+			<h2>上传版本</h2>
+			<form class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form">
+				<h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
+				<div class="input-group">
+					<label class="input-group-addon" for="version">版本号</label>
+					<input name="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
+				</div>
+				<div class="input-group">
+					<label class="input-group-addon" for="version">更新包(zip格式)：</label>
+					<input name="file" class="form-control" type="file" />
+				</div>
+				<input name="submit" class="form-control btn btn-success" type="submit" value="上传更新包" />
+			</form>
+		</div>
+	</div>
+</div>
+<script language="JavaScript">
+	$(function(){
+		var tips = "{{requestFailedTips}}";
+		if (tips != "") {
+			alert(tips);
+		}
+		// 显示头部
+		if ($("#userNavCollapse ul").hasClass("hidden")) {
+			$("#userNavCollapse ul").removeClass("hidden");
+		}
+		// 更新用户名
+		$("#userName").text("{{userInfo.name}}");
+		// 更新当前项
+		var mkey = "{{mkey}}";
+		if (mkey == "") {
+			mkey = $("#sidebar ._slideItem_:eq(0)").attr("data-target");
+		}
+		var $activeLi = $("#sidebar li.active");
+		if ($activeLi.length == 0) {
+			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+		}else if (mkey != $activeLi.firstChild.attr("data-target")) {
+			$activeLi.toggleClass("active");
+			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+		}
+		// 切换tab
+		$("#sidebar ._slideItem_").on("click", function(){
+			var $selected = $("#sidebar li.active").toggleClass("active");
+			if ($selected != $(this).parent()) {
+				$(this).parent().toggleClass("active");
+				// 请求信息
+				requestManage({
+					isSwitchTab : true,
+					mk : $(this).attr("data-target"),
+				});
+			}
+		});
+	})
+</script>
