@@ -1,0 +1,69 @@
+
+<h2>线上版本</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>版本号</th>
+            <th>更新日志</th>
+            <th>发布时间</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>1.0.0</th>
+            <th>无</th>
+            <th>00:00:00</th>
+        </tr>
+    </tbody>
+</table>
+<h2>上传版本</h2>
+<form class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form">
+    <h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
+    <div class="clearfix dependE">
+        <h5 class="pull-left">依赖程序</h5>
+        <div class="pull-left">
+            <strong>pytoolsip.exe&nbsp;<span>[v1.0.0]</span></strong>
+            <strong>update.exe&nbsp;<span>[v1.0.0]</span></strong>
+        </div>
+    </div>
+    <div class="clearfix dependE">
+        <h5 class="pull-left">依赖环境</h5>
+        <div id="dependEnvList" class="pull-left">
+            <label class="checkbox-inline">
+                <input type="checkbox" value="python" checked />python&nbsp;&nbsp;
+            </label>
+        </div>
+        </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="version">版本号</label>
+        <input id="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="version">更新包(zip格式)</label>
+        <input id="file" class="form-control" type="file" />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="version">changelog</label>
+        <textarea id="changelog" class="form-control" rows="4"></textarea>
+    </div>
+    <input id="uploadButton" class="form-control btn btn-success" type="button" value="上传更新包" />
+</form>
+<script language="JavaScript">
+	$(function(){
+		var tips = "{{requestFailedTips}}";
+		if (tips != "") {
+			alert(tips);
+		}
+		// 点击上传
+		$("#uploadButton").on("click",function(){
+            var selectedEnv = new Array();
+            $("#dependEnvList input[type='checkbox']:checked").each(function() {selectedEnv.push($(this).val());});
+			requestManage({
+                envList : selectedEnv,
+                version : $("#version").val(),
+                file : $("#file").val(),
+                changelog : $("#changelog").val(),
+            });
+		});
+	})
+</script>

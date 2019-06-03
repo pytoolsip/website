@@ -14,44 +14,30 @@
 			</ul>
 		</div>
 		<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
-			<h2>线上版本</h2>
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th>版本号</th>
-						<th>更新日志</th>
-						<th>发布时间</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<th>1.0.0</th>
-						<th>无</th>
-						<th>00:00:00</th>
-					</tr>
-				</tbody>
-			</table>
-			<h2>上传版本</h2>
-			<form class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form">
-				<h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
-				<div class="input-group">
-					<label class="input-group-addon" for="version">版本号</label>
-					<input name="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
-				</div>
-				<div class="input-group">
-					<label class="input-group-addon" for="version">更新包(zip格式)：</label>
-					<input name="file" class="form-control" type="file" />
-				</div>
-				<input name="submit" class="form-control btn btn-success" type="submit" value="上传更新包" />
-			</form>
+			<div id="alertList">
+			</div>
+			<div id="contentList">
+				{% ifequal mkey "ptip_script" %}
+					{% include "manage/ptip.html" %}
+				{% endifequal %}
+				{% ifequal mkey "pt_new_script" %}
+					{% include "manage/ptip.html" %}
+				{% endifequal %}
+			</div>
 		</div>
 	</div>
 </div>
 <script language="JavaScript">
 	$(function(){
+		var showAlert = function(type, text) {
+			$("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
+					<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<span class='alertContent'>"+ text +"</span>\
+				</div>");
+		}
 		var tips = "{{requestFailedTips}}";
 		if (tips != "") {
-			alert(tips);
+			showAlert("danger", tips);
 		}
 		// 显示头部
 		if ($("#userNavCollapse ul").hasClass("hidden")) {
@@ -62,14 +48,19 @@
 		// 更新当前项
 		var mkey = "{{mkey}}";
 		if (mkey == "") {
-			mkey = $("#sidebar ._slideItem_:eq(0)").attr("data-target");
-		}
-		var $activeLi = $("#sidebar li.active");
-		if ($activeLi.length == 0) {
-			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
-		}else if (mkey != $activeLi.firstChild.attr("data-target")) {
-			$activeLi.toggleClass("active");
-			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+			// 请求信息
+			requestManage({
+				isSwitchTab : true,
+				mk : $("#sidebar ._slideItem_:eq(0)").attr("data-target"),
+			});
+		} else {
+			var $activeLi = $("#sidebar li.active");
+			if ($activeLi.length == 0) {
+				$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+			}else if (mkey != $activeLi.firstChild.attr("data-target")) {
+				$activeLi.toggleClass("active");
+				$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+			}
 		}
 		// 切换tab
 		$("#sidebar ._slideItem_").on("click", function(){

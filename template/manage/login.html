@@ -23,7 +23,6 @@
 		}
 		// 点击登陆
 		$("#loginButton").on("click",function(){
-			console.log("loginButton click")
 			$.post(window.location.href, {
 				isLogin : true,
 				uname : $("#loginUserName").val(),
