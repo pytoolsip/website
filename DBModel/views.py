@@ -201,6 +201,7 @@ def login(request):
 def manage(request):
     print("manage get", request.GET)
     print("manage post", request.POST)
+    print("manage files", request.FILES)
     if not request.POST or "uname" not in request.POST or "upwd" not in request.POST:
         return render(request, "manage/index.html");
     try:

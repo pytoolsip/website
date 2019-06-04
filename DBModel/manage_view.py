@@ -25,7 +25,7 @@ def _getMd5_(name, category):
 # 上传平台脚本
 def uploadPtipScript(request, user, result):
     if "isSwitchTab" not in request.POST:
-        if "version" in request.POST and "file" in request.POST and "changelog" in request.POST:
+        if request.POST.get("version", None) and request.POST.get("file", None) and request.POST.get("changelog", None):
             version = request.POST["version"];
             p = models.Ptip(version = version, file_path = request.POST["file"], changelog = request.POST["changelog"], time = timezone.now());
             p.save();
