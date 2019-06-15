@@ -1,4 +1,3 @@
-
 <h2>线上版本</h2>
 <table class="table table-striped">
     <thead>
@@ -16,38 +15,14 @@
         </tr>
     </tbody>
 </table>
-<h2>上传版本</h2>
+<h2>上传工具</h2>
 <form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form" enctype="multipart/form-data">
-    <h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
-    <div class="clearfix dependE">
-        <h5 class="pull-left">依赖程序</h5>
-        <div class="pull-left">
-            <strong>
-                pytoolsip.exe&nbsp;
-                <select>
-                    <option>v1.0.0</option>
-                    <option>v1.0.1</option>
-                    <option>v1.0.2</option>
-                </select>
-            </strong>
-            <strong>
-                update.exe&nbsp;
-                <select>
-                    <option>v1.0.0</option>
-                    <option>v1.0.1</option>
-                    <option>v1.0.2</option>
-                </select>
-            </strong>
-        </div>
-    </div>
-    <div class="clearfix dependE">
-        <h5 class="pull-left">依赖环境</h5>
-        <div id="dependEnvList" class="pull-left">
-            <label class="checkbox-inline">
-                <input type="checkbox" value="python" checked disabled />
-                python&nbsp;&nbsp;
-            </label>
-        </div>
+    <h3 class="text-center">
+        -&nbsp;上传新版本工具&nbsp;-
+    </h3>
+    <div class="input-group">
+        <label class="input-group-addon" for="name">工具ID</label>
+        <input name="name" class="form-control" type="text" value="{{tkey}}" readOnly />
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="version">版本号</label>
@@ -61,7 +36,7 @@
         <label class="input-group-addon" for="changelog">更新日志</label>
         <textarea name="changelog" class="form-control" rows="4" required></textarea>
     </div>
-    <input class="form-control btn btn-success" type="submit" value="上传更新包" />
+    <input id="uploadButton" class="form-control btn btn-success" type="button" value="上传更新包" />
 </form>
 <script language="JavaScript">
 	$(function(){
@@ -72,11 +47,9 @@
                 changelog: "请输入更新日志",
             },
             submitHandler: function() {
-                alert("提交事件!");
-                // 上传事件
-                // uploadManageForm($("#uploadForm"), [
-                //     {"key":"mk", "val":"{{mkey}}", "type":"text"}
-                // ]);
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
             }
         });
 	})

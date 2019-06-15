@@ -20,8 +20,18 @@
 				{% ifequal mkey "ptip_script" %}
 					{% include "manage/ptip.html" %}
 				{% endifequal %}
+				{% ifequal mkey "ptip_exe" %}
+					{% include "manage/ptip_exe.html" %}
+				{% endifequal %}
+				{% ifequal mkey "update_exe" %}
+					{% include "manage/ptip_exe.html" %}
+				{% endifequal %}
+
 				{% ifequal mkey "pt_new_script" %}
-					{% include "manage/ptip.html" %}
+					{% include "manage/new_tool.html" %}
+				{% endifequal %}
+				{% ifequal mkey "pt_ol_script" %}
+					{% include "manage/ol_tool.html" %}
 				{% endifequal %}
 			</div>
 		</div>
@@ -54,11 +64,11 @@
 				mk : $("#sidebar ._slideItem_:eq(0)").attr("data-target"),
 			});
 		} else {
-			var $activeLi = $("#sidebar li.active");
-			if ($activeLi.length == 0) {
+			var $activeItem = $("#sidebar li.active>._slideItem_");
+			if ($activeItem.length == 0) {
 				$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
-			}else if (mkey != $activeLi.firstChild.attr("data-target")) {
-				$activeLi.toggleClass("active");
+			}else if (mkey != $activeItem.attr("data-target")) {
+				$activeItem.parent().toggleClass("active");
 				$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
 			}
 		}

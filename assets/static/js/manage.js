@@ -30,9 +30,14 @@ $(function(){
         }
     }
     // 添加数据到表单
-    var addInputsToForm = function(item, mk){
-        // 添加mk
-        addInputToForm(item, "mk", mk, "text");
+    var addInputsToForm = function(item, exIpts){
+        // 添加扩展输入
+        if (exIpts instanceof Array && exIpts.length > 0) {
+            for (var i = 0; i < exIpts.length; i++) {
+                var ipt = exIpts[i];
+                addInputToForm(item, ipt.key, ipt.val, ipt.type);
+            }
+        }
         // 添加用户名和密码
         var $uname = $.cookie("ptip_mg_username");
         var $upwd = $.cookie("ptip_mg_userpwd");
@@ -46,12 +51,12 @@ $(function(){
         addInputToForm(item, "upwd", $upwd, "text");
     }
     // 添加用户信息到表单
-    uploadManageForm = function(item, mk){
+    uploadManageForm = function(item, exIpts){
         if (item.length == 0) {
             return;
         }
         // 添加数据到表单
-        addInputsToForm(item, mk);
+        addInputsToForm(item, exIpts);
         // 提交数据
         $.ajax({
             url : window.location.href,

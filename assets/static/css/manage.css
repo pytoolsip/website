@@ -55,9 +55,17 @@ a:hover{
     display: inline-block;
     margin: 4px;
     padding: 2px;
-    border: 1px #E1E1E1 solid;
+    border: 1px #D0D0D0 solid;
 }
-.dependE > div > strong > span {
+.dependE > div > strong > select {
     color: #008000;
     font-weight: normal;
+}
+/* validation */
+.error {
+    border: 1px solid red;
+}
+label.error {
+    color: red;
+    border: none;
 }

@@ -1,0 +1,72 @@
+<h2>上传工具</h2>
+<form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;上传新工具&nbsp;-
+    </h3>
+    <div class="clearfix dependE">
+        <h5 class="pull-left">工具分类</h5>
+        <div id="category" class="pull-left" style="margin-top: 6px;color: #008000;">
+            <select id="firstCategory" class="category" required>
+                <option>--请选择--</option>
+            </select>
+            <select id="secondCategory" class="category" required>
+                <option>--请选择--</option>
+            </select>
+            <input name="category" placeholder="扩展分类" type="text" />
+        </div>
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="name">工具名</label>
+        <input name="name" class="form-control" type="text" placeholder="" required />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="version">版本号</label>
+        <input name="version" class="form-control" type="text" placeholder="1.0.0" required />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="file">工具包(zip格式)</label>
+        <input name="file" class="form-control" type="file" required />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="description">工具描述</label>
+        <textarea name="description" class="form-control" rows="4" required></textarea>
+    </div>
+    <input class="form-control btn btn-success" type="submit" value="上传工具包" />
+</form>
+<script language="JavaScript">
+	$(function(){
+        $("#uploadForm").validate({
+            messages: {
+                // category: func,
+                name: "请输入工具名",
+                version: "请输入版本号",
+                file: "请选择更新包",
+                description: "请输入工具描述",
+            },
+            submitHandler: function() {
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        var category = {
+            "first" : ["开发工具", "产品工具", "娱乐工具"],
+            "dict" : {
+                "开发工具" : ["文件处理", "数据处理"],
+                "产品工具" : ["文件处理", "数据处理"],
+                "娱乐工具" : ["小游戏"],
+            },
+        };
+        for (var i = 0; i < category.first.length; i++) {
+            $("#firstCategory").append("<option>"+ category.first[i] +"</option>");
+        }
+        $("#firstCategory").change(function(){
+            var fc = $("#firstCategory > option:selected").val();
+            $("#secondCategory > option:gt(0)").remove();
+            var sc = category.dict[fc];
+            for (var i = 0; i < sc.length; i++) {
+                $("#secondCategory").append("<option>"+ sc[i] +"</option>");
+            }
+        });
+	})
+</script>
