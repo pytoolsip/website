@@ -7,10 +7,10 @@
         <h5 class="pull-left">工具分类</h5>
         <div id="category" class="pull-left" style="margin-top: 6px;color: #008000;">
             <select id="firstCategory" class="category" required>
-                <option>--请选择--</option>
+                <option value="">--请选择--</option>
             </select>
             <select id="secondCategory" class="category" required>
-                <option>--请选择--</option>
+                <option value="">--请选择--</option>
             </select>
             <input name="category" placeholder="扩展分类" type="text" />
         </div>
@@ -58,14 +58,14 @@
             },
         };
         for (var i = 0; i < category.first.length; i++) {
-            $("#firstCategory").append("<option>"+ category.first[i] +"</option>");
+            $("#firstCategory").append("<option value='" + category.first[i] + "'>"+ category.first[i] +"</option>");
         }
         $("#firstCategory").change(function(){
             var fc = $("#firstCategory > option:selected").val();
             $("#secondCategory > option:gt(0)").remove();
             var sc = category.dict[fc];
             for (var i = 0; i < sc.length; i++) {
-                $("#secondCategory").append("<option>"+ sc[i] +"</option>");
+                $("#secondCategory").append("<option value='" + sc[i] + "'>"+ sc[i] +"</option>");
             }
         });
 	})
