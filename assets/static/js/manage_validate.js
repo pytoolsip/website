@@ -3,27 +3,28 @@ $(function(){
     $.validator.addMethod(
         "checkVersion",
         function(value, element, param){
-            if (!this.optional(element)) {
+            if (this.optional(element)) {
                 return false;
             }
             var verList = value.split(".");
-            if (verList.length != 3) {
+            console.log("checkVersion::verList:", verList);
+            if (verList.length != param) {
                 return false;
             }
             verList.forEach(function(item){
-                if (!isNaN(Number(item))) {
+                if (isNaN(Number(item))) {
                     return false;
                 }
             });
             return true;
         },
-        $.validator.format("请输入正确的版本格式（如，1.0.0）!")
+        "请输入正确的版本格式（如，1.0.0）"
     );
     // 校验文件类型
     $.validator.addMethod(
         "checkFileType",
         function(value, element, param){
-            if (!this.optional(element)) {
+            if (this.optional(element)) {
                 return false;
             }
             var valList = value.split(".");
@@ -38,7 +39,7 @@ $(function(){
     $.validator.addMethod(
         "checkToolName",
         function(value, element, param){
-            if (!this.optional(element)) {
+            if (this.optional(element)) {
                 return false;
             }
             // 获取分类值
@@ -63,6 +64,6 @@ $(function(){
 
             return true;
         },
-        $.validator.format("请选择{0}格式的文件!")
+        $.validator.format("请输入正确工具名!")
     );
 })

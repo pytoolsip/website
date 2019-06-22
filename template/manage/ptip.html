@@ -66,17 +66,31 @@
 <script language="JavaScript">
 	$(function(){
         $("#uploadForm").validate({
+            rules: {
+                version: {
+                    checkVersion: 3,
+                },
+                file: {
+                    checkFileType: "zip",
+                },
+                changelog: {
+                    required: true,
+                },
+            },
             messages: {
-                version: "请输入版本号",
-                file: "请选择更新包",
+                version: {
+                    required: "请输入版本号",
+                },
+                file: {
+                    required: "请选择更新包",
+                },
                 changelog: "请输入更新日志",
             },
             submitHandler: function() {
-                alert("提交事件!");
-                // 上传事件
-                // uploadManageForm($("#uploadForm"), [
-                //     {"key":"mk", "val":"{{mkey}}", "type":"text"}
-                // ]);
+                上传事件
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
             }
         });
 	})
