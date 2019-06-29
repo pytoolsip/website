@@ -11,12 +11,11 @@ $(function(){
             if (verList.length != param) {
                 return false;
             }
+            var ret = true;
             verList.forEach(function(item){
-                if (isNaN(Number(item))) {
-                    return false;
-                }
+                ret = /^\d+$/.test(item)
             });
-            return true;
+            return ret;
         },
         "请输入正确的版本格式（如，1.0.0）"
     );
@@ -34,36 +33,5 @@ $(function(){
             return true;
         },
         $.validator.format("请选择{0}格式的文件!")
-    );
-    // 校验工具
-    $.validator.addMethod(
-        "checkToolName",
-        function(value, element, param){
-            if (this.optional(element)) {
-                return false;
-            }
-            // 获取分类值
-            var categorys = [];
-            $("#category>select").each(function(index,element){
-                categorys.push($(element).val())
-            });
-            $("#category>input").val().split("/").forEach(function(item){
-                if (item != "") {
-                    categorys.push(item);
-                }
-            });
-            // 获取完整名称
-            var tName = categorys.join("/") + value;
-            // 校验工具(post方法)
-            $.get(window.location.href, {"name" : tName}, function(data, status){
-                if (status == "success") {
-                    
-                    $(element).addClass("");
-                }
-            });
-
-            return true;
-        },
-        $.validator.format("请输入正确工具名!")
     );
 })

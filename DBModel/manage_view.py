@@ -1,7 +1,8 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 import django.utils.timezone as timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+import hashlib;
 
 from DBModel import models
 
@@ -183,3 +184,14 @@ def manage(request, user, mkey):
                 } for toolInfo in toolInfoList],
             };
     return render(request, "manage/content.html", result);
+
+# 校验逻辑
+def verify(request):
+    # 校验工具名
+    if "toolname" in request.POST:
+        tkey = hashlib.md5(request.POST["toolname"].encode("utf-8")).hexdigest();
+        if len(models.Tool.objects.filter(tkey = tkey)) == 0:
+            return HttpResponse("true");
+    # 校验失败
+    print("Verify Fail!", request.POST);
+    return HttpResponse("false");

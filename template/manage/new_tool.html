@@ -17,7 +17,7 @@
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="name">工具名</label>
-        <input name="name" class="form-control" type="text" placeholder="" required />
+        <input id="toolname" name="name" class="form-control" type="text" placeholder="" required />
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="version">版本号</label>
@@ -38,7 +38,29 @@
         $("#uploadForm").validate({
             rules: {
                 name: {
-                    checkToolName: true,
+                    required: true,
+                    remote: {
+                        url : window.location.href,
+                        type : "post",
+                        dataType: "json",
+                        data : {
+                            isVerify : true,
+                            toolname : function() {
+                                // 获取分类值
+                                var categorys = [];
+                                $("#category>select").each(function(index,element){
+                                    categorys.push($(element).val())
+                                });
+                                $("#category>input").val().split("/").forEach(function(item){
+                                    if (item != "") {
+                                        categorys.push(item);
+                                    }
+                                });
+                                // 获取完整名称
+                                return categorys.join("/") + $("#toolname").val();
+                            }
+                        }
+                    },
                 },
                 version: {
                     checkVersion: 3,
@@ -53,6 +75,7 @@
             messages: {
                 name: {
                     required: "请输入工具名",
+                    remote: "在所选分类下，已存在相同工具名！请重新输入",
                 },
                 version: {
                     required: "请输入版本号",

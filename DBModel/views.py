@@ -202,7 +202,11 @@ def manage(request):
     print("manage get", request.GET)
     print("manage post", request.POST)
     print("manage files", request.FILES)
-    if not request.POST or "uname" not in request.POST or "upwd" not in request.POST:
+    # 判断是否校验
+    if "isVerify" in request.POST:
+        return manage_view.verify(request);
+    # 判断是否已登陆
+    if "uname" not in request.POST or "upwd" not in request.POST:
         return render(request, "manage/index.html");
     try:
         user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
