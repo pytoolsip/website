@@ -177,3 +177,8 @@ footer a{
 	font-weight: normal;
 	padding: 10px 0px;
 }
+
+.ptip-navbar > a {
+	font-size: 14px;
+	color: #FFFFFF;
+}

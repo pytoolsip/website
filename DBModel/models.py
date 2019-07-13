@@ -22,6 +22,23 @@ class Comment(models.Model):
         db_table = 'comment'
 
 
+# 运行程序文件路径
+def exe_directory_path(instance, filename):
+    ext = os.path.splitext(filename)[1];
+    return os.path.join("release", "exe", f"{instance.name}-{instance.version}.{ext}");
+class Exe(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
+    version = models.CharField(max_length=255)
+    file_path = models.FileField(upload_to = exe_directory_path)
+    changelog = models.TextField()
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'exe'
+
+
 # 平台文件路径
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
@@ -33,11 +50,9 @@ class Ptip(models.Model):
     file_path = models.FileField(upload_to = ptip_directory_path)
     changelog = models.TextField()
     time = models.DateTimeField()
-    download_count = models.IntegerField()
+    download = models.IntegerField()
+    base_version = models.CharField(max_length=255)
     update_version = models.CharField(max_length=255)
-    update_url = models.CharField(max_length=255, blank=True, null=True)
-    update_size = models.FloatField(blank=True, null=True)
-    update_type = models.IntegerField()
 
     class Meta:
         managed = False
@@ -68,7 +83,7 @@ def tool_directory_path(instance, filename):
 class ToolDetail(models.Model):
     tkey = models.ForeignKey(Tool, models.DO_NOTHING, db_column='tkey', to_field='tkey')
     version = models.CharField(max_length=255)
-    ip_version = models.CharField(max_length=255)
+    ip_base_version = models.CharField(max_length=255)
     changelog = models.TextField()
     file_path = models.FileField(upload_to = tool_directory_path)
     time = models.DateTimeField()
@@ -77,23 +92,6 @@ class ToolDetail(models.Model):
         managed = False
         db_table = 'tool_detail'
 
-
-# 更新文件路径
-def update_directory_path(instance, filename):
-    ext = os.path.splitext(filename)[1];
-    vList = instance.version.split(".");
-    return os.path.join("release", "update", instance.tkey, ".".join(vList[:1]), f"{instance.version}.{ext}");
-class Update(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255)
-    version = models.CharField(max_length=255)
-    file_path = models.FileField(upload_to = update_directory_path)
-    changelog = models.CharField(max_length=255)
-    time = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'update'
 
 class User(models.Model):
     name = models.CharField(max_length=255)
