@@ -79,7 +79,7 @@ def getManageResult(request, user, mkey):
     if mkey == "ptip_script": # 更新平台脚本
         uploadPtipScript(request, user, result);
     elif mkey == "ptip_exe" or mkey == "update_exe": # 更新平台启动/更新程序
-        uploadUpdateFile(request, user, mkey, result);
+        uploadExeFile(request, user, mkey, result);
     elif mkey == "pt_new_script": # 上传新工具脚本
         uploadNewTool(request, user, result);
         toolInfoData["isUploadNew"] = True;
@@ -119,9 +119,10 @@ def _getMd5_(name, category):
 # 上传平台脚本
 def uploadPtipScript(request, user, result):
     if "isSwitchTab" not in request.POST:
-        if request.POST.get("version", None) and request.POST.get("file", None) and request.POST.get("changelog", None):
+        if request.POST.get("version", None) and request.FILES.get("file", None) and request.POST.get("changelog", None):
             version = request.POST["version"];
-            p = models.Ptip(version = version, file_path = request.POST["file"], changelog = request.POST["changelog"], time = timezone.now());
+            vList = version.split(".");
+            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]));
             p.save();
             result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
     # 返回线上版本数据
@@ -134,23 +135,23 @@ def uploadPtipScript(request, user, result):
             "url" : ptipInfo.file_path.url,
         } for ptipInfo in ptipList];
 
-# 上传更新文件
-def uploadUpdateFile(request, user, name, result):
+# 上传程序文件
+def uploadExeFile(request, user, name, result):
     if "isSwitchTab" not in request.POST:
-        if "version" in request.POST and "file" in request.POST and "changelog" in request.POST:
+        if "version" in request.POST and "file" in request.FILES and "changelog" in request.POST:
             version = request.POST["version"];
             try:
-                ud = models.Update.objects.get(name = name);
+                ud = models.Exe.objects.get(name = name);
                 ud.version = version;
-                ud.file_path = request.POST["file"];
+                ud.file_path = request.FILES["file"];
                 ud.changelog = request.POST["changelog"];
                 ud.time = timezone.now();
             except Exception as e:
-                ud = models.Update(name = name, version = version, file_path = request.POST["file"], changelog = request.POST["changelog"], time = timezone.now());
+                ud = models.Exe(name = name, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
             ud.save();
             result["requestTips"] = f"更新文件【{version}】上传成功。";
     # 返回线上版本数据
-    updateList = models.Update.objects.filter(name = name).order_by('time');
+    updateList = models.Exe.objects.filter(name = name).order_by('time');
     if len(updateList) > 0:
         result["onlineInfoList"] = [{
             "version" : updateInfo.version,
@@ -162,7 +163,10 @@ def uploadUpdateFile(request, user, name, result):
 # 上传新工具
 def uploadNewTool(request, user, result):
     if "isSwitchTab" not in request.POST:
-        for k in ["name", "category", "file", "description", "version", "ip_version"]:
+        if "file" not in request.FILES:
+            result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+            return;
+        for k in ["name", "category", "description", "version", "ip_version"]:
             if k not in request.POST:
                 result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
                 return;
@@ -179,14 +183,18 @@ def uploadNewTool(request, user, result):
             tool = models.Tool(uid = user, tkey = tkey, name = name, category = category, description = request.POST["description"], time = curTime);
             tool.save();
             # 保存ToolDetail
-            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_version = request.POST["ip_version"], file_path = request.POST["file"], changelog = "初始版本。", time = curTime);
+            ipVList = request.POST["ip_version"].split(".");
+            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = "初始版本。", time = curTime);
             toolDetail.save();
         result["requestTips"] = f"新工具【{version}】上传成功。";
 
 # 更新线上工具
 def uploadOlTool(request, user, tkey, result):
     if "isSwitchTab" not in request.POST:
-        for k in ["file", "description", "changelog", "version", "ip_version"]:
+        if "file" not in request.FILES:
+            result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+            return;
+        for k in ["description", "changelog", "version", "ip_version"]:
             if k not in request.POST:
                 result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
                 return;
@@ -199,7 +207,8 @@ def uploadOlTool(request, user, tkey, result):
             tool.time = curTime;
             tool.save();
             # 保存ToolDetail
-            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_version = request.POST["ip_version"], file_path = request.POST["file"], changelog = request.POST["changelog"], time = curTime);
+            ipVList = request.POST["ip_version"].split(".");
+            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = curTime);
             toolDetail.save();
             result["requestTips"] = f"线上工具新版本【{version}】上传成功。";
         except Exception as e:
