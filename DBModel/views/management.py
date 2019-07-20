@@ -120,9 +120,12 @@ def _getMd5_(name, category):
 def uploadPtipScript(request, user, result):
     if "isSwitchTab" not in request.POST:
         if request.POST.get("version", None) and request.FILES.get("file", None) and request.POST.get("changelog", None):
+            # 合成工程文件
+            pjFile = "";
+            # 保存脚本文件
             version = request.POST["version"];
             vList = version.split(".");
-            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]));
+            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), project_path = pjFile, base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]));
             p.save();
             result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
     # 返回线上版本数据
@@ -134,6 +137,16 @@ def uploadPtipScript(request, user, result):
             "changelog" : ptipInfo.changelog,
             "url" : ptipInfo.file_path.url,
         } for ptipInfo in ptipList];
+    # 返回所依赖的线上版本
+    exeList = models.Exe.objects.order_by('time');
+    if len(exeList) > 0:
+        result["onlineExeInfoList"] = [{
+            "name": exeInfo.name,
+            "version" : exeInfo.version,
+            "time" : exeInfo.time,
+            "changelog" : exeInfo.changelog,
+            "url" : exeInfo.file_path.url,
+        } for exeInfo in exeList];
 
 # 上传程序文件
 def uploadExeFile(request, user, name, result):

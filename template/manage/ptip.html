@@ -9,11 +9,13 @@
         </tr>
     </thead>
     <tbody>
+        {% for olInfo in onlineInfoList %}
         <tr>
-            <th>1.0.0</th>
-            <th>无</th>
-            <th>00:00:00</th>
+            <th>{{ olInfo.version }}</th>
+            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 <h2>上传版本</h2>
@@ -21,8 +23,8 @@
     <h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
     <div class="clearfix dependE">
         <h5 class="pull-left">依赖程序</h5>
-        <div class="pull-left">
-            <strong>
+        <div id="dependExeList" class="pull-left">
+            <strong data-target="pytoolsip">
                 pytoolsip.exe&nbsp;
                 <select>
                     <option>v1.0.0</option>
@@ -30,7 +32,7 @@
                     <option>v1.0.2</option>
                 </select>
             </strong>
-            <strong>
+            <strong data-target="update">
                 update.exe&nbsp;
                 <select>
                     <option>v1.0.0</option>
@@ -87,9 +89,21 @@
                 changelog: "请输入更新日志",
             },
             submitHandler: function() {
-                上传事件
+                // 上传事件
+                var exeList = [];
+                $("#dependExeList>strong").each(function(index,element){
+                    exeList.push([$(element).attr("data-target"), $(element).find("select").val()]);
+                });
+                var envList = [];
+                $("#dependEnvList input").each(function(index,element){
+                    if ($(element).attr('checked')){
+                        envList.push($(element).val());
+                    }
+                });
                 uploadManageForm($("#uploadForm"), [
-                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                    {"key":"exeList", "val":JSON.stringify(exeList), "type":"text"},
+                    {"key":"envList", "val":JSON.stringify(envList), "type":"text"}
                 ]);
             }
         });

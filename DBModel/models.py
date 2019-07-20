@@ -39,17 +39,23 @@ class Exe(models.Model):
         db_table = 'exe'
 
 
-# 平台文件路径
+# 平台脚本文件路径
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
-    return os.path.join("release", "ptip", ".".join(vList[:1]), f"PyToolsIP-{instance.version}.{ext}");
+    return os.path.join("release", "ptip", "script", ".".join(vList[:1]), f"{instance.version}.{ext}");
+# 平台工程文件路径
+def ptip_pj_directory_path(instance, filename):
+    ext = os.path.splitext(filename)[1];
+    vList = instance.version.split(".");
+    return os.path.join("release", "ptip", "project", ".".join(vList[:1]), f"PyToolsIP-{instance.version}.{ext}");
 class Ptip(models.Model):
     id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = ptip_directory_path)
     changelog = models.TextField()
     time = models.DateTimeField()
+    project_path = models.FileField(upload_to = ptip_pj_directory_path)
     download = models.IntegerField()
     base_version = models.CharField(max_length=255)
     update_version = models.CharField(max_length=255)
