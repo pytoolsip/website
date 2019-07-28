@@ -138,40 +138,43 @@ def uploadPtipScript(request, user, result):
             "url" : ptipInfo.file_path.url,
         } for ptipInfo in ptipList];
     # 返回所依赖的线上版本
-    exeList = models.Exe.objects.order_by('time');
-    if len(exeList) > 0:
-        result["onlineExeInfoList"] = [{
-            "name": exeInfo.name,
-            "version" : exeInfo.version,
-            "time" : exeInfo.time,
-            "changelog" : exeInfo.changelog,
-            "url" : exeInfo.file_path.url,
-        } for exeInfo in exeList];
+    for exe in models.Exe.objects.all():
+        exeInfoList = models.ExeDetail.objects.filter(name = exe).order_by('time');
+        if len(exeInfoList) > 0:
+            result["onlineExeInfoList"].append({"name" : exe.name, "list" : [{
+                "version" : exeInfo.version,
+                "time" : exeInfo.time,
+                "changelog" : exeInfo.changelog,
+                "url" : exeInfo.file_path.url,
+            } for exeInfo in exeInfoList]});
 
 # 上传程序文件
 def uploadExeFile(request, user, name, result):
     if "isSwitchTab" not in request.POST:
         if "version" in request.POST and "file" in request.FILES and "changelog" in request.POST:
-            version = request.POST["version"];
             try:
-                ud = models.Exe.objects.get(name = name);
-                ud.version = version;
-                ud.file_path = request.FILES["file"];
-                ud.changelog = request.POST["changelog"];
-                ud.time = timezone.now();
+                exe = models.Exe.objects.get(name = name);
             except Exception as e:
-                ud = models.Exe(name = name, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
-            ud.save();
+                exe = models.Exe(name = name);
+                exe.save();
+            # 保存程序详情
+            version = request.POST["version"];
+            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+            exeDetail.save();
             result["requestTips"] = f"更新文件【{version}】上传成功。";
     # 返回线上版本数据
-    updateList = models.Exe.objects.filter(name = name).order_by('time');
-    if len(updateList) > 0:
-        result["onlineInfoList"] = [{
-            "version" : updateInfo.version,
-            "time" : updateInfo.time,
-            "changelog" : updateInfo.changelog,
-            "url" : updateInfo.file_path.url,
-        } for updateInfo in updateList];
+    try:
+        exe = models.Exe.objects.get(name = name);
+        exeList = models.exeDetail.objects.filter(name = exe).order_by('time');
+        if len(exeList) > 0:
+            result["onlineInfoList"] = [{
+                "version" : updateInfo.version,
+                "time" : updateInfo.time,
+                "changelog" : updateInfo.changelog,
+                "url" : updateInfo.file_path.url,
+            } for updateInfo in exeList];
+    except Exception as e:
+        print(e);
 
 # 上传新工具
 def uploadNewTool(request, user, result):

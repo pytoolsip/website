@@ -22,13 +22,20 @@ class Comment(models.Model):
         db_table = 'comment'
 
 
+class Exe(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        managed = False
+        db_table = 'exe'
+
 # 运行程序文件路径
 def exe_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     return os.path.join("release", "exe", f"{instance.name}-{instance.version}.{ext}");
-class Exe(models.Model):
+class ExeDetail(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255)
+    name = models.ForeignKey(Exe, models.DO_NOTHING, db_column='name')
     version = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = exe_directory_path)
     changelog = models.TextField()
@@ -36,8 +43,7 @@ class Exe(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'exe'
-
+        db_table = 'exe_detail'
 
 # 平台脚本文件路径
 def ptip_directory_path(instance, filename):
