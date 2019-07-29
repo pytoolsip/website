@@ -41,11 +41,14 @@
 		}
 		// 切换tab
 		$("#sidebar ._slideItem_").on("click", function(){
-			var $selected = $("#sidebar li.active").toggleClass("active");
-			if ($selected != $(this).parent()) {
-				$(this).parent().toggleClass("active");
-				// 请求信息
-				requestItemContent($(this).attr("data-target"));
+			var $activeItem = $("#sidebar li.active>._slideItem_");
+			if ($activeItem.length > 0) {
+				if ($activeItem.attr("data-target") != $(this).attr("data-target")) {
+					$activeItem.parent().toggleClass("active");
+					$(this).parent().toggleClass("active");
+					// 请求信息
+					requestItemContent($(this).attr("data-target"));
+				}
 			}
 		});
 	})
