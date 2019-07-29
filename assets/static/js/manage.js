@@ -1,6 +1,6 @@
 $(function(){
-    // 请求管理后台
-    requestManage = function(data){
+    // 获取玩家信息
+    var getUserInfo = function(){
         var $uname = $.cookie("ptip_mg_username");
         var $upwd = $.cookie("ptip_mg_userpwd");
         if ($uname == undefined || $uname == "null") {
@@ -9,11 +9,34 @@ $(function(){
         if ($upwd == undefined || $upwd == "null") {
             $upwd = "";
         }
-        data.uname = $uname;
-        data.upwd = $upwd;
+        return {
+            "name" : $uname,
+            "pwd" : $upwd,
+        };
+    }
+    // 请求管理后台
+    requestManage = function(data){
+        var userInfo = getUserInfo();
+        data.uname = userInfo.name;
+        data.upwd = userInfo.pwd;
         $.post(window.location.href, data, function(data, status){
             if (status == "success") {
                 $("#mainContent").html(data);
+            }
+        });
+    }
+    // 请求管理项内容
+    requestItemContent = function(mk){
+        $("#itemContent").html(""); // 清空内容
+        var userInfo = getUserInfo();
+        $.post(window.location.href, {
+            "uname" : userInfo.name,
+            "upwd" : userInfo.pwd,
+            "isSwitchTab" : true,
+            "mk" : mk,
+        }, function(data, status){
+            if (status == "success") {
+                $("#itemContent").html(data);
             }
         });
     }

@@ -24,16 +24,29 @@ def manage(request):
         return render(request, "manage/index.html");
     try:
         user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
+        # 登陆时的返回数据
         if request.POST.get("isLogin", False):
             return JsonResponse({
                 "isSuccess" : True,
                 "name" : user.name,
                 "pwd" : user.password,
             });
+        # 登陆后的页面信息
         if request.POST.get("isAfterLogin", False):
-            return render(request, "manage/content.html", getManageResult(request, user, ""));
+            result = {
+                "userInfo" : { # 用户信息
+                    "name":user.name,
+                    "pwd":user.password,
+                },
+                "isShowIpOption" : user.authority == 1, # 是否显示平台选项
+            };
+            mgResult = getManageResult(request, user, "");
+            for k,v in mgResult.items():
+                result[k] = v;
+            return render(request, "manage/items.html", result);
     except Exception as e:
         print(e);
+        # 返回登陆页面信息
         ret = {};
         if request.POST["uname"] and request.POST["upwd"]:
             ret = {"requestFailedTips" : "用户名和密码不匹配！"};
@@ -47,7 +60,8 @@ def manage(request):
             mkey = PtKeyList[0];
         else:
             mkey = PtipKeyList[0];
-    return render(request, "manage/content.html", getManageResult(request, user, mkey));
+    # 返回管理项的内容
+    return render(request, "manage/item_content.html", getManageResult(request, user, mkey));
 
 # 校验逻辑
 def verify(request):
@@ -65,11 +79,6 @@ def getManageResult(request, user, mkey):
     # 返回页面内容
     result = {
         "mkey" : mkey,
-        "userInfo" : { # 用户信息
-            "name":user.name,
-            "pwd":user.password,
-        },
-        "isShowIpOption" : user.authority == 1, # 是否显示平台选项
         "requestTips" : "", # 请求提示
         "requestFailedTips" : "", # 请求失败提示
         "onlineInfoList" : [], # 线上信息列表
