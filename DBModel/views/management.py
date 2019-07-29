@@ -8,7 +8,7 @@ from DBModel import models
 import hashlib;
 
 # 平台键值列表
-PtipKeyList = ["ptip_script", "ptip_exe", "update_exe"];
+PtipKeyList = ["ptip_script", "ptip_exe", "update_exe", "depend_lib"];
 # 工具键值列表
 PtKeyList = ["pt_new_script", "pt_ol_script"];
 
@@ -70,6 +70,10 @@ def verify(request):
         tkey = hashlib.md5(request.POST["toolname"].encode("utf-8")).hexdigest();
         if len(models.Tool.objects.filter(tkey = tkey)) == 0:
             return HttpResponse("true");
+    # 校验依赖库名
+    if "dependName" in request.POST:
+        if len(models.Depend.objects.filter(name = request.POST["dependName"])) == 0:
+            return HttpResponse("true");
     # 校验失败
     print("Verify Fail!", request.POST);
     return HttpResponse("false");
@@ -87,6 +91,8 @@ def getManageResult(request, user, mkey):
     toolInfoData = result["toolInfoData"];
     if mkey == "ptip_script": # 更新平台脚本
         uploadPtipScript(request, user, result);
+    elif mkey == "depend_lib": # 上传依赖库
+        uploadDependLib(request, user, result);
     elif mkey == "ptip_exe" or mkey == "update_exe": # 更新平台启动/更新程序
         uploadExeFile(request, user, mkey, result);
     elif mkey == "pt_new_script": # 上传新工具脚本
@@ -276,3 +282,25 @@ def searchToolInfoData(toolName, uid):
             "uploadTime" :  toolInfo.time,
         } for toolInfo in toolInfoList],
     };
+
+# 上传依赖库
+def uploadDependLib(request, user, result):
+    if "isSwitchTab" not in request.POST:
+        if "name" in request.POST and "file" in request.FILES and "description" in request.POST:
+            name = request.POST["name"];
+            try:
+                models.Depend.objects.get(name = name);
+                result["requestFailedTips"] =  f"已存在相同名称的依赖库【{name}】，请重新选上传！";
+            except Exception as e:
+                depend = models.Depend(name = name, file_path = request.FILES["file"], description = request.POST["description"], time = timezone.now());
+                depend.save();
+                result["requestTips"] = f"上传依赖库【{name}】上传成功。";
+    # 返回线上版本数
+    dependList = models.Depend.objects.filter(name = request.POST.get("name", "")).order_by('time');
+    if len(dependList) > 0:
+        result["onlineInfoList"] = [{
+            "name" : dependInfo.name,
+            "time" : dependInfo.time,
+            "description" : dependInfo.description,
+            "url" : dependInfo.file_path.url,
+        } for dependInfo in dependList];

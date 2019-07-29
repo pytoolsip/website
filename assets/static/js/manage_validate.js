@@ -7,7 +7,6 @@ $(function(){
                 return false;
             }
             var verList = value.split(".");
-            console.log("checkVersion::verList:", verList);
             if (verList.length != param) {
                 return false;
             }
@@ -32,6 +31,23 @@ $(function(){
             }
             return true;
         },
-        $.validator.format("请选择{0}格式的文件!")
+        $.validator.format("请选择{0}格式的文件")
+    );
+    // 校验只能输入下划线、字母或数字，且不能以数字开头
+    $.validator.addMethod(
+        "check_LetterNum0",
+        function(value, element, param){
+            if (this.optional(element)) {
+                return false;
+            }
+            if (/^\w+$/.test(value)) { // 判断是否为下划线、字母及数字
+                if (/^\d+.*$/.test(value)) { // 判断是否为数字开头
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        },
+        $.validator.format("请输入下划线、字母或数字，且不能以数字开头")
     );
 })

@@ -22,12 +22,29 @@ class Comment(models.Model):
         db_table = 'comment'
 
 
+# 依赖库路径
+def depend_lib_path(instance, filename):
+    ext = os.path.splitext(filename)[1];
+    return os.path.join("release", "depend", f"{instance.name}.{ext}");
+class Depend(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=255)
+    file_path = models.FileField(upload_to = depend_lib_path)
+    description = models.TextField()
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'depend'
+
+
 class Exe(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     class Meta:
         managed = False
         db_table = 'exe'
+
 
 # 运行程序文件路径
 def exe_directory_path(instance, filename):

@@ -10,6 +10,9 @@
 	{% ifequal mkey "update_exe" %}
 		{% include "manage/ptip_exe.html" %}
 	{% endifequal %}
+	{% ifequal mkey "depend_lib" %}
+		{% include "manage/ptip_depend.html" %}
+	{% endifequal %}
 
 	{% ifequal mkey "pt_new_script" %}
 		{% include "manage/new_tool.html" %}

@@ -1,0 +1,80 @@
+<h2>线上版本</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>名称</th>
+            <th>描述</th>
+            <th>发布时间</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>python</th>
+            <th>无</th>
+            <th>00:00:00</th>
+        </tr>
+    </tbody>
+</table>
+<h2>上传版本</h2>
+<form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;上传依赖库&nbsp;-
+    </h3>
+    <div class="input-group">
+        <label class="input-group-addon" for="name">名称</label>
+        <input id="dependName" name="name" class="form-control" type="text" placeholder="请使用英文名称" required autofocus />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="file">上传包(zip格式)</label>
+        <input name="file" class="form-control" type="file" required />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="description">描述</label>
+        <textarea name="description" class="form-control" rows="4" required></textarea>
+    </div>
+    <input class="form-control btn btn-success" type="submit" value="上传依赖" />
+</form>
+<script language="JavaScript">
+	$(function(){
+        $("#uploadForm").validate({
+            rules: {
+                name: {
+                    required: true,
+                    check_LetterNum0: true,
+                    remote: {
+                        url : window.location.href,
+                        type : "post",
+                        dataType: "json",
+                        data : {
+                            isVerify : true,
+                            dependName : function() {
+                                return $("#dependName").val();
+                            }
+                        }
+                    },
+                },
+                file: {
+                    checkFileType: "zip",
+                },
+                description: {
+                    required: true,
+                },
+            },
+            messages: {
+                name: {
+                    required: "请输入依赖库名称",
+                },
+                file: {
+                    required: "请选择上传包",
+                },
+                description: "请输入描述信息",
+            },
+            submitHandler: function() {
+                // uploadManageForm($("#uploadForm"), [
+                //     {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                // ]);
+                alert("xxxxxxxxxxxxxxxxx")
+            }
+        });
+	})
+</script>
