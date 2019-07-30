@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from DBModel import models
 
 import hashlib;
+import random;
+import math;
 
 # 平台键值列表
 PtipKeyList = ["ptip_script", "ptip_exe", "update_exe", "depend_lib"];
@@ -19,23 +21,20 @@ def manage(request):
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);
+    # 登陆平台
+    loginInfo = loginIP(request);
+    if loginInfo != None:
+        return loginInfo;
     # 判断是否已登陆
     if "uname" not in request.POST or "upwd" not in request.POST:
         return render(request, "manage/index.html");
     try:
         user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
-        # 登陆时的返回数据
-        if request.POST.get("isLogin", False):
-            return JsonResponse({
-                "isSuccess" : True,
-                "name" : user.name,
-                "pwd" : user.password,
-            });
     except Exception as e:
         # 返回登陆页面信息
         ret = {};
         if request.POST["uname"] and request.POST["upwd"]:
-            ret = {"requestFailedTips" : "用户名和密码不匹配！"};
+            ret = {"requestFailedTips" : "登陆信息已过期！"};
         return render(request, "manage/login.html", ret);
     # 是否切换Tab
     isSwitchTab = request.POST.get("isSwitchTab", False);
@@ -51,6 +50,44 @@ def manage(request):
         isSwitchTab = True;
     # 返回管理项的内容
     return render(request, "manage/item.html", getManageResult(request, user, mkey, isSwitchTab));
+
+# 解码登陆密码
+def decodePwd(pwd, code):
+    pwds = [""] * len(pwd);
+    space, increment = math.floor(code/10) + 1, code%10 + 1;
+    for i in range(len(pwd)):
+        col, row = math.floor(i/space), i%space * (math.floor((len(pwd))/space) + 1);
+        pwds[row + col] = chr(ord(pwd[i]) - increment);
+        increment+=1;
+    return "".join(pwds);
+
+# 登陆平台
+def loginIP(request):
+    # 判断是否请求登陆
+    code = "21"; # "".join([str(i) for i in random.sample(range(10), 2)]); # 编码值
+    uname = request.POST.get("uname", "");
+    if "isReqLogin" in request.POST:
+        if len(models.User.objects.filter(name = uname)) == 0:
+            return JsonResponse({
+                "isSuccess" : False,
+            });
+        return JsonResponse({
+            "isSuccess" : True,
+            "code" : code,
+        });
+    # 登陆时的返回数据
+    if request.POST.get("isLogin", False):
+        upwd = decodePwd(request.POST.get("upwd", ""), int(code));
+        try:
+            user = models.User.objects.get(name = uname, password = upwd);
+            return JsonResponse({
+                "isSuccess" : True,
+                "name" : user.name,
+                "pwd" : hashlib.md5(user.password.encode("utf-8")).hexdigest(),
+            });
+        except Exception as e:
+            return render(request, "manage/login.html", {"requestFailedTips" : "用户名和密码不匹配！"});
+    return None;
 
 # 校验逻辑
 def verify(request):

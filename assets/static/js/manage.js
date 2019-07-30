@@ -81,10 +81,60 @@ $(function(){
             }
         })
     }
-    // 点击登出
-    $("#logoutButton").on("click",function(){
+    // 登出管理后台
+    logoutManage = function(){
         $.cookie("ptip_mg_username", null, {expires: 0.5, path: "/"});
         $.cookie("ptip_mg_userpwd", null, {expires: 0.5, path: "/"});
         requestManage({});
+    }
+    // 点击登出
+    $("#logoutButton").on("click",function(){
+        logoutManage();
     });
+    // 编码登陆密码
+    var encodePwd = function(pwd, code){
+        var pwds = [];
+        var space = Math.floor(code/10) + 1;
+        var increment = code%10 + 1;
+        for (var i = 0; i < pwd.length; i ++) {
+            var col = Math.floor(i/space);
+            var row = i%space * (Math.floor((pwd.length)/space) + 1);
+            pwds.push(String.fromCharCode(pwd.charCodeAt(row + col) + increment));
+            increment++;
+        }
+	    return pwds.join("");
+    }
+    // 登陆管理后台
+    loginManage = function(name, pwd){
+        $.post(window.location.href, {
+            isReqLogin : true,
+            uname : name,
+        }, function(data, status){
+            if (status == "success") {
+                if (!data.isSuccess) {
+                    alert("用户名和密码不匹配！");
+                    return;
+                }
+                $.post(window.location.href, {
+                    isLogin : true,
+                    uname : name,
+                    upwd : encodePwd(pwd, parseInt(data.code)),
+                }, function(data, status){
+                    if (status == "success") {
+                        if (!data.isSuccess) {
+                            alert("用户名和密码不匹配！");
+                            return;
+                        }
+                        $.cookie("ptip_mg_username", data.name, {expires: 0.5, path: "/"});
+                        $.cookie("ptip_mg_userpwd", data.pwd, {expires: 0.5, path: "/"});
+                        requestManage({});
+                    } else {
+                        alert("登陆失败！")
+                    }
+                });
+            } else {
+                alert("请求登陆失败！")
+            }
+        });
+    }
 })
