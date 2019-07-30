@@ -25,21 +25,6 @@ $(function(){
             }
         });
     }
-    // 请求管理项内容
-    requestItemContent = function(mk){
-        $("#itemContent").html(""); // 清空内容
-        var userInfo = getUserInfo();
-        $.post(window.location.href, {
-            "uname" : userInfo.name,
-            "upwd" : userInfo.pwd,
-            "isSwitchTab" : true,
-            "mk" : mk,
-        }, function(data, status){
-            if (status == "success") {
-                $("#itemContent").html(data);
-            }
-        });
-    }
     // 添加input到form中
     var addInputToForm = function(item, name, value, type){
         var $input = item.find("input[name='" + name + "']");

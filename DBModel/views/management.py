@@ -31,26 +31,14 @@ def manage(request):
                 "name" : user.name,
                 "pwd" : user.password,
             });
-        # 登陆后的页面信息
-        if request.POST.get("isAfterLogin", False):
-            result = {
-                "userInfo" : { # 用户信息
-                    "name":user.name,
-                    "pwd":user.password,
-                },
-                "isShowIpOption" : user.authority == 1, # 是否显示平台选项
-            };
-            mgResult = getManageResult(request, user, "");
-            for k,v in mgResult.items():
-                result[k] = v;
-            return render(request, "manage/items.html", result);
     except Exception as e:
-        print(e);
         # 返回登陆页面信息
         ret = {};
         if request.POST["uname"] and request.POST["upwd"]:
             ret = {"requestFailedTips" : "用户名和密码不匹配！"};
         return render(request, "manage/login.html", ret);
+    # 是否切换Tab
+    isSwitchTab = request.POST.get("isSwitchTab", False);
     # 获取请求键值
     mkey = request.POST.get("mk", "");
     # 判断是否重定向
@@ -60,8 +48,9 @@ def manage(request):
             mkey = PtKeyList[0];
         else:
             mkey = PtipKeyList[0];
+        isSwitchTab = True;
     # 返回管理项的内容
-    return render(request, "manage/item_content.html", getManageResult(request, user, mkey));
+    return render(request, "manage/item.html", getManageResult(request, user, mkey, isSwitchTab));
 
 # 校验逻辑
 def verify(request):
@@ -79,10 +68,15 @@ def verify(request):
     return HttpResponse("false");
 
 # 获取管理页返回结果
-def getManageResult(request, user, mkey):
+def getManageResult(request, user, mkey, isSwitchTab):
     # 返回页面内容
     result = {
         "mkey" : mkey,
+        "userInfo" : { # 用户信息
+            "name":user.name,
+            "pwd":user.password,
+        },
+        "isShowIpOption" : user.authority == 1, # 是否显示平台选项
         "requestTips" : "", # 请求提示
         "requestFailedTips" : "", # 请求失败提示
         "onlineInfoList" : [], # 线上信息列表
@@ -90,13 +84,13 @@ def getManageResult(request, user, mkey):
     };
     toolInfoData = result["toolInfoData"];
     if mkey == "ptip_script": # 更新平台脚本
-        uploadPtipScript(request, user, result);
+        uploadPtipScript(request, user, result, isSwitchTab);
     elif mkey == "depend_lib": # 上传依赖库
-        uploadDependLib(request, user, result);
+        uploadDependLib(request, user, result, isSwitchTab);
     elif mkey == "ptip_exe" or mkey == "update_exe": # 更新平台启动/更新程序
-        uploadExeFile(request, user, mkey, result);
+        uploadExeFile(request, user, mkey, result, isSwitchTab);
     elif mkey == "pt_new_script": # 上传新工具脚本
-        uploadNewTool(request, user, result);
+        uploadNewTool(request, user, result, isSwitchTab);
         toolInfoData["isUploadNew"] = True;
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
@@ -105,7 +99,7 @@ def getManageResult(request, user, mkey):
             toolInfoList = models.Tool.objects.filter(tkey = tkey, uid = user);
             if len(toolInfoList) > 0:
                 # 从request.POST中获取上传数据
-                uploadOlTool(request, user, tkey, result);
+                uploadOlTool(request, user, tkey, result, isSwitchTab);
                 # 返回线上版本数据
                 result["onlineInfoList"] = getOnlineInfoList(toolInfoList[0]);
             else:
@@ -132,8 +126,8 @@ def _getMd5_(name, category):
     return hashlib.md5(name.encode("utf-8")).hexdigest();
 
 # 上传平台脚本
-def uploadPtipScript(request, user, result):
-    if "isSwitchTab" not in request.POST:
+def uploadPtipScript(request, user, result, isSwitchTab):
+    if not isSwitchTab:
         if request.POST.get("version", None) and request.FILES.get("file", None) and request.POST.get("changelog", None):
             # 合成工程文件
             pjFile = "";
@@ -164,8 +158,8 @@ def uploadPtipScript(request, user, result):
             } for exeInfo in exeInfoList]});
 
 # 上传程序文件
-def uploadExeFile(request, user, name, result):
-    if "isSwitchTab" not in request.POST:
+def uploadExeFile(request, user, name, result, isSwitchTab):
+    if not isSwitchTab:
         if "version" in request.POST and "file" in request.FILES and "changelog" in request.POST:
             try:
                 exe = models.Exe.objects.get(name = name);
@@ -192,8 +186,8 @@ def uploadExeFile(request, user, name, result):
         print(e);
 
 # 上传新工具
-def uploadNewTool(request, user, result):
-    if "isSwitchTab" not in request.POST:
+def uploadNewTool(request, user, result, isSwitchTab):
+    if not isSwitchTab:
         if "file" not in request.FILES:
             result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
             return;
@@ -220,8 +214,8 @@ def uploadNewTool(request, user, result):
         result["requestTips"] = f"新工具【{version}】上传成功。";
 
 # 更新线上工具
-def uploadOlTool(request, user, tkey, result):
-    if "isSwitchTab" not in request.POST:
+def uploadOlTool(request, user, tkey, result, isSwitchTab):
+    if not isSwitchTab:
         if "file" not in request.FILES:
             result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
             return;
@@ -284,8 +278,8 @@ def searchToolInfoData(toolName, uid):
     };
 
 # 上传依赖库
-def uploadDependLib(request, user, result):
-    if "isSwitchTab" not in request.POST:
+def uploadDependLib(request, user, result, isSwitchTab):
+    if not isSwitchTab:
         if "name" in request.POST and "file" in request.FILES and "description" in request.POST:
             name = request.POST["name"];
             try:

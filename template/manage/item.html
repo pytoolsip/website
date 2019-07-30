@@ -1,0 +1,68 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+	<div id="alertList">
+	</div>
+	<div id="contentList">
+		{% ifequal mkey "ptip_script" %}
+			{% include "manage/ptip.html" %}
+		{% endifequal %}
+		{% ifequal mkey "ptip_exe" %}
+			{% include "manage/ptip_exe.html" %}
+		{% endifequal %}
+		{% ifequal mkey "update_exe" %}
+			{% include "manage/ptip_exe.html" %}
+		{% endifequal %}
+		{% ifequal mkey "depend_lib" %}
+			{% include "manage/ptip_depend.html" %}
+		{% endifequal %}
+
+		{% ifequal mkey "pt_new_script" %}
+			{% include "manage/new_tool.html" %}
+		{% endifequal %}
+		{% ifequal mkey "pt_ol_script" %}
+			{% include "manage/ol_tool.html" %}
+		{% endifequal %}
+	</div>
+</div>
+<script language="JavaScript">
+	$(function(){
+		var showAlert = function(type, text) {
+			$("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
+					<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<span class='alertContent'>"+ text +"</span>\
+				</div>");
+		}
+		var tips = "{{requestFailedTips}}";
+		if (tips != "") {
+			showAlert("danger", tips);
+		}
+		// 更新用户名
+		$("#userName").text("{{userInfo.name}}");
+		// 显示头部信息
+		if ($("#userNavCollapse ul").hasClass("hidden")) {
+			$("#userNavCollapse ul").removeClass("hidden");
+		}
+		// 显示左边导航栏
+		if ($("#sidebar").hasClass("hidden")) {
+			$("#sidebar").removeClass("hidden");
+		}
+		// 更新当前项
+		var mkey = "{{mkey}}";
+		var $activeItem = $("#sidebar li.active>._slideItem_");
+		if ($activeItem.length == 0) {
+			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+		}else if (mkey != $activeItem.attr("data-target")) {
+			$activeItem.parent().toggleClass("active");
+			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
+		}
+		// 是否显示平台选项
+		if ("{{isShowIpOption}}" == "True") {
+			if ($("#IPOption").hasClass("hidden")) {
+				$("#IPOption").removeClass("hidden");
+			}
+		} else {
+			if (!$("#IPOption").hasClass("hidden")) {
+				$("#IPOption").addClass("hidden");
+			}
+		}
+	})
+</script>

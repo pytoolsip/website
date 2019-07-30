@@ -17,9 +17,15 @@
 		if (tips != "") {
 			alert(tips);
 		}
+		// 更新用户名
+		$("#userName").text("用户名");
 		// 隐藏头部
 		if (!$("#userNavCollapse ul").hasClass("hidden")) {
 			$("#userNavCollapse ul").addClass("hidden");
+		}
+		// 隐藏左边导航栏
+		if (!$("#sidebar").hasClass("hidden")) {
+			$("#sidebar").addClass("hidden");
 		}
 		// 点击登陆
 		$("#loginButton").on("click",function(){
@@ -31,7 +37,7 @@
 				if (status == "success" && data.isSuccess) {
 					$.cookie("ptip_mg_username", data.name, {expires: 0.5, path: "/"});
 					$.cookie("ptip_mg_userpwd", data.pwd, {expires: 0.5, path: "/"});
-					requestManage({isAfterLogin : true});
+					requestManage({});
 				} else {
 					alert("登陆失败！")
 				}

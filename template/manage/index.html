@@ -27,14 +27,29 @@
                 </div>
                 <div id="userNavCollapse" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right" style="margin:0px">
-                        <li><a href="javascript:void(0);" title="用户中心"><span id="userName" class="glyphicon glyphicon-user">用户</span></a></li>
+                        <li><a href="javascript:void(0);" title="用户中心"><span id="userName" class="glyphicon glyphicon-user">用户名</span></a></li>
                         <li><a id="logoutButton" href="javascript:void(0);" title="退出"><span class="glyphicon glyphicon-log-out">退出</span></a></li>
                     </ul>
                 </div>
             </nav>
         </header>
-        <div id="mainContent">
-
+        <div class="container-fluid">
+            <div class="row">
+                <div id="sidebar" class="col-sm-3 col-md-2 sidebar hidden">
+                    <ul id="IPOption" class="nav nav-sidebar">
+                        <li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">PTIP平台</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台运行程序</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="update_exe">平台更新程序</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="depend_lib">平台依赖库</a></li>
+                    </ul>
+                    <ul class="nav nav-sidebar">
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_new_script">上传新工具</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_ol_script">更新线上工具</a></li>
+                    </ul>
+                </div>
+                <div id="mainContent">
+                </div>
+            </div>
         </div>
         <footer style="position: fixed;bottom: 0px;">
             <div class="container">
@@ -51,8 +66,23 @@
         <script src={% static "js/manage_validate.js" %}></script>
         <script language="JavaScript">
             $(function(){
-				// 请求登陆后信息
-				requestManage({isAfterLogin : true});
+                // 切换tab
+                $("#sidebar ._slideItem_").on("click", function(){
+                    var $activeItem = $("#sidebar li.active>._slideItem_");
+                    if ($activeItem.length > 0) {
+                        if ($activeItem.attr("data-target") != $(this).attr("data-target")) {
+                            $activeItem.parent().toggleClass("active");
+                            $(this).parent().toggleClass("active");
+                            // 请求信息
+                            requestManage({
+                                "isSwitchTab" : true,
+                                "mk" : $(this).attr("data-target"),
+                            });
+                        }
+                    }
+                });
+                // 请求管理后台
+                requestManage({});
             })
         </script>
     </body>
