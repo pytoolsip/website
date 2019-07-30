@@ -91,21 +91,8 @@ $(function(){
     $("#logoutButton").on("click",function(){
         logoutManage();
     });
-    // 编码登陆密码
-    var encodePwd = function(pwd, code){
-        var pwds = [];
-        var space = Math.floor(code/10) + 1;
-        var increment = code%10 + 1;
-        for (var i = 0; i < pwd.length; i ++) {
-            var col = Math.floor(i/space);
-            var row = i%space * (Math.floor((pwd.length)/space) + 1);
-            pwds.push(String.fromCharCode(pwd.charCodeAt(row + col) + increment));
-            increment++;
-        }
-	    return pwds.join("");
-    }
     // 登陆管理后台
-    loginManage = function(name, pwd){
+    loginManage = function(name, pwd, encodePwd){
         $.post(window.location.href, {
             isReqLogin : true,
             uname : name,

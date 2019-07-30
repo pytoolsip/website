@@ -78,6 +78,7 @@ def loginIP(request):
     # 登陆时的返回数据
     if request.POST.get("isLogin", False):
         upwd = decodePwd(request.POST.get("upwd", ""), int(code));
+        print("===== User Login ===== :", uname, upwd);
         try:
             user = models.User.objects.get(name = uname, password = upwd);
             return JsonResponse({
