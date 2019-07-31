@@ -7,13 +7,31 @@ $(function(){
 	var windowOnresizeFunc = window.onresize;
 	// 登陆链接
 	var loginUrl = "http://jimdreamheart.club/pytoolsip/login";
-	// 创建弹窗函数
-	function createDialogPage(content){
+	// 注册链接
+	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
+	// 获取提示文档
+	var getAlertTips = function(type, tips) {
+		return "<div class='alert alert-"+ type +"' role='alert'>\
+			<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+			<span class='alertContent'>"+ tips +"</span>\
+		</div>";
+	}
+	// 关闭弹窗
+	var closeDialogPage = function(){
+		if ($('#dialogPage').length > 0) 	{
+			$('#dialogPage').remove();
+		}
+	}
+	// 创建弹窗函数[带有关闭回调参数]
+	function createDialog(content, closeCallback){
+		// 关闭原有弹窗
+		closeDialogPage();
+		// 弹窗内容
 		var dialogPage = "<div id='dialogPage'>\
 			<div class='container'>\
 				<div class='row'>\
 					<div class='dialog-background col-md-4 col-md-offset-4'>\
-						<a id='closeDialogPage' href='javascript:void(0);' title='关闭登陆弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
+						<a id='closeDialogPage' href='javascript:void(0);' title='关闭弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
 						" + content + "\
 					</div>\
 				</div>\
@@ -24,9 +42,11 @@ $(function(){
 		// 点击关闭的事件
 		$("#closeDialogPage").on("click",function(){
 			// 移除弹窗页
-			$('#dialogPage').remove();
+			closeDialogPage();
 			// 重置窗口大小事件
 			window.onresize = windowOnresizeFunc;
+			// 回调关闭函数
+			closeCallback();
 		});
 		// 更新弹窗页尺寸方法
 		function updateDialogPageSize(){
@@ -43,7 +63,32 @@ $(function(){
 			}
 			updateDialogPageSize();
 		}
+		
 	}
+	// 创建弹窗函数
+	function createDialogPage(content){
+		createDialog(content, function(){}); // 关闭弹窗时无回调
+	}
+	// 创建定时弹窗
+	function createIntervalDialog(content, seconds){
+		// 设置定时器
+		var intervalId = window.setInterval(function(){
+			seconds--
+			if (seconds < 0) {
+				window.clearInterval(intervalId);
+				//关闭弹窗
+				closeDialogPage();
+			}
+			if ($('#timeCountDown').length > 0) {
+				$('#timeCountDown').html(seconds);
+			}
+		}, 1000);
+		// 创建弹窗
+		createDialog("<div class='dialog-content text-center'>"+ content +"<p class='dialog-interval'><span id='timeCountDown'>"+ seconds +"</span>&nbsp;秒后自动关闭</p></div>", function(){
+			window.clearInterval(intervalId);
+		});
+	}
+	// 创建登录弹窗
 	function createLoginDialog(){
 		// 创建弹窗
 		createDialogPage("<form class='login-form dialog-content' role='form'>\
@@ -52,7 +97,7 @@ $(function(){
 						<input id='loginPassword' class='form-control' type='password' placeholder='密码' required />\
 						<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>\
 						<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
-						<label>注：本平台暂不支持网页注册。如需注册，请通过<a href='http://jimdreamheart.club/pytoolsip'>首页</a>下载并运行PyToolsIP，选择【用户>注册】进行注册。</label>\
+						<label><a id='registerDialog' href='javascript:void(0)'>注册</a></label>\
 					</form>");
 		// 绑定登陆按钮的点击事件
 		$("#loginButton").on("click",function(){
@@ -70,15 +115,19 @@ $(function(){
 						$.session.set("uid", data.uid);
 						console.log("session uid:", $.session.get("uid"));
 					}
-					if ($('#dialogPage').length > 0) 	{
-						$('#dialogPage').remove();
-					}
+					// 关闭弹窗
+					closeDialogPage();
 				} else {
 					alert("登陆失败！")
 				}
 			});
 		});
+		// 绑定注册超链接的点击事件
+		$("#registerDialog").on("click",function(){
+			createRegisterDialog();
+		});
 	}
+	// 创建登出弹窗
 	function createLogoutDialog(data){
 		// 创建弹窗
 		createDialogPage("<div class='dialog-content text-center'>\
@@ -91,9 +140,8 @@ $(function(){
 		$("#logoutButton").on("click",function(){
 			$.cookie("uid", null, {expires: 1, path: "/"});
 			$.session.remove("uid");
-			if ($('#dialogPage').length > 0) 	{
-				$('#dialogPage').remove();
-			}
+			// 关闭弹窗
+			closeDialogPage();
 			// 创建登陆弹窗
 			createLoginDialog();
 		});
@@ -149,22 +197,93 @@ $(function(){
 			}
 		});
 	});
+	// 创建注册弹窗
+	function createRegisterDialog(){
+		// 创建弹窗
+		createDialogPage("<form id='registerForm' class='login-form dialog-content' role='form' enctype='multipart/form-data'>\
+						<h2>PyToolsIP用户注册</h2>\
+						<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
+						<input id='password' name='password' class='form-control' type='password' placeholder='密码' required />\
+						<input id='verifyPwd' name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
+						<input name='email' class='form-control' type='text' placeholder='邮箱' required />\
+						<div class='input-group'>\
+							<input name='verifyCode' class='form-control' type='text' placeholder='验证码' required />\
+							<span class='input-group-btn'>\
+								<button id='verifyCodeBtn' class='btn btn-default' type='button'>获取验证码</button>\
+							</span>\
+						</div>\
+						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-registration-mark'></span>&nbsp;注册</button>\
+					</form>");
+		// 绑定登陆按钮的点击事件
+		$("#registerForm").validate({
+            rules: {
+                name: {
+                    required: true,
+                    rangelength: [2, 10],
+                },
+                password: {
+                    required: true,
+                    rangelength: [6, 16],
+                },
+                verifyPwd: {
+                    required: true,
+                    rangelength: [6, 16],
+                    equalTo: "#password"
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                verifyCode: {
+                	required: true,
+                }
+            },
+            messages: {
+                name: {
+                    required: "请输入用户名",
+                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+                },
+                password: {
+                    required: "请输入密码",
+                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+                },
+                verifyPwd: {
+                    required: "请输入确认密码",
+                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+                    equalTo: "确认密码和密码不匹配"
+                },
+                email: {
+                    required: "请输入邮箱",
+                    email: "邮箱格式有误",
+                },
+                verifyCode: {
+                	required: "请输入验证码",
+                }
+            },
+            submitHandler: function() {
+                $.post(registerUrl, {
+					name : $("#registerForm input[name='name']").val(),
+					password : $("#registerForm input[name='password']").val(),
+					email : $("#registerForm input[name='email']").val(),
+					verifyCode : $("#registerForm input[name='verifyCode']").val(),
+				}, function(data, status){
+					if (status == "success") {
+						if (!data.isSuccess) {
+							$("#registerForm").prepend(getAlertTips("danger", data.tips));
+							return;
+						}
+						// 创建登录成功的弹窗
+						createIntervalDialog("<h2>注册成功!</h2>", 2);
+					} else {
+						alert("注册失败！")
+					}
+				});
+            }
+       });
+	}
 	
-//	// 节日祝福
+//	// 定时弹窗
 //	if ($('.jumbotron').length > 0) {
-//		var seconds = 3;
-//		createDialogPage("<div class='dialog-content text-center'><h2>母亲节快乐~</h2><h3>祝愿天下的所有母亲，节日快乐。</h3><p style='margin-top:30px;font-size:10px'><span id='countDown' style='color:red'>3</span>&nbsp;秒后自动关闭</p></div>");
-//		var intervalId = window.setInterval(function(){
-//			seconds--
-//			if (seconds <= 0) {
-//				window.clearInterval(intervalId);
-//				if ($('#dialogPage').length > 0) 	{
-//					$('#dialogPage').remove();
-//				}
-//			}
-//			if ($('#countDown').length > 0) 	{
-//				$('#countDown').html(seconds);
-//			}
-//		}, seconds*500);
+//		createIntervalDialog("<h2>定时弹窗</h2><p>测试...</p>", 5);
 //	}
 })

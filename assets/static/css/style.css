@@ -159,16 +159,27 @@ footer a{
 .dialog-content>p>span{
 	color:#646464;
 }
+.dialog-content>.dialog-interval{
+	margin-top:40px;
+	font-size:12px;
+}
+.dialog-content>.dialog-interval #timeCountDown{
+	color:red;
+}
 #logoutButton:hover{
 	color: #FFFFFF;
 	background-color: red;
 }
 /* login-form style */
-.login-form>.form-control{
+.login-form>.form-control, .login-form>.input-group{
 	height: auto;
 	padding: 10px;
 	font-size: 16px;
 	margin-top: 10px;
+}
+.login-form>.input-group{
+	padding: 0px;
+	margin-bottom: 10px;
 }
 .login-form>.form-control:focus{
 	z-index: 2;
@@ -176,6 +187,14 @@ footer a{
 .login-form>label{
 	font-weight: normal;
 	padding: 10px 0px;
+}
+/* validation */
+.error {
+    border: 1px solid red;
+}
+label.error {
+    color: red;
+    border: none;
 }
 
 .ptip-navbar > a {
