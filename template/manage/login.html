@@ -31,18 +31,7 @@
 		// 点击登陆
 		$("#loginButton").on("click",function(){
 			// 编码登陆密码
-			loginManage($("#loginUserName").val(), $("#loginPassword").val(), function(pwd, code){
-				var pwds = [];
-				var space = Math.floor(code/10) + 1;
-				var increment = code%10 + 1;
-				for (var i = 0; i < pwd.length; i ++) {
-					var col = Math.floor(i/space);
-					var row = i%space * (Math.floor((pwd.length)/space) + 1);
-					pwds.push(String.fromCharCode(pwd.charCodeAt(row + col) + increment));
-					increment++;
-				}
-				return pwds.join("");
-			});
+			loginManage($("#loginUserName").val(), $("#loginPassword").val());
 		});
 	})
 </script>

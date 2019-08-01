@@ -16,6 +16,26 @@ $(function(){
 			<span class='alertContent'>"+ tips +"</span>\
 		</div>";
 	}
+    // 设置玩家登录信息
+    setUserLoginInfo = function(name, pwd, expires){
+        $.cookie("ptip_username", name, {expires: expires, path: "/"});
+        $.cookie("ptip_userpwd", pwd, {expires: expires, path: "/"});
+    }
+    // 获取玩家登录信息
+    getUserLoginInfo = function(){
+        var $uname = $.cookie("ptip_username");
+        var $upwd = $.cookie("ptip_userpwd");
+        if ($uname == undefined || $uname == "null") {
+            $uname = "";
+        }
+        if ($upwd == undefined || $upwd == "null") {
+            $upwd = "";
+        }
+        return {
+            "name" : $uname,
+            "pwd" : $upwd,
+        };
+    }
 	// 关闭弹窗
 	var closeDialogPage = function(){
 		if ($('#dialogPage').length > 0) 	{
@@ -116,12 +136,11 @@ $(function(){
 			}, function(data, status){
 				if (status == "success" && data.isSuccess) {
 					console.log("登陆成功。");
+					var expires = 0.5;
 					if ($.session.get("isRememberMe") == true) {
-						$.cookie("uid", data.uid, {expires: 1, path: "/"});
-					} else {
-						$.session.set("uid", data.uid);
-						console.log("session uid:", $.session.get("uid"));
+						expires = 10;
 					}
+					setUserLoginInfo(data.name, data.pwd, expires);
 					// 关闭弹窗
 					closeDialogPage();
 				} else {
@@ -149,35 +168,24 @@ $(function(){
 						</div>");
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
-			$.cookie("uid", null, {expires: 1, path: "/"});
-			$.session.remove("uid");
+			// 重置玩家的登录信息
+			setUserLoginInfo(null, null, 0);
 			// 关闭弹窗
 			closeDialogPage();
 			// 创建登陆弹窗
 			createLoginDialog();
 		});
 	}
-	// 获取玩家ID
-	function getUid() {
-		var $uid = $.cookie("uid");
-		if ($uid == undefined || $uid == "null") {
-			$uid = $.session.get("uid");
-		}
-		if ($uid == undefined || $uid == "null") {
-			return null;
-		}
-		return $uid;
-	}
 	// 点击用户事件
 	$("#user").on("click",function(){
-		var $uid = getUid();
-		if ($uid == undefined) {
+		var userInfo = getUserLoginInfo();
+		if (userInfo.name == "" || userInfo.pwd == "") {
 			createLoginDialog();
 		} else {
 			$.post(loginUrl, {
-				uid : $uid,
+				uname : userInfo.name,
+				upwd : userInfo.pwd,
 			}, function(data, status){
-				console.log("data", data)
 				if (status == "success" && data.isSuccess) {
 					createLogoutDialog(data);
 				} else {
@@ -188,8 +196,8 @@ $(function(){
 	});
 	// 评论按钮点击事件
 	$("#commentButton").click(function(){
-		var $uid = getUid();
-		if ($uid == undefined) {
+		var userInfo = getUserLoginInfo();
+		if (userInfo.name == "" || userInfo.pwd == "") {
 			createLoginDialog();
 			return;
 		}
@@ -199,7 +207,8 @@ $(function(){
 			return;
 		}
 		$.post("http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}",{
-			uid : $uid,
+			uname : userInfo.name,
+			upwd : userInfo.pwd,
 			content : $content,
 			score : $("#commentScore").val(),
 		}, function(data,status){

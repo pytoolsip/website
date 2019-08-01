@@ -1,22 +1,7 @@
 $(function(){
-    // 获取玩家信息
-    var getUserInfo = function(){
-        var $uname = $.cookie("ptip_mg_username");
-        var $upwd = $.cookie("ptip_mg_userpwd");
-        if ($uname == undefined || $uname == "null") {
-            $uname = "";
-        }
-        if ($upwd == undefined || $upwd == "null") {
-            $upwd = "";
-        }
-        return {
-            "name" : $uname,
-            "pwd" : $upwd,
-        };
-    }
     // 请求管理后台
     requestManage = function(data){
-        var userInfo = getUserInfo();
+        var userInfo = getUserLoginInfo();
         data.uname = userInfo.name;
         data.upwd = userInfo.pwd;
         $.post(window.location.href, data, function(data, status){
@@ -47,16 +32,9 @@ $(function(){
             }
         }
         // 添加用户名和密码
-        var $uname = $.cookie("ptip_mg_username");
-        var $upwd = $.cookie("ptip_mg_userpwd");
-        if ($uname == undefined || $uname == "null") {
-            $uname = "";
-        }
-        if ($upwd == undefined || $upwd == "null") {
-            $upwd = "";
-        }
-        addInputToForm(item, "uname", $uname, "text");
-        addInputToForm(item, "upwd", $upwd, "text");
+        var userInfo = getUserLoginInfo();
+        addInputToForm(item, "uname", userInfo.name, "text");
+        addInputToForm(item, "upwd", userInfo.pwd, "text");
     }
     // 添加用户信息到表单
     uploadManageForm = function(item, exIpts){
@@ -83,8 +61,8 @@ $(function(){
     }
     // 登出管理后台
     logoutManage = function(){
-        $.cookie("ptip_mg_username", null, {expires: 0.5, path: "/"});
-        $.cookie("ptip_mg_userpwd", null, {expires: 0.5, path: "/"});
+        // 重置玩家的登录信息
+        setUserLoginInfo(null, null, 0);
         requestManage({});
     }
     // 点击登出
@@ -92,7 +70,7 @@ $(function(){
         logoutManage();
     });
     // 登陆管理后台
-    loginManage = function(name, pwd, encodePwd){
+    loginManage = function(name, pwd){
         $.post(window.location.href, {
             isReqLogin : true,
             uname : name,
@@ -105,15 +83,15 @@ $(function(){
                 $.post(window.location.href, {
                     isLogin : true,
                     uname : name,
-                    upwd : encodePwd(pwd, parseInt(data.code)),
+                    upwd : eval(data.encodePwd.replace(/\$1/, pwd)),
                 }, function(data, status){
                     if (status == "success") {
                         if (!data.isSuccess) {
                             alert("用户名和密码不匹配！");
                             return;
                         }
-                        $.cookie("ptip_mg_username", data.name, {expires: 0.5, path: "/"});
-                        $.cookie("ptip_mg_userpwd", data.pwd, {expires: 0.5, path: "/"});
+                        // 设置玩家的登录信息
+                        setUserLoginInfo(data.name, data.pwd, 0.5);
                         requestManage({});
                     } else {
                         alert("登陆失败！")

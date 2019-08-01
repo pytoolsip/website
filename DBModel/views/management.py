@@ -4,6 +4,7 @@ import django.utils.timezone as timezone
 from django.http import JsonResponse
 
 from DBModel import models
+import login;
 
 import hashlib;
 import random;
@@ -51,42 +52,18 @@ def manage(request):
     # 返回管理项的内容
     return render(request, "manage/item.html", getManageResult(request, user, mkey, isSwitchTab));
 
-# 解码登陆密码
-def decodePwd(pwd, code):
-    pwds = [""] * len(pwd);
-    space, increment = math.floor(code/10) + 1, code%10 + 1;
-    for i in range(len(pwd)):
-        col, row = math.floor(i/space), i%space * (math.floor((len(pwd))/space) + 1);
-        pwds[row + col] = chr(ord(pwd[i]) - increment);
-        increment+=1;
-    return "".join(pwds);
-
 # 登陆平台
 def loginIP(request):
     # 判断是否请求登陆
-    code = "21"; # "".join([str(i) for i in random.sample(range(10), 2)]); # 编码值
     uname = request.POST.get("uname", "");
-    if "isReqLogin" in request.POST:
-        if len(models.User.objects.filter(name = uname)) == 0:
-            return JsonResponse({
-                "isSuccess" : False,
-            });
-        return JsonResponse({
-            "isSuccess" : True,
-            "code" : code,
-        });
+    if request.POST.get("isReqLogin", False):
+        return JsonResponse(login.getLoginInfo(uname, isReq = True));
     # 登陆时的返回数据
     if request.POST.get("isLogin", False):
-        upwd = decodePwd(request.POST.get("upwd", ""), int(code));
-        print("===== User Login ===== :", uname, upwd);
-        try:
-            user = models.User.objects.get(name = uname, password = upwd);
-            return JsonResponse({
-                "isSuccess" : True,
-                "name" : user.name,
-                "pwd" : hashlib.md5(user.password.encode("utf-8")).hexdigest(),
-            });
-        except Exception as e:
+        loginInfo = login.getLoginInfo(uname, upwd = request.POST.get("upwd", ""), isLogin = True);
+        if loginInfo.get("isSuccess", False):
+            return JsonResponse(loginInfo);
+        else:
             return render(request, "manage/login.html", {"requestFailedTips" : "用户名和密码不匹配！"});
     return None;
 
