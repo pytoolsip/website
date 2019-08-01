@@ -6,7 +6,7 @@ $(function(){
 	// 响应窗口尺寸大小变化函数
 	var windowOnresizeFunc = window.onresize;
 	// 登陆链接
-	var loginUrl = "http://jimdreamheart.club/pytoolsip/login";
+	var loginUrl = "http://localhost:8000/login";
 	// 注册链接
 	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
 	// 获取提示文档
@@ -35,6 +35,46 @@ $(function(){
             "name" : $uname,
             "pwd" : $upwd,
         };
+	}
+	// 登陆平台
+    loginIP = function(url, formId, isRemember, callback){
+		var name = $("#"+formId+" input[name='name']").val();
+		var pwd = $("#"+formId+" input[name='password']").val();
+		console.log("===== loginIP =====", formId, name, pwd);
+        $.post(url, {
+			isReqLogin : true,
+			uname : name,
+		}, function(data, status){
+			if (status == "success") {
+				if (!data.isSuccess) {
+					$("#"+formId).prepend(getAlertTips("danger", data.tips));
+					return;
+				}
+				// 提交登陆数据
+				$.post(url, {
+                    isLogin : true,
+                    uname : name,
+                    upwd : eval(data.encodePwd.replace(/\$1/, pwd)),
+					isRemember : isRemember,
+				}, function(data, status){
+					if (status == "success") {
+						if (!data.isSuccess) {
+							$("#"+formId).prepend(getAlertTips("danger", data.tips));
+							return;
+						}
+						console.log("登陆成功。");
+						// 缓存登陆数据
+						setUserLoginInfo(data.name, data.pwd, data.expires);
+						// 登陆成功回调
+						callback();
+					} else {
+						alert("登陆失败！")
+					}
+				});
+			} else {
+				alert("请求登陆失败！")
+			}
+		});
     }
 	// 关闭弹窗
 	var closeDialogPage = function(){
@@ -115,38 +155,41 @@ $(function(){
 	// 创建登录弹窗
 	function createLoginDialog(){
 		// 创建弹窗
-		createDialogPage("<form class='login-form' role='form'>\
+		createDialogPage("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>登陆PyToolsIP</h2>\
-						<input id='loginUserName' class='form-control' type='text' placeholder='用户名' required autofocus />\
-						<input id='loginPassword' class='form-control' type='password' placeholder='密码' required />\
+						<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
+						<input name='password' class='form-control' type='password' placeholder='密码' required />\
 						<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>\
-						<button id='loginButton' class='btn btn-lg btn-success btn-block' type='button'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
+						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
 						<div class='login-link clearfix'>\
 							<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>\
 							<a id='forgetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
 						</div>\
 					</form>");
-		// 绑定登陆按钮的点击事件
-		$("#loginButton").on("click",function(){
-			$.session.set("isRememberMe", $("#loginRemember>input[type='checkbox']").is(":checked"));
-			console.log("isRememberMe:", $.session.get("isRememberMe"))
-			$.post(loginUrl, {
-				name : $("#loginUserName").val(),
-				password : $("#loginPassword").val(),
-			}, function(data, status){
-				if (status == "success" && data.isSuccess) {
-					console.log("登陆成功。");
-					var expires = 0.5;
-					if ($.session.get("isRememberMe") == true) {
-						expires = 10;
-					}
-					setUserLoginInfo(data.name, data.pwd, expires);
+		// 登陆校验
+		$("#loginForm").validate({
+			rules: {
+				name: {
+					required: true,
+				},
+				password: {
+					required: true,
+				},
+			},
+			messages: {
+				name: {
+					required: "请输入用户名",
+				},
+				password: {
+					required: "请输入密码",
+				},
+			},
+			submitHandler: function() {
+				loginIP(loginUrl, "loginForm", $("#loginRemember>input[type='checkbox']").is(":checked"), function(){
 					// 关闭弹窗
 					closeDialogPage();
-				} else {
-					alert("登陆失败！")
-				}
-			});
+				});
+			}
 		});
 		// 绑定注册超链接的点击事件
 		$("#registerDialog").on("click",function(){
@@ -282,8 +325,8 @@ $(function(){
             },
             submitHandler: function() {
                 $.post(registerUrl, {
-					name : $("#registerForm input[name='name']").val(),
-					password : $("#registerForm input[name='password']").val(),
+					uname : $("#registerForm input[name='name']").val(),
+					upwd : $("#registerForm input[name='password']").val(),
 					email : $("#registerForm input[name='email']").val(),
 					verifyCode : $("#registerForm input[name='verifyCode']").val(),
 				}, function(data, status){
@@ -357,7 +400,7 @@ $(function(){
             },
             submitHandler: function() {
                 $.post(registerUrl, {
-					password : $("#registerForm input[name='password']").val(),
+					upwd : $("#registerForm input[name='password']").val(),
 					email : $("#registerForm input[name='email']").val(),
 					verifyCode : $("#registerForm input[name='verifyCode']").val(),
 				}, function(data, status){

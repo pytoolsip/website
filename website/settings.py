@@ -137,3 +137,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = (
     os.path.join(BASE_DIR, 'assets/media')
 )
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    },
+}

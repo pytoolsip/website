@@ -69,37 +69,4 @@ $(function(){
     $("#logoutButton").on("click",function(){
         logoutManage();
     });
-    // 登陆管理后台
-    loginManage = function(name, pwd){
-        $.post(window.location.href, {
-            isReqLogin : true,
-            uname : name,
-        }, function(data, status){
-            if (status == "success") {
-                if (!data.isSuccess) {
-                    alert("用户名和密码不匹配！");
-                    return;
-                }
-                $.post(window.location.href, {
-                    isLogin : true,
-                    uname : name,
-                    upwd : eval(data.encodePwd.replace(/\$1/, pwd)),
-                }, function(data, status){
-                    if (status == "success") {
-                        if (!data.isSuccess) {
-                            alert("用户名和密码不匹配！");
-                            return;
-                        }
-                        // 设置玩家的登录信息
-                        setUserLoginInfo(data.name, data.pwd, 0.5);
-                        requestManage({});
-                    } else {
-                        alert("登陆失败！")
-                    }
-                });
-            } else {
-                alert("请求登陆失败！")
-            }
-        });
-    }
 })

@@ -8,7 +8,6 @@ import login;
 
 import hashlib;
 import random;
-import math;
 
 # 平台键值列表
 PtipKeyList = ["ptip_script", "ptip_exe", "update_exe", "depend_lib"];
@@ -29,9 +28,9 @@ def manage(request):
     # 判断是否已登陆
     if "uname" not in request.POST or "upwd" not in request.POST:
         return render(request, "manage/index.html");
-    try:
-        user = models.User.objects.get(name = request.POST["uname"], password = request.POST["upwd"]);
-    except Exception as e:
+    # 获取登陆玩家
+    user = login.getLoginUser(request.POST["uname"], request.POST["upwd"]);
+    if not user:
         # 返回登陆页面信息
         ret = {};
         if request.POST["uname"] and request.POST["upwd"]:
