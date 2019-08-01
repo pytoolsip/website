@@ -10,13 +10,14 @@ import os,sys;
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
 sys.path.append(CURRENT_PATH);
 
-__all__ = ["home", "search", "detail", "login", "manage"];
+__all__ = ["home", "search", "detail", "login", "register", "manage"];
 
 try:
     from home import home;
     from search import search;
     from detail import detail;
     from login import login;
+    from register import register;
     from management import manage;
 
 except Exception as e:

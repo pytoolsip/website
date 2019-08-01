@@ -267,7 +267,7 @@ $(function(){
 						<h2>PyToolsIP用户注册</h2>\
 						<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
 						<input id='password' name='password' class='form-control' type='password' placeholder='密码' required />\
-						<input id='verifyPwd' name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
+						<input name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
 						<input name='email' class='form-control' type='text' placeholder='邮箱' required />\
 						<div class='input-group'>\
 							<input name='verifyCode' class='form-control' type='text' placeholder='验证码' required />\
@@ -350,7 +350,7 @@ $(function(){
 		createDialogPage("<form id='forgetForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>PyToolsIP更新密码</h2>\
 						<input id='password' name='password' class='form-control' type='password' placeholder='新密码' required />\
-						<input id='verifyPwd' name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
+						<input name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
 						<input name='email' class='form-control' type='text' placeholder='注册邮箱' required />\
 						<div class='input-group'>\
 							<input name='verifyCode' class='form-control' type='text' placeholder='验证码' required />\

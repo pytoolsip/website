@@ -29,7 +29,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
         # 返回编码密码函数
         code = "".join([str(random.randint(1,9)), str(random.randint(1,9))]); # 编码值
         print("===== Login code =====", code);
-        cache.set("|".join([uname, "verify_code"]), code, 2*60);
+        cache.set("|".join(["verify_code", "login", uname]), code, 2*60);
         return {
             "isSuccess" : True,
             "encodePwd" : getEncodePwdFunc(code),
@@ -58,7 +58,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
 def getLoginUser(uname, upwd, isLogin = False):
     try:
         pwd = upwd;
-        verifyKey = "|".join([uname, "verify_code"]);
+        verifyKey = "|".join(["verify_code", "login", uname]);
         if isLogin:
             if not cache.has_key(verifyKey):
                 return {
