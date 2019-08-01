@@ -145,25 +145,25 @@ footer a{
 	padding: 40px;
 	background-color: #FFFFFF;
 }
-.dialog-content>h2{
+.dialog-content h2{
 	text-align: center;
 	padding-bottom: 10px;
 	margin-top: 0px;
 	margin-bottom: 20px;
 	border-bottom: 1px #DCDCDC solid;
 }
-.dialog-content>p{
+.dialog-content p{
 	font-size:16px;
 	color:#232323;
 }
-.dialog-content>p>span{
+.dialog-content p>span{
 	color:#646464;
 }
-.dialog-content>.dialog-interval{
+.dialog-content .dialog-interval{
 	margin-top:40px;
 	font-size:12px;
 }
-.dialog-content>.dialog-interval #timeCountDown{
+.dialog-content .dialog-interval #timeCountDown{
 	color:red;
 }
 #logoutButton:hover{
@@ -187,6 +187,11 @@ footer a{
 .login-form>label{
 	font-weight: normal;
 	padding: 10px 0px;
+}
+.login-form>.login-link{
+	display: block;
+	margin-top: 10px;
+	padding: 10px;
 }
 /* validation */
 .error {
