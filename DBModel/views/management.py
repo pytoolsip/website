@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 import django.utils.timezone as timezone
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 
 from DBModel import models
 import login;

@@ -260,6 +260,44 @@ $(function(){
 			}
 		});
 	});
+	// 发送验证码
+	var sendVerifyCode = function(){
+		if($("#registerForm").validate().element("#registerForm input[name='email']")) {
+			$.post(registerUrl, {
+				isGetVerifyCode: true,
+				email : $("#registerForm input[name='email']").val(),
+			}, function(data, status){
+				if (status == "success") {
+					if (!data.isSuccess) {
+						$("#registerForm").prepend(getAlertTips("danger", data.tips));
+						return;
+					}
+					// 提示验证码已发送
+					$("#registerForm").prepend(getAlertTips("info", "验证码已发至邮箱。"));
+					// 更新验证码按钮
+					var seconds = data.expires;
+					$("#verifyCodeBtn").attr("disabled", true);
+					$("#verifyCodeBtn").text("已发送(" + seconds + "s)");
+					var intervalId = window.setInterval(function(){
+						seconds--
+						if (seconds > 0) {
+							if ($("#verifyCodeBtn").length > 0) {
+								$("#verifyCodeBtn").text("已发送(" + seconds + "s)");
+							}
+						}else{
+							window.clearInterval(intervalId);
+							if ($("#verifyCodeBtn").length > 0) {
+								$("#verifyCodeBtn").attr("disabled", false);
+								$("#verifyCodeBtn").text("获取验证码");
+							}
+						}
+					}, 1000);
+				} else {
+					alert("注册失败！")
+				}
+			});
+		}
+	}
 	// 创建注册弹窗
 	function createRegisterDialog(){
 		// 创建弹窗
@@ -270,61 +308,79 @@ $(function(){
 						<input name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
 						<input name='email' class='form-control' type='text' placeholder='邮箱' required />\
 						<div class='input-group'>\
-							<input name='verifyCode' class='form-control' type='text' placeholder='验证码' required />\
+							<input name='verifyCode' class='form-control' type='text' placeholder='验证码' />\
 							<span class='input-group-btn'>\
 								<button id='verifyCodeBtn' class='btn btn-default' type='button'>获取验证码</button>\
 							</span>\
 						</div>\
 						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-registration-mark'></span>&nbsp;注册</button>\
 					</form>");
-		// 绑定登陆按钮的点击事件
+		// 绑定登陆按钮的点击校验事件
 		$("#registerForm").validate({
-            rules: {
-                name: {
-                    required: true,
-                    rangelength: [2, 10],
-                },
-                password: {
-                    required: true,
-                    rangelength: [6, 16],
-                },
-                verifyPwd: {
-                    required: true,
-                    rangelength: [6, 16],
-                    equalTo: "#password"
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                verifyCode: {
-                	required: true,
-                }
-            },
-            messages: {
-                name: {
-                    required: "请输入用户名",
-                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
-                },
-                password: {
-                    required: "请输入密码",
-                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
-                },
-                verifyPwd: {
-                    required: "请输入确认密码",
-                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
-                    equalTo: "确认密码和密码不匹配"
-                },
-                email: {
-                    required: "请输入邮箱",
-                    email: "邮箱格式有误",
-                },
-                verifyCode: {
-                	required: "请输入验证码",
-                }
-            },
-            submitHandler: function() {
-                $.post(registerUrl, {
+			rules: {
+				name: {
+					required: true,
+					rangelength: [2, 10],
+					remote: {
+						url : registerUrl,
+						type : "post",
+						dataType: "json",
+						data : {
+							isVerify : true,
+							uname : function() {
+								return $("#registerForm input[name='name']").val();
+							},
+						},
+					},
+				},
+				password: {
+					required: true,
+					rangelength: [6, 16],
+				},
+				verifyPwd: {
+					required: true,
+					equalTo: "#password"
+				},
+				email: {
+					required: true,
+					email: true,
+					remote: {
+						url : registerUrl,
+						type : "post",
+						dataType: "json",
+						data : {
+							isVerify : true,
+							email : function() {
+								return $("#registerForm input[name='email']").val();
+							},
+						},
+					},
+				},
+				verifyCode : "required",
+			},
+			messages: {
+				name: {
+					required: "请输入用户名",
+					rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+					remote: "用户名已存在！请重新输入",
+				},
+				password: {
+					required: "请输入密码",
+					rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+				},
+				verifyPwd: {
+					required: "请输入确认密码",
+					equalTo: "确认密码和密码不匹配"
+				},
+				email: {
+					required: "请输入邮箱",
+					email: "邮箱格式有误",
+					remote: "邮箱已被注册！请使用新邮箱",
+				},
+				verifyCode : "请输入验证码",
+			},
+			submitHandler : function() {
+				$.post(registerUrl, {
 					uname : $("#registerForm input[name='name']").val(),
 					upwd : $("#registerForm input[name='password']").val(),
 					email : $("#registerForm input[name='email']").val(),
@@ -335,14 +391,18 @@ $(function(){
 							$("#registerForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						// 创建登录成功的弹窗
+						// 创建注册成功的弹窗
 						createIntervalDialog("<h2>注册成功!</h2>", 2);
 					} else {
 						alert("注册失败！")
 					}
 				});
-            }
-       });
+			},
+		});
+	    // 获取验证码
+	    $("#verifyCodeBtn").on("click",function(){
+			sendVerifyCode();
+		});
 	}
 	// 创建更新密码弹窗
 	function createForgetDialog(){
@@ -369,7 +429,6 @@ $(function(){
                 },
                 verifyPwd: {
                     required: true,
-                    rangelength: [6, 16],
                     equalTo: "#password"
                 },
                 email: {
@@ -387,7 +446,6 @@ $(function(){
                 },
                 verifyPwd: {
                     required: "请输入确认密码",
-                    rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
                     equalTo: "确认密码和密码不匹配"
                 },
                 email: {
@@ -417,6 +475,10 @@ $(function(){
 				});
             }
        });
+	   // 获取验证码
+	   $("#verifyCodeBtn").on("click",function(){
+		   sendVerifyCode();
+	   });
 	}
 	
 //	// 定时弹窗

@@ -6,7 +6,10 @@
 				<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />
 				<input name='password' class='form-control' type='password' placeholder='密码' required />
 				<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>
-				<label>注：本平台不支持注册管理员。</label>
+				<div class='login-link clearfix'>
+					<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>
+					<a id='forgetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -51,6 +54,14 @@
 				requestManage({});
 			});
 			}
+		});
+		// 绑定注册超链接的点击事件
+		$("#registerDialog").on("click",function(){
+			createRegisterDialog();
+		});
+		// 绑定更新密码超链接的点击事件
+		$("#forgetDialog").on("click",function(){
+			createForgetDialog();
 		});
 	})
 </script>
