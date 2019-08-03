@@ -8,7 +8,7 @@ $(function(){
 	// 登陆链接
 	var loginUrl = "http://localhost:8000/login";
 	// 注册链接
-	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
+	var registerUrl = "http://localhost:8000/register";
 	// 获取提示文档
 	var getAlertTips = function(type, tips) {
 		return "<div class='alert alert-"+ type +"' role='alert'>\
@@ -382,7 +382,7 @@ $(function(){
 			submitHandler : function() {
 				$.post(registerUrl, {
 					isReq : true,
-					email : email,
+					email : $("#registerForm input[name='email']").val(),
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {
@@ -454,7 +454,7 @@ $(function(){
 							isVerify : true,
 							isExist: true,
 							email : function() {
-								return $("#registerForm input[name='email']").val();
+								return $("#resetPwdForm input[name='email']").val();
 							},
 						},
 					},
@@ -484,7 +484,7 @@ $(function(){
             submitHandler: function() {
 				$.post(registerUrl, {
 					isReq : true,
-					email : email,
+					email : $("#resetPwdForm input[name='email']").val(),
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {

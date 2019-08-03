@@ -5,17 +5,17 @@ from django.http import JsonResponse
 from django.core.cache import cache
 
 from DBModel import models
+from utils import base_util, pwd_util
 
 import hashlib;
 import random;
-import math;
 
 # 登陆页请求
 @csrf_exempt
 def login(request):
     uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
     print("===== login =====", uname, upwd);
-    return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = request.POST.get("isReqLogin", False), isLogin = request.POST.get("isLogin", False), isRemember = request.POST.get("isRemember", False)));
+    return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = getPostAsBool(request, "isReqLogin"), isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
 
 # 获取登录信息
 def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = False):
@@ -32,7 +32,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
         cache.set("|".join(["encode_pwd_code", "login", uname]), code, 2*60);
         return {
             "isSuccess" : True,
-            "encodePwd" : getEncodePwdFunc(code),
+            "encodePwd" : pwd_util.getEncodePwdFunc(code),
         };
     # 获取登陆玩家
     user = getLoginUser(uname, upwd, isLogin);
@@ -65,7 +65,7 @@ def getLoginUser(uname, upwd, isLogin = False):
                     "isSuccess" : False,
                     "tips" : "验证码已过期！",
                 };
-            pwd = decodePwd(upwd, int(cache.get(verifyKey)));
+            pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
         elif cache.has_key(upwd):
             # 从缓存中读取密码
             pwd = cache.get(upwd);
@@ -75,29 +75,3 @@ def getLoginUser(uname, upwd, isLogin = False):
     except Exception as e:
         print(e);
     return None;
-
-
-# 获取编码密码函数
-def getEncodePwdFunc(code):
-    return """(function(pwd, code){
-            var pwds = [];
-            var space = Math.floor(code/10) + 1;
-            var increment = code%10 + 1;
-            for (var i = 0; i < pwd.length; i ++) {
-                var col = Math.floor(i/space);
-                var row = i%space * (Math.floor((pwd.length)/space) + 1);
-                pwds.push(String.fromCharCode(pwd.charCodeAt(row + col) + increment));
-                increment++;
-            }
-            return pwds.join("");
-        })('$1', """+code+")";
-
-# 解码登陆密码
-def decodePwd(pwd, code):
-    pwds = [""] * len(pwd);
-    space, increment = math.floor(code/10) + 1, code%10 + 1;
-    for i in range(len(pwd)):
-        col, row = math.floor(i/space), i%space * (math.floor((len(pwd))/space) + 1);
-        pwds[row + col] = chr(ord(pwd[i]) - increment);
-        increment+=1;
-    return "".join(pwds);

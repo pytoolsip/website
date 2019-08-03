@@ -4,6 +4,7 @@ import django.utils.timezone as timezone
 from django.http import JsonResponse,HttpResponse
 
 from DBModel import models
+from utils import base_util
 import login;
 
 import hashlib;
@@ -37,7 +38,7 @@ def manage(request):
             ret = {"requestFailedTips" : "登陆信息已过期！"};
         return render(request, "manage/login.html", ret);
     # 是否切换Tab
-    isSwitchTab = request.POST.get("isSwitchTab", False);
+    isSwitchTab = base_util.getPostAsBool(request, "isSwitchTab");
     # 获取请求键值
     mkey = request.POST.get("mk", "");
     # 判断是否重定向
@@ -55,10 +56,10 @@ def manage(request):
 def loginIP(request):
     # 判断是否请求登陆
     uname = request.POST.get("uname", "");
-    if request.POST.get("isReqLogin", False):
+    if base_util.getPostAsBool(request, "isReqLogin"):
         return JsonResponse(login.getLoginInfo(uname, isReq = True));
     # 登陆时的返回数据
-    if request.POST.get("isLogin", False):
+    if base_util.getPostAsBool(request, "isLogin"):
         loginInfo = login.getLoginInfo(uname, upwd = request.POST.get("upwd", ""), isLogin = True);
         if loginInfo.get("isSuccess", False):
             return JsonResponse(loginInfo);

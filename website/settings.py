@@ -138,6 +138,7 @@ MEDIA_ROOT = (
     os.path.join(BASE_DIR, 'assets/media')
 )
 
+# Redis Cache
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -147,3 +148,10 @@ CACHES = {
         },
     },
 }
+
+# Email
+EMAIL_HOST = "smtp.163.com"
+EMAIL_PORT = 994
+EMAIL_HOST_USER = "15602291936@163.com"
+EMAIL_HOST_PASSWORD = ""
+EMAIL_USE_SSL = True

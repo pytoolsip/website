@@ -3,9 +3,11 @@ from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse,HttpResponse
 from django.core.cache import cache
+from django.core.mail import send_mail
 
+from website import settings
 from DBModel import models
-import login;
+from utils import base_util, pwd_util
 
 import random;
 
@@ -14,19 +16,19 @@ import random;
 def register(request):
     print("register get :", request.GET, "; register post :", request.POST, "; register files :", request.FILES);
     # 判断是否校验
-    if request.POST.get("isVerify", False):
+    if base_util.getPostAsBool(request, "isVerify"):
         return verify(request);
     # 获取验证码
-    if request.POST.get("isGetVerifyCode", False):
+    if base_util.getPostAsBool(request, "isGetVerifyCode"):
         return getVerifyCode(request);
     # 请求编码方法
-    if request.POST.get("isReq", False):
+    if base_util.getPostAsBool(request, "isReq"):
         return getEncodePwdInfo(request);
     # 注册用户
-    if request.POST.get("isRegister", False):
+    if base_util.getPostAsBool(request, "isRegister"):
         return registerUser(request);
     # 重置用户密码
-    if request.POST.get("isResetPwd", False):
+    if base_util.getPostAsBool(request, "isResetPwd"):
         return resetUserPwd(request);
 
 # 校验逻辑
@@ -38,7 +40,7 @@ def verify(request):
     # 校验邮箱
     if "email" in request.POST:
         isExist = len(models.User.objects.filter(email = request.POST["email"])) > 0;
-        if isExist == request.POST.get("isExist", False):
+        if isExist == base_util.getPostAsBool(request, "isExist"):
             return HttpResponse("true");
     # 校验失败
     print("Verify Fail!", request.POST);
@@ -52,6 +54,11 @@ def getVerifyCode(request):
     # 生成8位随机验证码
     verifyCode = "".join([str(i) for i in random.sample(range(10), 8)]);
     ### 发送邮件给指定邮箱，注意得确认是否发送成功
+    try:
+        send_mail("PyToolsIP", "平台验证码："+verifyCode, settings.EMAIL_HOST_USER, [email], fail_silently=False);
+    except Exception as e:
+        print(e);
+        return JsonResponse({"isSuccess" : False, "tips" : "验证码发送失败，请检查邮箱是否正确！"});
     # 缓存验证码
     expires = 2*60; # 缓存2分钟
     cache.set("|".join(["verify_code", "register", email]), verifyCode, expires);
@@ -71,7 +78,7 @@ def getEncodePwdInfo(request):
     cache.set("|".join(["encode_pwd_code", "register", email]), code, 2*60);
     return {
         "isSuccess" : True,
-        "encodePwd" : login.getEncodePwdFunc(code),
+        "encodePwd" : pwd_util.getEncodePwdFunc(code),
     };
 
 # 注册玩家
@@ -94,7 +101,7 @@ def registerUser(request):
             "isSuccess" : False,
             "tips" : "验证码已过期！",
         };
-    pwd = login.decodePwd(upwd, int(cache.get(verifyKey)));
+    pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
     models.User(name = uname, password = pwd, email = email, authority = 0).save();
     return JsonResponse({"isSuccess" : True});
 
@@ -120,6 +127,6 @@ def resetUserPwd(request):
             "isSuccess" : False,
             "tips" : "验证码已过期！",
         };
-    user.password = login.decodePwd(upwd, int(cache.get(verifyKey)));
+    user.password = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
     user.save();
     return JsonResponse({"isSuccess" : True});
