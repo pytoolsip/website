@@ -83,7 +83,7 @@ $(function(){
 		}
 	}
 	// 创建弹窗函数[带有关闭回调参数]
-	function createDialog(content, closeCallback){
+	createDialog = function(content, closeCallback){
 		// 关闭原有弹窗
 		closeDialogPage();
 		// 弹窗内容
@@ -130,11 +130,11 @@ $(function(){
 		
 	}
 	// 创建弹窗函数
-	function createDialogPage(content){
+	createDialogPage = function(content){
 		createDialog(content, function(){}); // 关闭弹窗时无回调
 	}
 	// 创建定时弹窗
-	function createIntervalDialog(content, seconds){
+	createIntervalDialog = function(content, seconds){
 		// 设置定时器
 		var intervalId = window.setInterval(function(){
 			seconds--
@@ -153,7 +153,7 @@ $(function(){
 		});
 	}
 	// 创建登录弹窗
-	function createLoginDialog(){
+	createLoginDialog = function(){
 		// 创建弹窗
 		createDialogPage("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>登陆PyToolsIP</h2>\
@@ -163,7 +163,7 @@ $(function(){
 						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
 						<div class='login-link clearfix'>\
 							<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>\
-							<a id='forgetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
+							<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
 						</div>\
 					</form>");
 		// 登陆校验
@@ -196,12 +196,12 @@ $(function(){
 			createRegisterDialog();
 		});
 		// 绑定更新密码超链接的点击事件
-		$("#forgetDialog").on("click",function(){
-			createForgetDialog();
+		$("#resetDialog").on("click",function(){
+			createResetDialog();
 		});
 	}
 	// 创建登出弹窗
-	function createLogoutDialog(data){
+	createLogoutDialog = function(data){
 		// 创建弹窗
 		createDialogPage("<div class='text-center'>\
 							<h2>玩家信息</h2>\
@@ -261,19 +261,19 @@ $(function(){
 		});
 	});
 	// 发送验证码
-	var sendVerifyCode = function(){
-		if($("#registerForm").validate().element("#registerForm input[name='email']")) {
+	var sendVerifyCode = function(formSelector){
+		if($(formSelector).validate().element(formSelector + " input[name='email']")) {
 			$.post(registerUrl, {
 				isGetVerifyCode: true,
-				email : $("#registerForm input[name='email']").val(),
+				email : $(formSelector + " input[name='email']").val(),
 			}, function(data, status){
 				if (status == "success") {
 					if (!data.isSuccess) {
-						$("#registerForm").prepend(getAlertTips("danger", data.tips));
+						$(formSelector).prepend(getAlertTips("danger", data.tips));
 						return;
 					}
 					// 提示验证码已发送
-					$("#registerForm").prepend(getAlertTips("info", "验证码已发至邮箱。"));
+					$(formSelector).prepend(getAlertTips("info", "验证码已发至邮箱。"));
 					// 更新验证码按钮
 					var seconds = data.expires;
 					$("#verifyCodeBtn").attr("disabled", true);
@@ -299,7 +299,7 @@ $(function(){
 		}
 	}
 	// 创建注册弹窗
-	function createRegisterDialog(){
+	createRegisterDialog = function(){
 		// 创建弹窗
 		createDialogPage("<form id='registerForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>PyToolsIP用户注册</h2>\
@@ -381,33 +381,45 @@ $(function(){
 			},
 			submitHandler : function() {
 				$.post(registerUrl, {
-					uname : $("#registerForm input[name='name']").val(),
-					upwd : $("#registerForm input[name='password']").val(),
-					email : $("#registerForm input[name='email']").val(),
-					verifyCode : $("#registerForm input[name='verifyCode']").val(),
+					isReq : true,
+					email : email,
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {
 							$("#registerForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						// 创建注册成功的弹窗
-						createIntervalDialog("<h2>注册成功!</h2>", 2);
-					} else {
-						alert("注册失败！")
+						$.post(registerUrl, {
+							isRegister : true,
+							uname : $("#registerForm input[name='name']").val(),
+							upwd : eval(data.encodePwd.replace(/\$1/, $("#registerForm input[name='password']").val())),
+							email : $("#registerForm input[name='email']").val(),
+							verifyCode : $("#registerForm input[name='verifyCode']").val(),
+						}, function(data, status){
+							if (status == "success") {
+								if (!data.isSuccess) {
+									$("#registerForm").prepend(getAlertTips("danger", data.tips));
+									return;
+								}
+								// 创建注册成功的弹窗
+								createIntervalDialog("<h2>注册成功!</h2>", 2);
+							} else {
+								alert("注册失败！")
+							}
+						});
 					}
 				});
 			},
 		});
 	    // 获取验证码
 	    $("#verifyCodeBtn").on("click",function(){
-			sendVerifyCode();
+			sendVerifyCode("#registerForm");
 		});
 	}
 	// 创建更新密码弹窗
-	function createForgetDialog(){
+	createResetDialog = function(){
 		// 创建弹窗
-		createDialogPage("<form id='forgetForm' class='login-form' role='form' enctype='multipart/form-data'>\
+		createDialogPage("<form id='resetPwdForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>PyToolsIP更新密码</h2>\
 						<input id='password' name='password' class='form-control' type='password' placeholder='新密码' required />\
 						<input name='verifyPwd' class='form-control' type='password' placeholder='确认密码' required />\
@@ -421,7 +433,7 @@ $(function(){
 						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-registration-mark'></span>&nbsp;更新密码</button>\
 					</form>");
 		// 绑定登陆按钮的点击事件
-		$("#forgetForm").validate({
+		$("#resetPwdForm").validate({
             rules: {
                 password: {
                     required: true,
@@ -433,7 +445,19 @@ $(function(){
                 },
                 email: {
                     required: true,
-                    email: true
+                    email: true,
+					remote: {
+						url : registerUrl,
+						type : "post",
+						dataType: "json",
+						data : {
+							isVerify : true,
+							isExist: true,
+							email : function() {
+								return $("#registerForm input[name='email']").val();
+							},
+						},
+					},
                 },
                 verifyCode: {
                 	required: true,
@@ -451,33 +475,46 @@ $(function(){
                 email: {
                     required: "请输入邮箱",
                     email: "邮箱格式有误",
+					remote: "邮箱未注册！",
                 },
                 verifyCode: {
                 	required: "请输入验证码",
                 }
             },
             submitHandler: function() {
-                $.post(registerUrl, {
-					upwd : $("#registerForm input[name='password']").val(),
-					email : $("#registerForm input[name='email']").val(),
-					verifyCode : $("#registerForm input[name='verifyCode']").val(),
+				$.post(registerUrl, {
+					isReq : true,
+					email : email,
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {
-							$("#forgetForm").prepend(getAlertTips("danger", data.tips));
+							$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						// 创建登录成功的弹窗
-						createIntervalDialog("<h2>密码更新成功!</h2>", 2);
-					} else {
-						alert("注册失败！")
+						$.post(registerUrl, {
+							isResetPwd : true,
+							upwd : eval(data.encodePwd.replace(/\$1/, $("#resetPwdForm input[name='password']").val())),
+							email : $("#resetPwdForm input[name='email']").val(),
+							verifyCode : $("#resetPwdForm input[name='verifyCode']").val(),
+						}, function(data, status){
+							if (status == "success") {
+								if (!data.isSuccess) {
+									$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
+									return;
+								}
+								// 创建登录成功的弹窗
+								createIntervalDialog("<h2>密码更新成功!</h2>", 2);
+							} else {
+								alert("注册失败！")
+							}
+						});
 					}
 				});
             }
        });
 	   // 获取验证码
 	   $("#verifyCodeBtn").on("click",function(){
-		   sendVerifyCode();
+		   sendVerifyCode("#resetPwdForm");
 	   });
 	}
 	

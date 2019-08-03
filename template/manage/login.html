@@ -8,7 +8,7 @@
 				<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>
 				<div class='login-link clearfix'>
 					<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>
-					<a id='forgetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>
+					<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>
 				</div>
 			</form>
 		</div>
@@ -60,8 +60,8 @@
 			createRegisterDialog();
 		});
 		// 绑定更新密码超链接的点击事件
-		$("#forgetDialog").on("click",function(){
-			createForgetDialog();
+		$("#resetDialog").on("click",function(){
+			createResetDialog();
 		});
 	})
 </script>
