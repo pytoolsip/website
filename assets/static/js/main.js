@@ -40,7 +40,6 @@ $(function(){
     loginIP = function(url, formId, isRemember, callback){
 		var name = $("#"+formId+" input[name='name']").val();
 		var pwd = $("#"+formId+" input[name='password']").val();
-		console.log("===== loginIP =====", formId, name, pwd);
         $.post(url, {
 			isReqLogin : true,
 			uname : name,

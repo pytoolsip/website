@@ -53,7 +53,7 @@ def getVerifyCode(request):
         return JsonResponse({"isSuccess" : False, "tips" : "邮箱信息不能为空！"});
     # 生成8位随机验证码
     verifyCode = "".join([str(i) for i in random.sample(range(10), 8)]);
-    ### 发送邮件给指定邮箱，注意得确认是否发送成功
+    # 发送邮件给指定邮箱
     try:
         send_mail("PyToolsIP", "平台验证码："+verifyCode, settings.EMAIL_HOST_USER, [email], fail_silently=False);
     except Exception as e:
@@ -73,7 +73,7 @@ def getEncodePwdInfo(request):
             "tips" : "邮箱不能为空！",
         };
     # 返回编码密码函数
-    code = "".join([str(random.randint(1,9)), str(random.randint(1,9))]); # 编码值
+    code = pwd_util.getEncodeCode(); # 编码值
     print("===== Register code =====", code);
     cache.set("|".join(["encode_pwd_code", "register", email]), code, 2*60);
     return {

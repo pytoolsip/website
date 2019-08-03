@@ -27,7 +27,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
                 "tips" : "用户名不存在！",
             };
         # 返回编码密码函数
-        code = "".join([str(random.randint(1,9)), str(random.randint(1,9))]); # 编码值
+        code = pwd_util.getEncodeCode(); # 编码值
         print("===== Login code =====", code);
         cache.set("|".join(["encode_pwd_code", "login", uname]), code, 2*60);
         return {
@@ -49,7 +49,12 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
             result["expires"] = 12*60*60; # 默认12小时
             if isRemember:
                 result["expires"] = 10*24*60*60; # 10天
+            # 缓存密码信息
             cache.set(result["pwd"], user.password, result["expires"]);
+            pwdKey = "|".join(["password", user.name, user.password]);
+            if cache.has_key(pwdKey) and cache.has_key(cache.get(pwdKey)):
+                cache.delete(cache.get(pwdKey));
+            cache.set(pwdKey, result["pwd"], result["expires"]);
     else:
         result["tips"] = "用户名和密码不匹配！";
     return result;
