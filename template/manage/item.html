@@ -2,6 +2,9 @@
 	<div id="alertList">
 	</div>
 	<div id="contentList">
+		{% ifequal mkey "ptip_examination" %}
+			{% include "manage/ptip_examination.html" %}
+		{% endifequal %}
 		{% ifequal mkey "ptip_script" %}
 			{% include "manage/ptip.html" %}
 		{% endifequal %}
@@ -14,7 +17,13 @@
 		{% ifequal mkey "depend_lib" %}
 			{% include "manage/ptip_depend.html" %}
 		{% endifequal %}
+		{% ifequal mkey "pt_ol_examination" %}
+			{% include "manage/tool_examination.html" %}
+		{% endifequal %}
 
+		{% ifequal mkey "pt_examination" %}
+			{% include "manage/tool_examination.html" %}
+		{% endifequal %}
 		{% ifequal mkey "pt_new_script" %}
 			{% include "manage/new_tool.html" %}
 		{% endifequal %}
@@ -55,7 +64,7 @@
 			$("#sidebar ._slideItem_[data-target="+mkey+"]").parent().toggleClass("active");
 		}
 		// 是否显示平台选项
-		if ("{{isShowIpOption}}" == "True") {
+		if ("{{isManager}}" == "True") {
 			if ($("#IPOption").hasClass("hidden")) {
 				$("#IPOption").removeClass("hidden");
 			}

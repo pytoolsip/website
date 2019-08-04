@@ -1,0 +1,55 @@
+{% ifequal mkey "pt_ol_examination" %}
+<h2>工具下架</h2>
+{% else %}
+<h2>工具审核</h2>
+{% endifequal %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>工具名</th>
+            <th>所属类别</th>
+            <th>工具ID</th>
+            <th>工具描述</th>
+            <th>版本号</th>
+            <th>更新日志</th>
+            <th>发布时间</th>
+            <th>确认审核</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for olInfo in onlineInfoList %}
+        <tr>
+            <th>{{ olInfo.name }}</th>
+            <th>{{ olInfo.category }}</th>
+            <th>{{ olInfo.tkey }}</th>
+            <th>{{ olInfo.description }}</th>
+            <th>{{ olInfo.version }}</th>
+            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <th>
+                {% if isManager %}
+                    {% if isReleased %}
+                        <a class="btn btn-block btn-success examination" name="delete" data-target="{{ olInfo.tid }}">下架</a>
+                    {% else %}
+                        <a class="btn btn-block btn-success examination" name="release" data-target="{{ olInfo.tid }}">发布</a>
+                        <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
+                    {% endif %}
+                {% else %}
+                    {{ olInfo.status }}
+                {% endif %}
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script language="JavaScript">
+	$(function(){
+        $(".examination").on("click",function(){
+            requestManage({
+                "mk" : "{{mkey}}",
+                "examType" : $(this).attr("name"),
+                "id": $(this).attr("data-target"),
+            });
+        });
+	});
+</script>

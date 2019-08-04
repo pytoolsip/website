@@ -82,6 +82,7 @@ class Ptip(models.Model):
     download = models.IntegerField()
     base_version = models.CharField(max_length=255)
     update_version = models.CharField(max_length=255)
+    status = models.IntegerField()
 
     class Meta:
         managed = False
@@ -120,6 +121,24 @@ class ToolDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'tool_detail'
+
+
+class ToolExamination(models.Model):
+    id = models.IntegerField(primary_key=True)
+    uid = models.IntegerField()
+    tkey = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    version = models.CharField(max_length=255)
+    ip_base_version = models.CharField(max_length=255)
+    changelog = models.TextField()
+    file_path = models.FileField(upload_to = tool_directory_path)
+    time = models.DateTimeField()
+    status = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'tool_examination'
 
 
 class User(models.Model):

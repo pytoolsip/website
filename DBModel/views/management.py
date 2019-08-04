@@ -7,13 +7,21 @@ from DBModel import models
 from utils import base_util
 import login;
 
+from enum import Enum;
 import hashlib;
 import random;
 
 # 平台键值列表
-PtipKeyList = ["ptip_script", "ptip_exe", "update_exe", "depend_lib"];
+PtipKeyList = ["ptip_examination", "ptip_script", "ptip_exe", "update_exe", "depend_lib", "pt_ol_examination"];
 # 工具键值列表
-PtKeyList = ["pt_new_script", "pt_ol_script"];
+PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
+
+# 上传状态穷举值
+class Status(Enum):
+    Uploading = 0 # 上传中
+    Examing = 1   # 审核中
+    Released = 2  # 已发布
+    Withdrew = 3  # 已撤回
 
 # 后台管理页请求
 @csrf_exempt
@@ -91,7 +99,7 @@ def getManageResult(request, user, mkey, isSwitchTab):
             "name":user.name,
             "pwd":user.password,
         },
-        "isShowIpOption" : user.authority == 1, # 是否显示平台选项
+        "isManager" : user.authority == 1, # 是否显示平台选项
         "requestTips" : "", # 请求提示
         "requestFailedTips" : "", # 请求失败提示
         "onlineInfoList" : [], # 线上信息列表
@@ -104,6 +112,10 @@ def getManageResult(request, user, mkey, isSwitchTab):
         uploadDependLib(request, user, result, isSwitchTab);
     elif mkey == "ptip_exe" or mkey == "update_exe": # 更新平台启动/更新程序
         uploadExeFile(request, user, mkey, result, isSwitchTab);
+    elif mkey == "pt_ol_examination": # 审核线上工具
+        examOlTool(request, user, result, isSwitchTab);
+    elif mkey == "pt_examination": # 审核工具
+        examTool(request, user, result, isSwitchTab);
     elif mkey == "pt_new_script": # 上传新工具脚本
         uploadNewTool(request, user, result, isSwitchTab);
         toolInfoData["isUploadNew"] = True;
@@ -149,11 +161,14 @@ def uploadPtipScript(request, user, result, isSwitchTab):
             # 保存脚本文件
             version = request.POST["version"];
             vList = version.split(".");
-            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), project_path = pjFile, base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]));
+            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), project_path = pjFile, base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]), status = Status.Uploading.value);
+            p.save();
+            # 更新状态
+            p.status = Status.Examing.value;
             p.save();
             result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
     # 返回线上版本数据
-    ptipList = models.Ptip.objects.order_by('time');
+    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('time');
     if len(ptipList) > 0:
         result["onlineInfoList"] = [{
             "version" : ptipInfo.version,
@@ -218,15 +233,12 @@ def uploadNewTool(request, user, result, isSwitchTab):
         except Exception as e:
             name, category = request.POST["name"], _verifyCategory_(request.POST["category"], False);
             tkey = _getMd5_(name, category);
-            curTime = timezone.now();
-            # 保存Tool
-            tool = models.Tool(uid = user, tkey = tkey, name = name, category = category, description = request.POST["description"], time = curTime);
-            tool.save();
-            # 保存ToolDetail
+            # 保存ToolExamination
             ipVList = request.POST["ip_version"].split(".");
-            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = "初始版本。", time = curTime);
-            toolDetail.save();
-        result["requestTips"] = f"新工具【{version}】上传成功。";
+            tool = models.ToolExamination(uid = user, tkey = tkey, name = name, category = category, description = request.POST["description"],
+            version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = "初始版本。", time = timezone.now());
+            tool.save();
+        result["requestTips"] = f"新工具【{tkey}， {version}】上传成功。";
 
 # 更新线上工具
 def uploadOlTool(request, user, tkey, result, isSwitchTab):
@@ -240,17 +252,13 @@ def uploadOlTool(request, user, tkey, result, isSwitchTab):
                 return;
         version = request.POST["version"];
         try:
-            tool = models.Tool.objects.get(tkey = tkey);
-            curTime = timezone.now();
-            # 更新Tool
-            tool.description = request.POST["description"];
-            tool.time = curTime;
-            tool.save();
-            # 保存ToolDetail
+            t = models.Tool.objects.get(tkey = tkey);
+            # 保存ToolExamination
             ipVList = request.POST["ip_version"].split(".");
-            toolDetail = models.ToolDetail(tkey = tool, version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = curTime);
-            toolDetail.save();
-            result["requestTips"] = f"线上工具新版本【{version}】上传成功。";
+            tool = models.ToolExamination(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = request.POST["description"],
+            version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+            tool.save();
+            result["requestTips"] = f"线上工具新版本【{t.tkey}， {version}】上传成功。";
         except Exception as e:
             print(e);
 
@@ -313,3 +321,119 @@ def uploadDependLib(request, user, result, isSwitchTab):
             "description" : dependInfo.description,
             "url" : dependInfo.file_path.url,
         } for dependInfo in dependList];
+
+# 上传程序文件
+def uploadExeFile(request, user, name, result, isSwitchTab):
+    if not isSwitchTab:
+        if "version" in request.POST and "file" in request.FILES and "changelog" in request.POST:
+            try:
+                exe = models.Exe.objects.get(name = name);
+            except Exception as e:
+                exe = models.Exe(name = name);
+                exe.save();
+            # 保存程序详情
+            version = request.POST["version"];
+            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+            exeDetail.save();
+            result["requestTips"] = f"更新文件【{version}】上传成功。";
+    # 返回线上版本数据
+    try:
+        exe = models.Exe.objects.get(name = name);
+        exeList = models.exeDetail.objects.filter(name = exe).order_by('time');
+        if len(exeList) > 0:
+            result["onlineInfoList"] = [{
+                "version" : updateInfo.version,
+                "time" : updateInfo.time,
+                "changelog" : updateInfo.changelog,
+                "url" : updateInfo.file_path.url,
+            } for updateInfo in exeList];
+    except Exception as e:
+        print(e);
+
+# 审核平台
+def examPtip(request, user, result, isSwitchTab):
+    if not isSwitchTab:
+        if "examType" in request.POST and "id" in request.FILES:
+            pid = request.POST["id"];
+            try:
+                p = models.Ptip.objects.get(id = pid);
+                if request.POST["examType"] == "release":
+                    p.status = Status.Released.value;
+                    result["requestTips"] = f"平台【{p.version}】发布成功。";
+                else:
+                    p.delete();
+                    result["requestTips"] = f"平台【{p.version}】撤回成功。";
+            except Exception as e:
+                result["requestTips"] = f"平台【{p.version}】审核失败！";
+    # 返回线上版本
+    ptipList = models.Ptip.objects.filter(status = Status.Examing.value).order_by('time');
+    if len(ptipList) > 0:
+        result["onlineInfoList"] = [{
+            "version" : ptipInfo.version,
+            "time" : ptipInfo.time,
+            "changelog" : ptipInfo.changelog,
+            "url" : ptipInfo.file_path.url,
+        } for ptipInfo in ptipList];
+
+# 审核工具
+def examTool(request, user, result, isSwitchTab):
+    if not isSwitchTab and user.authority == 1:
+        if "examType" in request.POST and "id" in request.POST:
+            tid = request.POST["id"];
+            try:
+                t = models.ToolExamination.objects.get(id = tid);
+                if request.POST["examType"] == "release":
+                    try:
+                        tool = models.Tool.objects.get(name = t.name, category = t.category);
+                        # 更新Tool
+                        tool.description = t.description;
+                        tool.time = t.time;
+                        tool.save();
+                    except Exception as e:
+                        # 保存Tool
+                        tool = models.Tool(uid = user, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time);
+                        tool.save();
+                    # 保存ToolDetail
+                    toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);
+                    toolDetail.save();
+                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】发布成功。";
+                else:
+                    t.delete();
+                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】撤回成功。";
+            except Exception as e:
+                result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
+    # 返回线上版本
+    toolList = models.ToolExamination.objects.filter().order_by('time');
+    if len(toolList) > 0:
+        result["onlineInfoList"] = [{
+            "id" : toolInfo.id,
+            "name" : toolInfo.name,
+            "category" : toolInfo.category,
+            "tkey" : toolInfo.tkey,
+            "description" : toolInfo.description,
+            "version" : toolInfo.version,
+            "time" : toolInfo.time,
+            "changelog" : toolInfo.changelog,
+            "url" : toolInfo.file_path.url,
+        } for toolInfo in toolList];
+
+# 审核线上工具
+def examOlTool(request, user, result, isSwitchTab):
+    if not isSwitchTab and user.authority == 1:
+        if "examType" in request.POST and "id" in request.POST:
+            tid = request.POST["id"];
+            try:
+                t = models.ToolDetail.objects.get(id = tid);
+                if request.POST["examType"] == "delete":
+                    t.delete();
+                    if len(models.ToolDetail.objects.filter(tkey = t.tkey)) == 0:
+                        t.tkey.delete();
+                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】下架成功。";
+            except Exception as e:
+                result["requestFailedTips"] = f"工具【{t.tkey}，{t.version}】审核失败！";
+    # 设置权限
+    result["isReleased"] = True;
+    # 返回线上版本
+    toolList = models.Tool.objects.filter().order_by('time');
+    for toolInfo in toolList:
+        result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));

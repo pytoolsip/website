@@ -2,17 +2,27 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>工具名</th>
+            <th>所属类别</th>
+            <th>工具ID</th>
+            <th>工具描述</th>
             <th>版本号</th>
             <th>更新日志</th>
             <th>发布时间</th>
         </tr>
     </thead>
     <tbody>
+        {% for olInfo in onlineInfoList %}
         <tr>
-            <th>1.0.0</th>
-            <th>无</th>
-            <th>00:00:00</th>
+            <th>{{ olInfo.name }}</th>
+            <th>{{ olInfo.category }}</th>
+            <th>{{ olInfo.tkey }}</th>
+            <th>{{ olInfo.description }}</th>
+            <th>{{ olInfo.version }}</th>
+            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 <h2>上传工具</h2>
@@ -21,8 +31,8 @@
         -&nbsp;上传新版本工具&nbsp;-
     </h3>
     <div class="input-group">
-        <label class="input-group-addon" for="name">工具ID</label>
-        <input name="name" class="form-control" type="text" value="{{tkey}}" readOnly />
+        <label class="input-group-addon" for="tkey">工具ID</label>
+        <input name="tkey" class="form-control" type="text" value="{{tkey}}" readOnly />
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="version">版本号</label>

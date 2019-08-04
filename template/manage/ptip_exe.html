@@ -8,11 +8,13 @@
         </tr>
     </thead>
     <tbody>
+        {% for olInfo in onlineInfoList %}
         <tr>
-            <th>1.0.0</th>
-            <th>无</th>
-            <th>00:00:00</th>
+            <th>{{ olInfo.version }}</th>
+            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 <h2>上传版本</h2>

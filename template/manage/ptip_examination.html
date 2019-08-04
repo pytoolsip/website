@@ -1,0 +1,35 @@
+<h2>平台审核</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>版本号</th>
+            <th>更新日志</th>
+            <th>发布时间</th>
+            <th>确认审核</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for olInfo in onlineInfoList %}
+        <tr>
+            <th>{{ olInfo.version }}</th>
+            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <th>
+                <a class="btn btn-block btn-success examination" name="release" data-target="{{ olInfo.pid }}">发布</a>
+                <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.pid }}">撤回</a>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script language="JavaScript">
+	$(function(){
+        $(".examination").on("click",function(){
+            requestManage({
+                "mk" : "{{mkey}}",
+                "examType" : $(this).attr("name"),
+                "id": $(this).attr("data-target"),
+            });
+        });
+	});
+</script>
