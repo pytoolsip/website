@@ -35,13 +35,18 @@
                         <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
                     {% endif %}
                 {% else %}
-                    {{ olInfo.status }}
+                    审核中
                 {% endif %}
             </th>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% ifequal mkey "pt_ol_examination" %}
+<p id="noExamingTool" class="text-center hidden">目前暂无已发布的工具版本~</p>
+{% else %}
+<p id="noExamingTool" class="text-center hidden">目前暂无需审核的工具版本~</p>
+{% endifequal %}
 <script language="JavaScript">
 	$(function(){
         $(".examination").on("click",function(){
@@ -51,5 +56,8 @@
                 "id": $(this).attr("data-target"),
             });
         });
+        if ($(".table>tbody>tr").length == 0) {
+            $("#noExamingTool").removeClass("hidden");
+        }
 	});
 </script>

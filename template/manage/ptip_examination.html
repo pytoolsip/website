@@ -22,6 +22,7 @@
         {% endfor %}
     </tbody>
 </table>
+<p id="noExamingIP" class="text-center hidden">目前暂无需审核的平台版本~</p>
 <script language="JavaScript">
 	$(function(){
         $(".examination").on("click",function(){
@@ -31,5 +32,8 @@
                 "id": $(this).attr("data-target"),
             });
         });
+        if ($(".table>tbody>tr").length == 0) {
+            $("#noExamingIP").removeClass("hidden");
+        }
 	});
 </script>

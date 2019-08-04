@@ -106,7 +106,9 @@ def getManageResult(request, user, mkey, isSwitchTab):
         "toolInfoData" : {"isUploadNew" : False, "isSearchNone" : False, "searchNoneTips" : ""}, # 工具信息数据
     };
     toolInfoData = result["toolInfoData"];
-    if mkey == "ptip_script": # 更新平台脚本
+    if mkey == "ptip_examination": # 更新平台脚本
+        examPtip(request, user, result, isSwitchTab);
+    elif mkey == "ptip_script": # 更新平台脚本
         uploadPtipScript(request, user, result, isSwitchTab);
     elif mkey == "depend_lib": # 上传依赖库
         uploadDependLib(request, user, result, isSwitchTab);
@@ -352,7 +354,7 @@ def uploadExeFile(request, user, name, result, isSwitchTab):
 
 # 审核平台
 def examPtip(request, user, result, isSwitchTab):
-    if not isSwitchTab:
+    if not isSwitchTab and user.authority == 1:
         if "examType" in request.POST and "id" in request.FILES:
             pid = request.POST["id"];
             try:
