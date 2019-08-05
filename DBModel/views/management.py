@@ -360,16 +360,16 @@ def examPtip(request, user, result, isSwitchTab):
         if "examType" in request.POST and "id" in request.FILES:
             pid = request.POST["id"];
             try:
-                p, msg = models.Ptip.objects.get(id = pid), "";
+                p, msg, reasonMsg = models.Ptip.objects.get(id = pid), "", "";
                 if request.POST["examType"] == "release":
                     p.status = Status.Released.value;
                     msg = "发布";
                 else:
                     p.delete();
-                    msg = "撤回";
+                    msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
                 result["requestTips"] = f"PTIP平台【{p.version}】成功{msg}。";
                 # 发送邮件通知
-                sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**PTIP平台【{p.version}】。");
+                sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**PTIP平台【{p.version}】。\n{reasonMsg}");
             except Exception as e:
                 result["requestTips"] = f"平台【{p.version}】审核失败！";
     # 返回线上版本
@@ -384,11 +384,15 @@ def examPtip(request, user, result, isSwitchTab):
 
 # 审核工具
 def examTool(request, user, result, isSwitchTab):
-    if not isSwitchTab and user.authority == 1:
+    if not isSwitchTab:
         if "examType" in request.POST and "id" in request.POST:
             tid = request.POST["id"];
             try:
-                t, msg, exMsg = models.ToolExamination.objects.get(id = tid), "", "";
+                t, msg, reasonMsg = models.ToolExamination.objects.get(id = tid), "", "";
+                # 判断用户权限
+                if user.authority == 0 and t.uid.id != user.id:
+                    result["requestFailedTips"] = f"您没有权限审核工具【{t.tkey}，{t.version}】！";
+                    return;
                 if request.POST["examType"] == "release":
                     try:
                         tool = models.Tool.objects.get(name = t.name, category = t.category);
@@ -406,11 +410,14 @@ def examTool(request, user, result, isSwitchTab):
                     msg = "发布";
                 else:
                     t.delete();
-                    msg, exMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
+                    msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
                 result["requestTips"] = f"工具【{t.tkey}，{t.version}】成功{msg}。";
                 # 发送邮件通知
-                sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
-                sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**{msg}**。\n{exMsg}", [t.uid.email]);
+                userIdentity, opMsg = "用户", "完成";
+                if user.authority == 1:
+                    userIdentity, opMsg = "管理员", "被管理员";
+                sendMsgToAllMgrs(f"{userIdentity}【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
+                sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}**{msg}**。\n{reasonMsg}", [t.uid.email]);
             except Exception as e:
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
     # 返回线上版本

@@ -35,7 +35,11 @@
                         <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
                     {% endif %}
                 {% else %}
-                    审核中
+                    {% if isReleased %}
+                        已发布
+                    {% else %}
+                        <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
+                    {% endif %}
                 {% endif %}
             </th>
         </tr>
