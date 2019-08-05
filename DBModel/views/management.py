@@ -2,7 +2,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse,HttpResponse
+from django.core.mail import send_mail
 
+from website import settings
 from DBModel import models
 from utils import base_util
 import login;
@@ -358,13 +360,16 @@ def examPtip(request, user, result, isSwitchTab):
         if "examType" in request.POST and "id" in request.FILES:
             pid = request.POST["id"];
             try:
-                p = models.Ptip.objects.get(id = pid);
+                p, msg = models.Ptip.objects.get(id = pid), "";
                 if request.POST["examType"] == "release":
                     p.status = Status.Released.value;
-                    result["requestTips"] = f"平台【{p.version}】发布成功。";
+                    msg = "发布";
                 else:
                     p.delete();
-                    result["requestTips"] = f"平台【{p.version}】撤回成功。";
+                    msg = "撤回";
+                result["requestTips"] = f"PTIP平台【{p.version}】成功{msg}。";
+                # 发送邮件通知
+                sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**PTIP平台【{p.version}】。");
             except Exception as e:
                 result["requestTips"] = f"平台【{p.version}】审核失败！";
     # 返回线上版本
@@ -383,7 +388,7 @@ def examTool(request, user, result, isSwitchTab):
         if "examType" in request.POST and "id" in request.POST:
             tid = request.POST["id"];
             try:
-                t = models.ToolExamination.objects.get(id = tid);
+                t, msg, exMsg = models.ToolExamination.objects.get(id = tid), "", "";
                 if request.POST["examType"] == "release":
                     try:
                         tool = models.Tool.objects.get(name = t.name, category = t.category);
@@ -393,15 +398,19 @@ def examTool(request, user, result, isSwitchTab):
                         tool.save();
                     except Exception as e:
                         # 保存Tool
-                        tool = models.Tool(uid = user, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time);
+                        tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time);
                         tool.save();
                     # 保存ToolDetail
                     toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);
                     toolDetail.save();
-                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】发布成功。";
+                    msg = "发布";
                 else:
                     t.delete();
-                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】撤回成功。";
+                    msg, exMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
+                result["requestTips"] = f"工具【{t.tkey}，{t.version}】成功{msg}。";
+                # 发送邮件通知
+                sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
+                sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**{msg}**。\n{exMsg}", [t.uid.email]);
             except Exception as e:
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
     # 返回线上版本
@@ -431,6 +440,10 @@ def examOlTool(request, user, result, isSwitchTab):
                     if len(models.ToolDetail.objects.filter(tkey = t.tkey)) == 0:
                         t.tkey.delete();
                     result["requestTips"] = f"工具【{t.tkey}，{t.version}】下架成功。";
+                    # 发送邮件通知
+                    sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
+                    exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
+                    sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**下架**。\n{exMsg}");
             except Exception as e:
                 result["requestFailedTips"] = f"工具【{t.tkey}，{t.version}】审核失败！";
     # 设置权限
@@ -439,3 +452,18 @@ def examOlTool(request, user, result, isSwitchTab):
     toolList = models.Tool.objects.filter().order_by('time');
     for toolInfo in toolList:
         result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));
+
+# 发送消息给所有管理员
+def sendMsgToAllMgrs(msg):
+    managers = models.User.objects.filter(authority = 0);
+    mgrEmails = [manager.email for manager in managers if manager.email != settings.EMAIL_HOST_USER];
+    return sendToEmails(msg, mgrEmails);
+
+def sendToEmails(msg, emails):
+    # 发送邮件给指定邮箱
+    try:
+        send_mail("PyToolsIP通知", msg, settings.EMAIL_HOST_USER, emails, fail_silently=False);
+        return True;
+    except Exception as e:
+        print("邮件发送失败!", e);
+    return False;

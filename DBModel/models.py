@@ -125,7 +125,7 @@ class ToolDetail(models.Model):
 
 class ToolExamination(models.Model):
     id = models.IntegerField(primary_key=True)
-    uid = models.IntegerField()
+    uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     description = models.TextField()

@@ -25,12 +25,42 @@
 <p id="noExamingIP" class="text-center hidden">目前暂无需审核的平台版本~</p>
 <script language="JavaScript">
 	$(function(){
-        $(".examination").on("click",function(){
+        var requestManageByExamType = function(examType, id) {
             requestManage({
                 "mk" : "{{mkey}}",
-                "examType" : $(this).attr("name"),
-                "id": $(this).attr("data-target"),
+                "examType" : examType,
+                "id": id,
             });
+        };
+        $(".examination").on("click",function(){
+            if ($(this).attr("name")  == "release") {
+                requestManageByExamType($(this).attr("name"), $(this).attr("data-target"));
+            } else {
+                // 创建弹窗
+                createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
+                                <h2>撤回原因</h2>\
+                                <input name='reason' class='form-control' type='text' placeholder='请填写原因' required autofocus />\
+                                <button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
+                            </form>");
+                // 登陆校验
+                $("#reasonForm").validate({
+                    rules: {
+                        reason: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        reason: {
+                            required: "请填写撤回原因",
+                        },
+                    },
+                    submitHandler: function() {
+                        requestManageByExamType($(this).attr("name"), $(this).attr("data-target"));
+                        // 关闭弹窗
+                        closeDialogPage();
+                    }
+                });
+            }
         });
         if ($(".table>tbody>tr").length == 0) {
             $("#noExamingIP").removeClass("hidden");
