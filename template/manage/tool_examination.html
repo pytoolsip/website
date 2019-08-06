@@ -90,5 +90,9 @@
                 });
             }
         });
+        // 判断是否显示无审核版本的提示
+        if ($(".table>tbody>tr").length == 0) {
+            $("#noExamingTool").removeClass("hidden");
+        }
 	});
 </script>

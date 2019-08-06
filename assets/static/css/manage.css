@@ -28,7 +28,7 @@ a:hover{
     color: #FFFFFF;
     background-color: #428BCA;
 }
-#contentList > h2{
+#contentList > h2, .item-content > h2{
     padding-top: 10px;
     color: #2069A8;
     border-bottom: 1px #DCDCDC solid;
@@ -41,6 +41,10 @@ a:hover{
 }
 .form-group > .input-group {
     margin: 20px 0px;
+}
+#searchForm > .input-group {
+    margin:  0px;
+    margin-top: 40px;
 }
 .dependE{
     padding: 10px;

@@ -1,3 +1,4 @@
+{% if tkey %}
 <h2>线上版本</h2>
 <table class="table table-striped">
     <thead>
@@ -26,7 +27,7 @@
     </tbody>
 </table>
 <h2>上传工具</h2>
-<form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form" enctype="multipart/form-data">
+<form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 form-group" role="form" enctype="multipart/form-data">
     <h3 class="text-center">
         -&nbsp;上传新版本工具&nbsp;-
     </h3>
@@ -39,6 +40,14 @@
         <input name="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
     </div>
     <div class="input-group">
+        <label class="input-group-addon" for="ip_base_version">依赖平台版本</label>
+        <select name="ip_base_version" class="form-control" required>
+            {% for olBaseVer in olIPBaseVerList %}
+            <option>olBaseVer</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="input-group">
         <label class="input-group-addon" for="file">更新包(zip格式)</label>
         <input name="file" class="form-control" type="file" required />
     </div>
@@ -48,8 +57,43 @@
     </div>
     <input id="uploadButton" class="form-control btn btn-success" type="button" value="上传更新包" />
 </form>
+{% else %}
+<form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;搜索用户所上传的工具&nbsp;-
+    </h3>
+    <div class="input-group">
+        <div class="input-group-btn form-group">
+            <select id="searchType" name="searchType" class="form-control" style="width: auto;">
+                <option value="name">名称</option>
+                <option value="tkey">ID</option>
+            </select>
+        </div>
+        <input id="searchText" name="searchText" type="text" placeholder="Search" class="form-control">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+    </div>
+</form>
+<div id="searchResult" class="col-sm-12 col-md-offset-1 col-md-10">
+    {% if isSearchNone %}
+        <p class="text-center">{{searchNoneTips}}</p>
+    {% endif %}
+    {% for toolInfo in toolInfoList %}
+        <div class="col-md-4 tool-info-item">
+            <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+            <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+            <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+            <p class="tool-info-detail"><a class="btn btn-info update-ol-tool-btn" href="javascript:void(0);" role="button" data-target="{{ toolInfo.tkey }}">更新工具版本</a></p>
+            <p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+            <p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
 <script language="JavaScript">
 	$(function(){
+        // 上传表单
         $("#uploadForm").validate({
             rules: {
                 version: {
@@ -77,5 +121,21 @@
                 ]);
             }
         });
+        // 搜索表单
+        $("#searchForm").validate({
+            submitHandler: function() {
+                uploadManageForm($("#searchForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        // 更新选中值
+        var $selectOption = $("#searchType").find("option[value='{{ searchType }}']");
+        $selectOption.attr("selected",true); // 选中选项
+        $("#searchText").val("{{ searchText }}"); // 搜索值
+        // 点击更新工具按钮
+        $(".update-ol-tool-btn").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "tkey" : $(this).attr("data-target")});
+		});
 	})
 </script>

@@ -24,6 +24,14 @@
         <input name="version" class="form-control" type="text" placeholder="1.0.0" required />
     </div>
     <div class="input-group">
+        <label class="input-group-addon" for="ip_base_version">依赖平台版本</label>
+        <select name="ip_base_version" class="form-control" required>
+            {% for olBaseVer in olIPBaseVerList %}
+            <option>olBaseVer</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="input-group">
         <label class="input-group-addon" for="file">工具包(zip格式)</label>
         <input name="file" class="form-control" type="file" required />
     </div>

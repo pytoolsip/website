@@ -105,9 +105,7 @@ def getManageResult(request, user, mkey, isSwitchTab):
         "requestTips" : "", # 请求提示
         "requestFailedTips" : "", # 请求失败提示
         "onlineInfoList" : [], # 线上信息列表
-        "toolInfoData" : {"isUploadNew" : False, "isSearchNone" : False, "searchNoneTips" : ""}, # 工具信息数据
     };
-    toolInfoData = result["toolInfoData"];
     if mkey == "ptip_examination": # 更新平台脚本
         examPtip(request, user, result, isSwitchTab);
     elif mkey == "ptip_script": # 更新平台脚本
@@ -122,7 +120,7 @@ def getManageResult(request, user, mkey, isSwitchTab):
         examTool(request, user, result, isSwitchTab);
     elif mkey == "pt_new_script": # 上传新工具脚本
         uploadNewTool(request, user, result, isSwitchTab);
-        toolInfoData["isUploadNew"] = True;
+        result["isUploadNew"] = True;
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
         if tkey:
@@ -133,12 +131,13 @@ def getManageResult(request, user, mkey, isSwitchTab):
                 uploadOlTool(request, user, tkey, result, isSwitchTab);
                 # 返回线上版本数据
                 result["onlineInfoList"] = getOnlineInfoList(toolInfoList[0]);
+                result["tkey"] = tkey;
             else:
-                toolInfoData["isSearchNone"] = True;
-                toolInfoData["searchNoneTips"] = f"您未曾上传过ID为【{tkey}】工具，请重新搜索！";
+                result["isSearchNone"] = True;
+                result["searchNoneTips"] = f"您未曾发布过ID为【{tkey}】工具，请重新搜索！";
         else:
             # 搜索工具信息数据
-            result["toolInfoData"] = searchToolInfoData(request.POST.get("search", ""), user.id);
+            searchToolInfoData(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), user.id);
     return result;
 
 # 校验分类
@@ -225,7 +224,7 @@ def uploadNewTool(request, user, result, isSwitchTab):
         if "file" not in request.FILES:
             result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
             return;
-        for k in ["name", "category", "description", "version", "ip_version"]:
+        for k in ["name", "category", "description", "version", "ip_base_version"]:
             if k not in request.POST:
                 result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
                 return;
@@ -238,11 +237,11 @@ def uploadNewTool(request, user, result, isSwitchTab):
             name, category = request.POST["name"], _verifyCategory_(request.POST["category"], False);
             tkey = _getMd5_(name, category);
             # 保存ToolExamination
-            ipVList = request.POST["ip_version"].split(".");
             tool = models.ToolExamination(uid = user, tkey = tkey, name = name, category = category, description = request.POST["description"],
-            version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = "初始版本。", time = timezone.now());
+            version = version, ip_base_version = request.POST["ip_base_version"], file_path = request.FILES["file"], changelog = "初始版本。", time = timezone.now());
             tool.save();
         result["requestTips"] = f"新工具【{tkey}， {version}】上传成功。";
+    result["olIPBaseVerList"] = getOlIPBaseVerList();
 
 # 更新线上工具
 def uploadOlTool(request, user, tkey, result, isSwitchTab):
@@ -250,7 +249,7 @@ def uploadOlTool(request, user, tkey, result, isSwitchTab):
         if "file" not in request.FILES:
             result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
             return;
-        for k in ["description", "changelog", "version", "ip_version"]:
+        for k in ["description", "changelog", "version", "ip_base_version"]:
             if k not in request.POST:
                 result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
                 return;
@@ -258,15 +257,19 @@ def uploadOlTool(request, user, tkey, result, isSwitchTab):
         try:
             t = models.Tool.objects.get(tkey = tkey);
             # 保存ToolExamination
-            ipVList = request.POST["ip_version"].split(".");
             tool = models.ToolExamination(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = request.POST["description"],
-            version = version, ip_base_version = ipVList[:1], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+            version = version, ip_base_version = request.POST["ip_base_version"], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
             tool.save();
             result["requestTips"] = f"线上工具新版本【{t.tkey}， {version}】上传成功。";
         except Exception as e:
             print(e);
+    result["olIPBaseVerList"] = getOlIPBaseVerList();
 
-# 获取向上信息列表
+# 获取线上平台基础版本
+def getOlIPBaseVerList():
+    return models.Ptip.objects.values("base_version").distinct().order_by('time');
+
+# 获取线上信息列表
 def getOnlineInfoList(baseInfo):
     ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('time');
     return [{
@@ -281,28 +284,32 @@ def getOnlineInfoList(baseInfo):
     } for ptInfo in ptInfoList];
 
 # 搜索工具信息数据
-def searchToolInfoData(toolName, uid):
+def searchToolInfoData(result, searchType, searchText, uid):
     searchNoneTips = "";
-    if toolName:
-        toolInfoList = models.Tool.objects.filter(name__icontains = toolName, uid = uid);
-        searchNoneTips = f"未搜索到名称为【{toolName}】的工具！";
+    if searchType == "name":
+        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = uid);
+        searchNoneTips = f"您未发布过名称包含为【{searchText}】工具，请重新搜索！";
+    elif searchType == "tkey":
+        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = uid);
+        searchNoneTips = f"您未曾发布过ID为【{searchText}】工具，请重新搜索！";
     else:
         toolInfoList = models.Tool.objects.filter(uid = uid);
-        searchNoneTips = f"您还未曾上传过工具到线上，请上传新工具！";
-    return {
-        "isSearchNone" : len(toolInfoList) == 0,
-        "searchNoneTips" : searchNoneTips,
-        "infoList" : [{
-            "name" : toolInfo.name,
-            "category" : toolInfo.category,
-            "tkey" : toolInfo.tkey,
-            "description" : toolInfo.description,
-            "downloadCount" : toolInfo.download or 0,
-            "score" : toolInfo.score or 0.0,
-            "author" :  toolInfo.uid.name,
-            "uploadTime" :  toolInfo.time,
-        } for toolInfo in toolInfoList],
-    };
+        searchNoneTips = f"您还未曾发布过工具到线上，请先上传新工具！";
+    # 设置返回数据
+    result["searchType"] = searchType;
+    result["searchText"] = searchText;
+    result["isSearchNone"] = len(toolInfoList) == 0;
+    result["searchNoneTips"] = searchNoneTips;
+    result["toolInfoList"] = [{
+        "name" : toolInfo.name,
+        "category" : toolInfo.category,
+        "tkey" : toolInfo.tkey,
+        "description" : toolInfo.description,
+        "downloadCount" : toolInfo.download or 0,
+        "score" : toolInfo.score or 0.0,
+        "author" :  toolInfo.uid.name,
+        "uploadTime" :  toolInfo.time,
+    } for toolInfo in toolInfoList];
 
 # 上传依赖库
 def uploadDependLib(request, user, result, isSwitchTab):
