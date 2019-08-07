@@ -6,6 +6,7 @@
             <th>版本号</th>
             <th>更新日志</th>
             <th>发布时间</th>
+            <th>更新版本</th>
         </tr>
     </thead>
     <tbody>
@@ -14,6 +15,13 @@
             <th>{{ olInfo.version }}</th>
             <th>{{ olInfo.changelog }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <th>
+                <select class="update-version" data-target="{{ olInfo.id }}" data-version="{{ olInfo.update_version }}">
+                    {% for baseVer in olInfo.baseVerList %}
+                    <option>baseVer</option>
+                    {% endfor %}
+                </select>
+            </th>
         </tr>
         {% endfor %}
     </tbody>
@@ -105,6 +113,21 @@
                     {"key":"exeList", "val":JSON.stringify(exeList), "type":"text"},
                     {"key":"envList", "val":JSON.stringify(envList), "type":"text"}
                 ]);
+            }
+        });
+        // 更新版本选中值
+        $(".update-version").each(function(){
+            $(this).find("option[value='" + $(this).attr("data-version") + "']").attr("selected", true);
+        });
+        // 选择更新版本时的回调
+        $(".update-version").change(function(){
+            var selectVal = $(this).children("option:selected").val();
+            if (selectVal != $(this).attr("data-version")) {
+                requestManage({
+                    "mk" : "{{mkey}}",
+                    "updateVersion" : selectVal,
+                    "id" : $(this).attr("data-target"),
+                });
             }
         });
 	})

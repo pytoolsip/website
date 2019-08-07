@@ -176,15 +176,35 @@ def uploadPtipScript(request, user, result, isSwitchTab):
             p.status = Status.Examing.value;
             p.save();
             result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
+        # 修改更新版本
+        if "id" in request.POST and "updateVersion" in request.POST:
+            if len(models.Ptip.objects.filter(status = Status.Released.value, base_version = request.POST["updateVersion"])) > 0:
+                try:
+                    p = models.Ptip.objects.get(id = request.POST["id"]);
+                    p.update_version = request.POST["updateVersion"];
+                    p.save();
+                    result["requestTips"] = f"PTIP平台版本【{request.POST['updateVersion']}】更新成功。";
+                except Exception as e:
+                    print(e);
+                    result["requestFailedTips"] = "所要更新版本的平台版本不存在，请刷新后重试！";
+            else:
+                result["requestFailedTips"] = "所选择的更新版本不存在，请重新选择！";
     # 返回线上版本数据
     ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('time');
+    ptipList = ptipList.values("base_version").distinct().order_by('base_version');
     if len(ptipList) > 0:
-        result["onlineInfoList"] = [{
-            "version" : ptipInfo.version,
-            "time" : ptipInfo.time,
-            "changelog" : ptipInfo.changelog,
-            "url" : ptipInfo.file_path.url,
-        } for ptipInfo in ptipList];
+        baseVerList = [];
+        for ptipInfo in ptipList:
+            baseVerList.insert(0, ptipInfo.base_version);
+            result["onlineInfoList"].append({
+                "id" : ptipInfo.id,
+                "version" : ptipInfo.version,
+                "time" : ptipInfo.time,
+                "changelog" : ptipInfo.changelog,
+                "url" : ptipInfo.file_path.url,
+                "update_version" : ptipInfo.update_version,
+                "baseVerList" : baseVerList.copy(),
+            });
     # 返回所依赖的线上版本
     for exe in models.Exe.objects.all():
         exeInfoList = models.ExeDetail.objects.filter(name = exe).order_by('time');
@@ -207,13 +227,15 @@ def uploadExeFile(request, user, name, result, isSwitchTab):
                 exe.save();
             # 保存程序详情
             version = request.POST["version"];
-            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+            vList = version.split(".");
+            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), base_version = ".".join(vList[:1]));
             exeDetail.save();
             result["requestTips"] = f"更新文件【{version}】上传成功。";
     # 返回线上版本数据
     try:
         exe = models.Exe.objects.get(name = name);
         exeList = models.exeDetail.objects.filter(name = exe).order_by('time');
+        exeList = exeList.values("base_version").distinct();
         if len(exeList) > 0:
             result["onlineInfoList"] = [{
                 "version" : updateInfo.version,
@@ -228,16 +250,16 @@ def uploadExeFile(request, user, name, result, isSwitchTab):
 def uploadNewTool(request, user, result, isSwitchTab):
     if not isSwitchTab:
         if "file" not in request.FILES:
-            result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+            result["requestFailedTips"] = "上传信息不完整，请重新上传！";
             return;
         for k in ["name", "category", "description", "version", "ip_base_version"]:
             if k not in request.POST:
-                result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+                result["requestFailedTips"] = "上传信息不完整，请重新上传！";
                 return;
         version = request.POST["version"];
         try:
             tool = models.Tool.objects.get(name = name, category = category);
-            result["requestFailedTips"] = "已存在相同分类的工具名，请重新选上传！";
+            result["requestFailedTips"] = "已存在相同分类的工具名，请重新上传！";
             return;
         except Exception as e:
             name, category = request.POST["name"], _verifyCategory_(request.POST["category"], False);
@@ -253,11 +275,11 @@ def uploadNewTool(request, user, result, isSwitchTab):
 def uploadOlTool(request, user, tkey, result, isSwitchTab):
     if not isSwitchTab:
         if "file" not in request.FILES:
-            result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+            result["requestFailedTips"] = "上传信息不完整，请重新上传！";
             return;
         for k in ["description", "changelog", "version", "ip_base_version"]:
             if k not in request.POST:
-                result["requestFailedTips"] = "上传信息不完整，请重新选上传！";
+                result["requestFailedTips"] = "上传信息不完整，请重新上传！";
                 return;
         version = request.POST["version"];
         try:
@@ -273,11 +295,13 @@ def uploadOlTool(request, user, tkey, result, isSwitchTab):
 
 # 获取线上平台基础版本
 def getOlIPBaseVerList():
-    return models.Ptip.objects.values("base_version").distinct().order_by('time');
+    ptipList =  models.Ptip.objects.all().order_by('time');
+    return ptipList.values("base_version").distinct();
 
 # 获取线上信息列表
 def getOnlineInfoList(baseInfo):
     ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('time');
+    ptInfoList = ptInfoList.values("base_version").distinct();
     return [{
         "name" : baseInfo.name,
         "category" : baseInfo.category,
@@ -324,7 +348,7 @@ def uploadDependLib(request, user, result, isSwitchTab):
             name = request.POST["name"];
             try:
                 models.Depend.objects.get(name = name);
-                result["requestFailedTips"] =  f"已存在相同名称的依赖库【{name}】，请重新选上传！";
+                result["requestFailedTips"] =  f"已存在相同名称的依赖库【{name}】，请重新上传！";
             except Exception as e:
                 depend = models.Depend(name = name, file_path = request.FILES["file"], description = request.POST["description"], time = timezone.now());
                 depend.save();
@@ -338,34 +362,6 @@ def uploadDependLib(request, user, result, isSwitchTab):
             "description" : dependInfo.description,
             "url" : dependInfo.file_path.url,
         } for dependInfo in dependList];
-
-# 上传程序文件
-def uploadExeFile(request, user, name, result, isSwitchTab):
-    if not isSwitchTab:
-        if "version" in request.POST and "file" in request.FILES and "changelog" in request.POST:
-            try:
-                exe = models.Exe.objects.get(name = name);
-            except Exception as e:
-                exe = models.Exe(name = name);
-                exe.save();
-            # 保存程序详情
-            version = request.POST["version"];
-            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
-            exeDetail.save();
-            result["requestTips"] = f"更新文件【{version}】上传成功。";
-    # 返回线上版本数据
-    try:
-        exe = models.Exe.objects.get(name = name);
-        exeList = models.exeDetail.objects.filter(name = exe).order_by('time');
-        if len(exeList) > 0:
-            result["onlineInfoList"] = [{
-                "version" : updateInfo.version,
-                "time" : updateInfo.time,
-                "changelog" : updateInfo.changelog,
-                "url" : updateInfo.file_path.url,
-            } for updateInfo in exeList];
-    except Exception as e:
-        print(e);
 
 # 审核平台
 def examPtip(request, user, result, isSwitchTab):
@@ -434,7 +430,7 @@ def examTool(request, user, result, isSwitchTab):
             except Exception as e:
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
     # 返回线上版本
-    toolList = models.ToolExamination.objects.filter().order_by('time');
+    toolList = models.ToolExamination.objects.all().order_by('time');
     if len(toolList) > 0:
         result["onlineInfoList"] = [{
             "id" : toolInfo.id,
@@ -469,7 +465,7 @@ def examOlTool(request, user, result, isSwitchTab):
     # 设置权限
     result["isReleased"] = True;
     # 返回线上版本
-    toolList = models.Tool.objects.filter().order_by('time');
+    toolList = models.Tool.objects.all().order_by('time');
     for toolInfo in toolList:
         result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));
 

@@ -57,6 +57,7 @@ class ExeDetail(models.Model):
     file_path = models.FileField(upload_to = exe_directory_path)
     changelog = models.TextField()
     time = models.DateTimeField()
+    base_version = models.CharField(max_length=255)
 
     class Meta:
         managed = False
