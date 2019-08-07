@@ -161,21 +161,38 @@ def _getMd5_(name, category):
     name = _verifyCategory_(category) + name;
     return hashlib.md5(name.encode("utf-8")).hexdigest();
 
+# 分离版本号
+def _splitVersion_(version):
+    return [int(ver) for ver in version.replace(" ", "").split(".") if ver.isdigit()];
+
+# 校验提交的版本
+def verifyVersion(ver, olVerList):
+    verList = _splitVersion_(ver);
+    for olVer in olVerList:
+        for i, v in enumerate(_splitVersion_(olVer)):
+            if v > verList[i]:
+                return False;
+    return True;
+
 # 上传平台脚本
 def uploadPtipScript(request, user, result, isSwitchTab):
     if not isSwitchTab:
         if request.POST.get("version", None) and request.FILES.get("file", None) and request.POST.get("changelog", None):
-            # 合成工程文件
-            pjFile = "";
-            # 保存脚本文件
             version = request.POST["version"];
             vList = version.split(".");
-            p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), project_path = pjFile, base_version = ".".join(vList[:1]), update_version = ".".join(vList[:1]), status = Status.Uploading.value);
-            p.save();
-            # 更新状态
-            p.status = Status.Examing.value;
-            p.save();
-            result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
+            base_version = ".".join(vList[:1]);
+            if verifyVersion(version, [ptipInfo.version for ptipInfo in models.Ptip.objects.filter(base_version = base_version)]):
+                # 合成工程文件
+                pjFile = "";
+                # 保存脚本文件
+                p = models.Ptip(version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), project_path = pjFile, base_version = base_version, update_version = base_version, status = Status.Uploading.value);
+                p.save();
+                # 更新状态
+                p.status = Status.Examing.value;
+                p.save();
+                result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
+            else:
+                result["requestFailedTips"] = f"已存在更高的平台版本号，请修改版本号【{version}】后重试！";
         # 修改更新版本
         if "id" in request.POST and "updateVersion" in request.POST:
             if len(models.Ptip.objects.filter(status = Status.Released.value, base_version = request.POST["updateVersion"])) > 0:
@@ -228,9 +245,13 @@ def uploadExeFile(request, user, name, result, isSwitchTab):
             # 保存程序详情
             version = request.POST["version"];
             vList = version.split(".");
-            exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), base_version = ".".join(vList[:1]));
-            exeDetail.save();
-            result["requestTips"] = f"更新文件【{version}】上传成功。";
+            base_version = ".".join(vList[:1]);
+            if  verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
+                exeDetail = models.ExeDetail(name = exe, version = version, file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now(), base_version = base_version);
+                exeDetail.save();
+                result["requestTips"] = f"更新文件【{version}】上传成功。";
+            else:
+                result["requestFailedTips"] = f"已存在更高的更新程序版本号，请修改版本号【{version}】后重试！";
     # 返回线上版本数据
     try:
         exe = models.Exe.objects.get(name = name);
@@ -282,15 +303,18 @@ def uploadOlTool(request, user, tkey, result, isSwitchTab):
                 result["requestFailedTips"] = "上传信息不完整，请重新上传！";
                 return;
         version = request.POST["version"];
-        try:
-            t = models.Tool.objects.get(tkey = tkey);
-            # 保存ToolExamination
-            tool = models.ToolExamination(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = request.POST["description"],
-            version = version, ip_base_version = request.POST["ip_base_version"], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
-            tool.save();
-            result["requestTips"] = f"线上工具新版本【{t.tkey}， {version}】上传成功。";
-        except Exception as e:
-            print(e);
+        if verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
+            try:
+                t = models.Tool.objects.get(tkey = tkey);
+                # 保存ToolExamination
+                tool = models.ToolExamination(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = request.POST["description"],
+                version = version, ip_base_version = request.POST["ip_base_version"], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
+                tool.save();
+                result["requestTips"] = f"线上工具新版本【{t.tkey}， {version}】上传成功。";
+            except Exception as e:
+                print(e);
+        else:
+            result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
     result["olIPBaseVerList"] = getOlIPBaseVerList();
 
 # 获取线上平台基础版本
