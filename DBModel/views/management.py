@@ -129,9 +129,15 @@ def getManageResult(request, user, mkey, isSwitchTab):
             if len(toolInfoList) > 0:
                 # 从request.POST中获取上传数据
                 uploadOlTool(request, user, tkey, result, isSwitchTab);
-                # 返回线上版本数据
-                result["onlineInfoList"] = getOnlineInfoList(toolInfoList[0]);
-                result["tkey"] = tkey;
+                # 返回工具数据
+                baseToolInfo = toolInfoList[0];
+                result["onlineInfoList"] = getOnlineInfoList(baseToolInfo);
+                result["baseToolInfo"] = {
+                    "name" : baseToolInfo.name,
+                    "category" : baseToolInfo.category,
+                    "tkey" : baseToolInfo.tkey,
+                    "description" : baseToolInfo.description,
+                };
             else:
                 result["isSearchNone"] = True;
                 result["searchNoneTips"] = f"您未曾发布过ID为【{tkey}】工具，请重新搜索！";

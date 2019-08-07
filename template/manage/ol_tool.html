@@ -1,4 +1,4 @@
-{% if tkey %}
+{% if baseToolInfo %}
 <h2>线上版本</h2>
 <table class="table table-striped">
     <thead>
@@ -32,8 +32,16 @@
         -&nbsp;上传新版本工具&nbsp;-
     </h3>
     <div class="input-group">
+        <label class="input-group-addon" for="name">工具名</label>
+        <input name="name" class="form-control" type="text" value="{{ baseToolInfo.name }}" readOnly />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="category">工具分类</label>
+        <input name="category" class="form-control" type="text" value="{{ baseToolInfo.category }}" readOnly />
+    </div>
+    <div class="input-group">
         <label class="input-group-addon" for="tkey">工具ID</label>
-        <input name="tkey" class="form-control" type="text" value="{{tkey}}" readOnly />
+        <input name="tkey" class="form-control" type="text" value="{{ baseToolInfo.tkey }}" readOnly />
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="version">版本号</label>
@@ -50,6 +58,10 @@
     <div class="input-group">
         <label class="input-group-addon" for="file">更新包(zip格式)</label>
         <input name="file" class="form-control" type="file" required />
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="description">工具描述</label>
+        <textarea name="description" class="form-control" rows="4"  value="{{ baseToolInfo.description }}" required></textarea>
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="changelog">更新日志</label>
