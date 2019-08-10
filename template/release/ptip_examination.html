@@ -15,8 +15,8 @@
             <th>{{ olInfo.changelog }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>
-                <a class="btn btn-block btn-success examination" name="release" data-target="{{ olInfo.pid }}">发布</a>
-                <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.pid }}">撤回</a>
+                <a class="btn btn-block btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
+                <a class="btn btn-block btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
             </th>
         </tr>
         {% endfor %}

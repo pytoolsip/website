@@ -18,7 +18,7 @@ try:
     from detail import detail;
     from login import login;
     from register import register;
-    from management import manage;
+    from release import release;
 
 except Exception as e:
 	raise e;

@@ -28,34 +28,30 @@
 </table>
 <h2>上传版本</h2>
 <form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 col-sm-offset-3 form-group" role="form" enctype="multipart/form-data">
-    <h3 class="text-center">-&nbsp;上传PTIP平台&nbsp;-</h3>
+    <h3 class="text-center">-&nbsp;发布PyToolsIP平台&nbsp;-</h3>
     <div class="clearfix dependE">
         <h5 class="pull-left">依赖程序</h5>
         <div id="dependExeList" class="pull-left">
-            <strong data-target="pytoolsip">
-                pytoolsip.exe&nbsp;
+            {% for olExeInfo in onlineExeInfoList %}
+            <strong data-target="{{ olExeInfo.name }}">
+                {{ olExeInfo.name }}&nbsp;
                 <select>
-                    <option>v1.0.0</option>
-                    <option>v1.0.1</option>
-                    <option>v1.0.2</option>
+                    {% for ver in olExeInfo.verlist %}
+                    <option>{{ ver }}</option>
+                    {% endfor %}
                 </select>
             </strong>
-            <strong data-target="update">
-                update.exe&nbsp;
-                <select>
-                    <option>v1.0.0</option>
-                    <option>v1.0.1</option>
-                    <option>v1.0.2</option>
-                </select>
-            </strong>
+            {% endfor %}
         </div>
     </div>
     <div class="clearfix dependE">
         <h5 class="pull-left">依赖环境</h5>
         <div id="dependEnvList" class="pull-left">
             <label class="checkbox-inline">
-                <input type="checkbox" value="python" checked disabled />
-                python&nbsp;&nbsp;
+                {% for olEnvInfo in onlineEnvInfoList %}
+                <input type="checkbox" value="{{ olEnvInfo.name }}" checked disabled />
+                olEnvInfo.name&nbsp;&nbsp;
+                {% endfor %}
             </label>
         </div>
     </div>
@@ -104,7 +100,7 @@
                 });
                 var envList = [];
                 $("#dependEnvList input").each(function(index,element){
-                    if ($(element).attr('checked')){
+                    if ($(element).is(':checked')){
                         envList.push($(element).val());
                     }
                 });

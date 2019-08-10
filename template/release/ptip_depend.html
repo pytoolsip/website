@@ -8,11 +8,13 @@
         </tr>
     </thead>
     <tbody>
+        {% for olInfo in onlineInfoList %}
         <tr>
-            <th>python</th>
-            <th>无</th>
-            <th>00:00:00</th>
+            <th>{{ olInfo.name }}</th>
+            <th>{{ olInfo.description }}</th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 <h2>上传版本</h2>
@@ -20,9 +22,26 @@
     <h3 class="text-center">
         -&nbsp;上传依赖库&nbsp;-
     </h3>
-    <div class="input-group">
-        <label class="input-group-addon" for="name">名称</label>
-        <input id="dependName" name="name" class="form-control" type="text" placeholder="请使用英文名称" required autofocus />
+    <input id="isUploadNew" type="checkbox" value="是否上传新依赖库" />
+    <div id="newExeName" calss="hidden">
+        <div class="input-group">
+            <label class="input-group-addon" for="name">名称</label>
+            <input name="name" class="form-control" type="text" placeholder="请使用英文名称" required />
+        </div>
+        <div class="input-group">
+            <label class="input-group-addon" for="path">路径</label>
+            <input name="path" class="form-control" type="text" placeholder="请使用英文路径" required />
+        </div>
+    </div>
+    <div id="olExeName">
+        <div class="input-group">
+            <label class="input-group-addon" for="name">名称</label>
+            <select  name="name" class="form-control">
+                {% for olName in olNamelist %}
+                <option>{{ olName }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="file">上传包(zip格式)</label>
@@ -46,9 +65,12 @@
                         type : "post",
                         dataType: "json",
                         data : {
-                            isVerify : true,
+                            isVerify : $("#isUploadNew").is(':checked'),
                             dependName : function() {
-                                return $("#dependName").val();
+                                if ($("#isUploadNew").is(':checked')) {
+                                    return $("#newExeName input[name='name']").val();
+                                }
+                                return "";
                             }
                         }
                     },
@@ -62,7 +84,7 @@
             },
             messages: {
                 name: {
-                    required: "请输入依赖库名称",
+                    required: "依赖库名称不能为空",
                 },
                 file: {
                     required: "请选择上传包",
@@ -70,10 +92,9 @@
                 description: "请输入描述信息",
             },
             submitHandler: function() {
-                // uploadManageForm($("#uploadForm"), [
-                //     {"key":"mk", "val":"{{mkey}}", "type":"text"}
-                // ]);
-                alert("xxxxxxxxxxxxxxxxx")
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
             }
         });
 	})

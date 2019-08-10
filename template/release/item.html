@@ -3,32 +3,32 @@
 	</div>
 	<div id="contentList">
 		{% ifequal mkey "ptip_examination" %}
-			{% include "manage/ptip_examination.html" %}
+			{% include "release/ptip_examination.html" %}
 		{% endifequal %}
 		{% ifequal mkey "ptip_script" %}
-			{% include "manage/ptip.html" %}
+			{% include "release/ptip.html" %}
 		{% endifequal %}
 		{% ifequal mkey "ptip_exe" %}
-			{% include "manage/ptip_exe.html" %}
+			{% include "release/ptip_exe.html" %}
 		{% endifequal %}
 		{% ifequal mkey "update_exe" %}
-			{% include "manage/ptip_exe.html" %}
+			{% include "release/ptip_exe.html" %}
 		{% endifequal %}
 		{% ifequal mkey "depend_lib" %}
-			{% include "manage/ptip_depend.html" %}
+			{% include "release/ptip_depend.html" %}
 		{% endifequal %}
 		{% ifequal mkey "pt_ol_examination" %}
-			{% include "manage/tool_examination.html" %}
+			{% include "release/tool_examination.html" %}
 		{% endifequal %}
 
 		{% ifequal mkey "pt_examination" %}
-			{% include "manage/tool_examination.html" %}
+			{% include "release/tool_examination.html" %}
 		{% endifequal %}
 		{% ifequal mkey "pt_new_script" %}
-			{% include "manage/new_tool.html" %}
+			{% include "release/new_tool.html" %}
 		{% endifequal %}
 		{% ifequal mkey "pt_ol_script" %}
-			{% include "manage/ol_tool.html" %}
+			{% include "release/ol_tool.html" %}
 		{% endifequal %}
 	</div>
 </div>

@@ -2,7 +2,7 @@
 	<div class='row'>
 		<div class='dialog-background col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4'>
 			<form id='loginForm' class='login-form dialog-content' role='form' enctype='multipart/form-data'>
-				<h2>登陆PTIP管理后台</h2>
+				<h2>登陆PTIP发布后台</h2>
 				<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />
 				<input name='password' class='form-control' type='password' placeholder='密码' required />
 				<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>
@@ -18,7 +18,7 @@
 	$(function(){
 		var tips = "{{requestFailedTips}}";
 		if (tips != "") {
-			logoutManage(); // 等处管理后台
+			logoutManage(); // 登陆发布后台
 			alert(tips);
 		}
 		// 更新用户名

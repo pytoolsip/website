@@ -29,6 +29,7 @@ def depend_lib_path(instance, filename):
 class Depend(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
+    path = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = depend_lib_path)
     description = models.TextField()
     time = models.DateTimeField()
@@ -40,6 +41,7 @@ class Depend(models.Model):
 
 class Exe(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    path = models.CharField(max_length=255)
 
     class Meta:
         managed = False
@@ -51,13 +53,12 @@ def exe_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     return os.path.join("release", "exe", f"{instance.name}-{instance.version}.{ext}");
 class ExeDetail(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.ForeignKey(Exe, models.DO_NOTHING, db_column='name')
+    eid = models.ForeignKey(Exe, models.DO_NOTHING, db_column='eid')
     version = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = exe_directory_path)
+    base_version = models.CharField(max_length=255)
     changelog = models.TextField()
     time = models.DateTimeField()
-    base_version = models.CharField(max_length=255)
 
     class Meta:
         managed = False
@@ -68,22 +69,18 @@ def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
     return os.path.join("release", "ptip", "script", ".".join(vList[:1]), f"{instance.version}.{ext}");
-# 平台工程文件路径
-def ptip_pj_directory_path(instance, filename):
-    ext = os.path.splitext(filename)[1];
-    vList = instance.version.split(".");
-    return os.path.join("release", "ptip", "project", ".".join(vList[:1]), f"PyToolsIP-{instance.version}.{ext}");
 class Ptip(models.Model):
     id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = ptip_directory_path)
     changelog = models.TextField()
     time = models.DateTimeField()
-    project_path = models.FileField(upload_to = ptip_pj_directory_path)
     download = models.IntegerField()
     base_version = models.CharField(max_length=255)
     update_version = models.CharField(max_length=255)
     status = models.IntegerField()
+    exe_list = models.TextField()
+    env_list = models.TextField()
 
     class Meta:
         managed = False

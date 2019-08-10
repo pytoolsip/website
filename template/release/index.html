@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP-管理后台</title>
+		<title>PyToolsIP-发布后台</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
@@ -39,9 +39,8 @@
                 <div id="sidebar" class="col-sm-3 col-md-2 sidebar hidden">
                     <ul id="IPOption" class="nav nav-sidebar">
                         <li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_examination">平台审核</a></li>
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">PTIP平台</a></li>
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台运行程序</a></li>
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="update_exe">平台更新程序</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_script">平台脚本</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="ptip_exe">平台依赖程序</a></li>
                         <li><a class="_slideItem_" href="javascript:void(0);" data-target="depend_lib">平台依赖库</a></li>
                         <li><a class="_slideItem_" href="javascript:void(0);" data-target="pt_ol_examination">工具下架</a></li>
                     </ul>
@@ -86,7 +85,7 @@
                         }
                     }
                 });
-                // 请求管理后台
+                // 请求发布后台
                 requestManage({});
             })
         </script>
