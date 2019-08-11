@@ -137,6 +137,8 @@ def releasePtip(request, user, result):
             p, msg, reasonMsg = models.Ptip.objects.get(id = pid), "", "";
             if examType == "release":
                 p.status = Status.Released.value;
+                # 删除除指定版本外的其他版本
+                delOtherVers(p.version);
                 msg = "发布";
             else:
                 p.delete();
@@ -146,3 +148,13 @@ def releasePtip(request, user, result):
             sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**PTIP平台【{p.version}】。\n{reasonMsg}");
         except Exception as e:
             result["requestTips"] = f"平台【{p.version}】审核失败！";
+
+# 删除除指定版本外的其他版本
+def delOtherVers(version):
+    base_version = ".".join(version.split(".")[:1]);
+    if len(models.Ptip.objects.filter(status = Status.Released.value, base_version = base_version, version = version)) > 0:
+        for ptip in models.Ptip.objects.filter(status = Status.Released.value, base_version = base_version):
+            if ptip.version != version:
+                ptip.delete();
+    else:
+        print(f"不存在指定版本【{version}】的平台，故不能删除除此版本外的其他版本！");

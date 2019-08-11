@@ -84,7 +84,7 @@ def verify(request):
     # 校验工具名
     if "toolname" in request.POST:
         tkey = hashlib.md5(request.POST["toolname"].encode("utf-8")).hexdigest();
-        if len(models.Tool.objects.filter(tkey = tkey)) == 0:
+        if len(models.Tool.objects.filter(tkey = tkey)) + len(models.ToolExamination.objects.filter(tkey = tkey)) == 0:
             return HttpResponse("true");
     # 校验依赖库名
     if "exeName" in request.POST:

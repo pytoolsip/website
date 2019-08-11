@@ -11,7 +11,8 @@ def uploadNew(request, user, result, isSwitchTab):
         name, category, description, version, ip_base_version = request.POST.get("name", None), request.POST.get("category", None), request.POST.get("description", None), request.POST.get("version", None), request.POST.get("ip_base_version", None);
         if file_path and name and category and description and version and ip_base_version:
             try:
-                tool = models.Tool.objects.get(name = name, category = category);
+                models.Tool.objects.get(name = name, category = category);
+                models.ToolExamination.objects.get(name = name, category = category);
                 result["requestFailedTips"] = "已存在相同分类的工具名，请重新上传！";
                 return;
             except Exception as e:
@@ -52,17 +53,20 @@ def saveOl(request, user, tool, result):
     file_path = request.FILES.get("file", None);
     changelog, description, version, ip_base_version = request.POST.get("changelog", None), request.POST.get("description", None), request.POST.get("version", None), request.POST.get("ip_base_version", None);
     if file_path and changelog and description and version and ip_base_version:
-        if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
-            try:
-                # 保存ToolExamination
-                t = models.ToolExamination(uid = tool.uid, tkey = tool.tkey, name = tool.name, category = tool.category, description = request.POST["description"],
-                version = version, ip_base_version = request.POST["ip_base_version"], file_path = request.FILES["file"], changelog = request.POST["changelog"], time = timezone.now());
-                t.save();
-                result["requestTips"] = f"线上工具新版本【{tool.tkey}， {version}】上传成功。";
-            except Exception as e:
-                print(e);
+        if checkHasUnExamination(version):
+            result["requestFailedTips"] = f"存在审核中的工具版本号，需撤回审核中的版本【{version}】后，才能发布新版本！";
         else:
-            result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
+            if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
+                try:
+                    # 保存ToolExamination
+                    t = models.ToolExamination(uid = tool.uid, tkey = tool.tkey, name = tool.name, category = tool.category, description = description,
+                    version = version, ip_base_version = ip_base_version, file_path = file_path, changelog = changelog, time = timezone.now());
+                    t.save();
+                    result["requestTips"] = f"线上工具新版本【{tool.tkey}， {version}】上传成功。";
+                except Exception as e:
+                    print(e);
+            else:
+                result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
     else:
         result["requestFailedTips"] = "上传信息不完整，请重新上传！";
 
@@ -126,11 +130,12 @@ def examTool(request, user, result, isSwitchTab):
                     result["requestFailedTips"] = f"您没有权限审核工具【{t.tkey}，{t.version}】！";
                     return;
                 if examType == "release":
+                    # 发布工具
                     releaseTool(t);
                     msg = "发布";
                 else:
-                    t.delete();
                     msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
+                t.delete(); # 移除审核中的工具信息
                 result["requestTips"] = f"工具【{t.tkey}，{t.version}】成功{msg}。";
                 # 发送邮件通知
                 userIdentity, opMsg = "用户", "完成";
@@ -146,7 +151,7 @@ def examTool(request, user, result, isSwitchTab):
 # 发布工具
 def releaseTool(t):
     try:
-        tool = models.Tool.objects.get(name = t.name, category = t.category);
+        tool = models.Tool.objects.get(tkey = t.tkey);
         # 更新Tool
         tool.description = t.description;
         tool.time = t.time;
@@ -158,6 +163,8 @@ def releaseTool(t):
     # 保存ToolDetail
     toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);
     toolDetail.save();
+    # 删除除指定版本外的其他版本
+    delOtherVers(t.version, t.ip_base_version);
 
 # 获取所有审核的工具信息
 def getToolExamination():
@@ -200,3 +207,16 @@ def examOlTool(request, user, result, isSwitchTab):
     toolList = models.Tool.objects.all().order_by('time');
     for toolInfo in toolList:
         result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));
+
+# 检测是否存在有未审核的版本号
+def checkHasUnExamination(version):
+    return len(models.ToolExamination.objects.filter(version = version)) > 0;
+
+# 删除除指定版本外的其他版本
+def delOtherVers(version, ip_base_version):
+    if len(models.ToolDetail.objects.filter(version = version, ip_base_version = ip_base_version)) > 0:
+        for t in models.ToolDetail.objects.filter(ip_base_version = ip_base_version):
+            if t.version != version:
+                t.delete();
+    else:
+        print(f"不存在指定平台版本【{ip_base_version}】的工具版本【{version}】，故不能删除除此工具版本外的其他版本！");

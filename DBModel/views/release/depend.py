@@ -37,6 +37,8 @@ def saveExe(request, name, result):
         if  base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
             exeDetail = models.ExeDetail(eid = exe, version = version, file_path = file_path, base_version = base_version, changelog = changelog, time = timezone.now());
             exeDetail.save();
+            # 删除除指定版本外的其他版本
+            delOtherVers(version);
             result["requestTips"] = f"更新文件【{name}, {version}】上传成功。";
         else:
             result["requestFailedTips"] = f"已存在更高的更新程序版本号，请修改版本号【{name}, {version}】后重试！";
@@ -82,3 +84,13 @@ def getOlDependInfoList():
             "url" : dependInfo.file_path.url,
         } for dependInfo in dependList];
     return [];
+
+# 删除除指定版本外的其他版本
+def delOtherVers(version):
+    base_version = ".".join(version.split(".")[:1]);
+    if len(models.ExeDetail.objects.filter(status = Status.Released.value, base_version = base_version, version = version)) > 0:
+        for ptip in models.ExeDetail.objects.filter(status = Status.Released.value, base_version = base_version):
+            if ptip.version != version:
+                ptip.delete();
+    else:
+        print(f"不存在指定版本【{version}】的依赖程序，故不能删除除此版本外的其他版本！");

@@ -22,8 +22,10 @@
     <h3 class="text-center">
         -&nbsp;上传依赖库&nbsp;-
     </h3>
-    <input id="isUploadNew" type="checkbox" value="是否上传新依赖库" />
-    <div id="newExeName" calss="hidden">
+    <div class="input-group">
+        <input id="isUploadNew" name="isUploadNew" type="checkbox" /><label for="isUploadNew">是否上传新依赖程序</label>
+    </div>
+    <div id="newExeName">
         <div class="input-group">
             <label class="input-group-addon" for="name">名称</label>
             <input name="name" class="form-control" type="text" placeholder="请使用英文名称" required />
@@ -97,5 +99,19 @@
                 ]);
             }
         });
+        // 监测是否选中上传新依赖程序选框
+        var checkIsUploadNew = function() {
+            if ($("#isUploadNew").is(":checked")) {
+                $("#newExeName").removeClass("hidden");
+                $("#olExeName").addClass("hidden");
+            } else {
+                $("#newExeName").addClass("hidden");
+                $("#olExeName").removeClass("hidden");
+            }
+        }
+        $("#isUploadNew").change(function(){
+            checkIsUploadNew();
+        });
+        checkIsUploadNew();
 	})
 </script>
