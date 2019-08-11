@@ -5,6 +5,7 @@ from base import *;
 
 import json;
 
+from _Global import _GG;
 
 # 上传平台脚本
 def upload(request, user, result, isSwitchTab):
@@ -44,7 +45,7 @@ def getExeJson(exeList):
             exeDetail = models.ExeDetail.objects.get(eid = exe, version = version);
             exeJson.append({"url" : exeDetail.file_path.url, "path" : exe.path});
         except Exception as e:
-            print(e);
+            _GG("Log").d(e);
     return json.dumps(exeJson);
 
 # 获取依赖环境url的json
@@ -55,7 +56,7 @@ def getEnvJson(envList):
             env = models.Depend.objects.get(name);
             envJson.append({"url" : env.file_path.url, "path" : env.path});
         except Exception as e:
-            print(e);
+            _GG("Log").d(e);
     return json.dumps(envJson);
 
 # 保存平台信息
@@ -87,7 +88,7 @@ def updateBaseVer(request, result):
                 p.save();
                 result["requestTips"] = f"PTIP平台版本【{request.POST['updateVersion']}】更新成功。";
             except Exception as e:
-                print(e);
+                _GG("Log").d(e);
                 result["requestFailedTips"] = "所要更新版本的平台版本不存在，请刷新后重试！";
         else:
             result["requestFailedTips"] = "所选择的更新版本不存在，请重新选择！";
@@ -157,4 +158,4 @@ def delOtherVers(version):
             if ptip.version != version:
                 ptip.delete();
     else:
-        print(f"不存在指定版本【{version}】的平台，故不能删除除此版本外的其他版本！");
+        _GG("Log").w(f"不存在指定版本【{version}】的平台，故不能删除除此版本外的其他版本！");

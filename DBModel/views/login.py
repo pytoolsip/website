@@ -7,6 +7,8 @@ from django.core.cache import cache
 from DBModel import models
 from utils import base_util, pwd_util
 
+from _Global import _GG;
+
 import hashlib;
 import random;
 
@@ -14,7 +16,7 @@ import random;
 @csrf_exempt
 def login(request):
     uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
-    print("===== login =====", uname, upwd);
+    _GG("Log").d("===== login =====", uname, upwd);
     return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = getPostAsBool(request, "isReqLogin"), isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
 
 # 获取登录信息
@@ -28,7 +30,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
             };
         # 返回编码密码函数
         code = pwd_util.getEncodeCode(); # 编码值
-        print("===== Login code =====", code);
+        _GG("Log").d("===== Login code =====", code);
         cache.set("|".join(["encode_pwd_code", "login", uname]), code, 2*60);
         return {
             "isSuccess" : True,
@@ -75,8 +77,8 @@ def getLoginUser(uname, upwd, isLogin = False):
             # 从缓存中读取密码
             pwd = cache.get(upwd);
         # 返回数据
-        print("===== Get Login User By ===== :", uname, pwd);
+        _GG("Log").d("===== Get Login User By ===== :", uname, pwd);
         return models.User.objects.get(name = uname, password = pwd);
     except Exception as e:
-        print(e);
+        _GG("Log").d(e);
     return None;

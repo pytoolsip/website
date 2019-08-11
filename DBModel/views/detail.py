@@ -5,6 +5,8 @@ from django.http import JsonResponse
 
 from DBModel import models
 
+from _Global import _GG;
+
 # 工具详情页
 @csrf_exempt
 def detail(request):
@@ -18,7 +20,7 @@ def detail(request):
         # 保存评论
         doComment(request.POST, user, tool);
     except Exception as e:
-        print(e);
+        _GG("Log").d(e);
     return render(request, "detail.html", getToolResultByTkey(tkey));
 
 # 处理收藏

@@ -9,12 +9,14 @@ from website import settings
 from DBModel import models
 from utils import base_util, pwd_util
 
+from _Global import _GG;
+
 import random;
 
 # 注册请求
 @csrf_exempt
 def register(request):
-    print("register get :", request.GET, "; register post :", request.POST, "; register files :", request.FILES);
+    _GG("Log").i("register get :", request.GET, "; register post :", request.POST, "; register files :", request.FILES);
     # 判断是否校验
     if base_util.getPostAsBool(request, "isVerify"):
         return verify(request);
@@ -43,7 +45,7 @@ def verify(request):
         if isExist == base_util.getPostAsBool(request, "isExist"):
             return HttpResponse("true");
     # 校验失败
-    print("Verify Fail!", request.POST);
+    _GG("Log").d("Verify Fail!", request.POST);
     return HttpResponse("false");
 
 # 获取验证码
@@ -57,7 +59,7 @@ def getVerifyCode(request):
     try:
         send_mail("PyToolsIP", "平台验证码："+verifyCode, settings.EMAIL_HOST_USER, [email], fail_silently=False);
     except Exception as e:
-        print(e);
+        _GG("Log").d(e);
         return JsonResponse({"isSuccess" : False, "tips" : "验证码发送失败，请检查邮箱是否正确！"});
     # 缓存验证码
     expires = 2*60; # 缓存2分钟
@@ -74,7 +76,7 @@ def getEncodePwdInfo(request):
         };
     # 返回编码密码函数
     code = pwd_util.getEncodeCode(); # 编码值
-    print("===== Register code =====", code);
+    _GG("Log").d("===== Register code =====", code);
     cache.set("|".join(["encode_pwd_code", "register", email]), code, 2*60);
     return {
         "isSuccess" : True,

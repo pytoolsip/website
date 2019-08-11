@@ -3,6 +3,7 @@ from DBModel import models;
 
 from utils import base_util;
 
+from _Global import _GG;
 
 # 上传新工具
 def uploadNew(request, user, result, isSwitchTab):
@@ -44,7 +45,7 @@ def uploadOl(request, user, tkey, result, isSwitchTab):
         };
         result["olIPBaseVerList"] = getOlIPBaseVerList();
     except Exception as e:
-        print(e);
+        _GG("Log").d(e);
         result["isSearchNone"] = True;
         result["searchNoneTips"] = f"您未曾发布过ID为【{tkey}】工具，请重新搜索！";
 
@@ -64,7 +65,7 @@ def saveOl(request, user, tool, result):
                     t.save();
                     result["requestTips"] = f"线上工具新版本【{tool.tkey}， {version}】上传成功。";
                 except Exception as e:
-                    print(e);
+                    _GG("Log").d(e);
             else:
                 result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
     else:
@@ -219,4 +220,4 @@ def delOtherVers(version, ip_base_version):
             if t.version != version:
                 t.delete();
     else:
-        print(f"不存在指定平台版本【{ip_base_version}】的工具版本【{version}】，故不能删除除此工具版本外的其他版本！");
+        _GG("Log").w(f"不存在指定平台版本【{ip_base_version}】的工具版本【{version}】，故不能删除除此工具版本外的其他版本！");

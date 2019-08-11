@@ -10,6 +10,8 @@ import login;
 import hashlib;
 import os,sys;
 
+from _Global import _GG;
+
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
 sys.path.append(CURRENT_PATH);
 
@@ -30,7 +32,7 @@ PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
 # 后台管理页请求
 @csrf_exempt
 def release(request):
-    print("release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
+    _GG("Log").i("release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);
@@ -95,7 +97,7 @@ def verify(request):
         if len(models.Depend.objects.filter(name = request.POST["dependName"])) == 0:
             return HttpResponse("true");
     # 校验失败
-    print("Verify Fail!", request.POST);
+    _GG("Log").d("Verify Fail!", request.POST);
     return HttpResponse("false");
 
 # 获取管理页返回结果

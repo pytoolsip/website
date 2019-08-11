@@ -3,6 +3,8 @@ from DBModel import models;
 
 from utils import base_util;
 
+from _Global import _GG;
+
 # 上传程序文件
 def uploadExe(request, user, result, isSwitchTab):
     if not isSwitchTab:
@@ -93,4 +95,4 @@ def delOtherVers(version):
             if ptip.version != version:
                 ptip.delete();
     else:
-        print(f"不存在指定版本【{version}】的依赖程序，故不能删除除此版本外的其他版本！");
+        _GG("Log").w(f"不存在指定版本【{version}】的依赖程序，故不能删除除此版本外的其他版本！");

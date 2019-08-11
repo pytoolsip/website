@@ -2,6 +2,8 @@
 from django.core.mail import send_mail
 from website import settings
 
+from _Global import _GG;
+
 from enum import Enum;
 
 # 上传状态穷举值
@@ -23,5 +25,5 @@ def sendToEmails(msg, emails):
         send_mail("PyToolsIP通知", msg, settings.EMAIL_HOST_USER, emails, fail_silently=False);
         return True;
     except Exception as e:
-        print("邮件发送失败!", e);
+        _GG("Log").e("邮件发送失败!", e);
     return False;
