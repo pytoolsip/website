@@ -17,7 +17,7 @@ import random;
 def login(request):
     uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
     _GG("Log").d("===== login =====", uname, upwd);
-    return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = getPostAsBool(request, "isReqLogin"), isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
+    return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = base_util.getPostAsBool(request, "isReqLogin"), isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
 
 # 获取登录信息
 def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = False):

@@ -32,6 +32,7 @@ def register(request):
     # 重置用户密码
     if base_util.getPostAsBool(request, "isResetPwd"):
         return resetUserPwd(request);
+    return HttpResponse("");
 
 # 校验逻辑
 def verify(request):
