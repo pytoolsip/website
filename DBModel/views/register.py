@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 
 from website import settings
 from DBModel import models
-from utils import base_util, pwd_util
+from utils import base_util, pwd_util, random_util
 
 from _Global import _GG;
 
@@ -55,7 +55,7 @@ def getVerifyCode(request):
     if not email:
         return JsonResponse({"isSuccess" : False, "tips" : "邮箱信息不能为空！"});
     # 生成8位随机验证码
-    verifyCode = "".join([str(i) for i in random.sample(range(10), 8)]);
+    verifyCode = random_util.randomNum(6); # 6位随机码
     # 发送邮件给指定邮箱
     try:
         send_mail("PyToolsIP", "平台验证码："+verifyCode, settings.EMAIL_HOST_USER, [email], fail_silently=False);
@@ -79,10 +79,10 @@ def getEncodePwdInfo(request):
     code = pwd_util.getEncodeCode(); # 编码值
     _GG("Log").d("===== Register code =====", code);
     cache.set("|".join(["encode_pwd_code", "register", email]), code, 2*60);
-    return {
+    return JsonResponse({
         "isSuccess" : True,
         "encodePwd" : pwd_util.getEncodePwdFunc(code),
-    };
+    });
 
 # 注册玩家
 def registerUser(request):
@@ -105,7 +105,9 @@ def registerUser(request):
             "tips" : "验证码已过期！",
         };
     pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
-    models.User(name = uname, password = pwd, email = email, authority = 0).save();
+    salt = random_util.randomMulti(32);
+    password = pwd_util.encodePassword(salt, pwd);
+    models.User(name = uname, password = password, salt = salt, email = email, authority = 0).save();
     return JsonResponse({"isSuccess" : True});
 
 # 重置用户密码

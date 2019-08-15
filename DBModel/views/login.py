@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.core.cache import cache
 
 from DBModel import models
-from utils import base_util, pwd_util
+from utils import base_util, pwd_util, random_util
 
 from _Global import _GG;
 
@@ -46,7 +46,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
         };
         # 缓存玩家密码对应的md5
         if isLogin:
-            randCode = "".join([str(i) for i in random.sample(range(10), 8)]); # 8位随机码
+            randCode = random_util.randomNum(8); # 8位随机码
             result["pwd"] = hashlib.md5("|".join([user.password, randCode]).encode("utf-8")).hexdigest();
             result["expires"] = 12*60*60; # 默认12小时
             if isRemember:
@@ -73,12 +73,14 @@ def getLoginUser(uname, upwd, isLogin = False):
                     "tips" : "验证码已过期！",
                 };
             pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
+            user = models.User.objects.get(name = uname);
+            password = pwd_util.encodePassword(user.salt, pwd);
         elif cache.has_key(upwd):
             # 从缓存中读取密码
-            pwd = cache.get(upwd);
+            password = cache.get(upwd);
         # 返回数据
         _GG("Log").d("===== Get Login User By ===== :", uname, pwd);
-        return models.User.objects.get(name = uname, password = pwd);
+        return models.User.objects.get(name = uname, password = password);
     except Exception as e:
         _GG("Log").d(e);
     return None;

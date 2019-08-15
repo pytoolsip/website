@@ -1,6 +1,8 @@
 import math;
 import random;
 
+import hashlib;
+
 # 获取编码值
 def getEncodeCode():
     return "".join([str(random.randint(1,9)), str(random.randint(1,2))]); # 编码值
@@ -39,3 +41,7 @@ def decodePwd(pwd, code):
             pwdIdx+=1;
             increment+=1;
     return "".join(pwds);
+
+# 加密明文密码
+def encodePassword(salt, upwd):
+    return hashlib.md5("|".join([salt, upwd]).encode("utf-8")).hexdigest();

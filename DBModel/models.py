@@ -144,6 +144,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     authority = models.IntegerField()
+    salt = models.CharField(max_length=32)
 
     class Meta:
         managed = False
