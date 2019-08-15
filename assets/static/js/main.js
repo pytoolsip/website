@@ -6,9 +6,9 @@ $(function(){
 	// 响应窗口尺寸大小变化函数
 	var windowOnresizeFunc = window.onresize;
 	// 登陆链接
-	var loginUrl = "http://localhost:8000/login";
+	var loginUrl = "http://jimdreamheart.club/pytoolsip/login";
 	// 注册链接
-	var registerUrl = "http://localhost:8000/register";
+	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
 	// 获取提示文档
 	var getAlertTips = function(type, tips) {
 		return "<div class='alert alert-"+ type +"' role='alert'>\
