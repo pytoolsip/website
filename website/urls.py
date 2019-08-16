@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^login$', views.login),
     url(r'^register$', views.register),
     url(r'^release$', views.release),
+    url(r'^reqinfo$', views.reqinfo),
 ]

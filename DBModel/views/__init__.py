@@ -19,6 +19,7 @@ try:
     from login import login;
     from register import register;
     from release import release;
+    from reqinfo import reqinfo;
 
 except Exception as e:
 	raise e;
