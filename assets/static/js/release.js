@@ -3,7 +3,7 @@ $(function(){
     requestManage = function(data){
         var userInfo = getUserLoginInfo();
         data.uname = userInfo.name;
-        data.upwd = userInfo.pwd;
+        data.upwd = encodeStr(userInfo.pwd);
         $.post(window.location.href, data, function(data, status){
             if (status == "success") {
                 $("#mainContent").html(data);
@@ -34,7 +34,7 @@ $(function(){
         // 添加用户名和密码
         var userInfo = getUserLoginInfo();
         addInputToForm(item, "uname", userInfo.name, "text");
-        addInputToForm(item, "upwd", userInfo.pwd, "text");
+        addInputToForm(item, "upwd", encodeStr(userInfo.pwd), "text");
     }
     // 添加用户信息到表单
     uploadManageForm = function(item, exIpts){

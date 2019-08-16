@@ -9,6 +9,14 @@ $(function(){
 	var loginUrl = "http://jimdreamheart.club/pytoolsip/login";
 	// 注册链接
 	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
+	// 公钥
+	var PUBLIC_KEY = "";
+	// 编码字符串
+	encodeStr = function(s) {
+		var ec = new JSEncrypt();
+		ec.setPublicKey(PUBLIC_KEY);
+		return ec.encrypt(s);
+	}
 	// 获取提示文档
 	var getAlertTips = function(type, tips) {
 		return "<div class='alert alert-"+ type +"' role='alert'>\
@@ -40,38 +48,24 @@ $(function(){
     loginIP = function(url, formId, isRemember, callback){
 		var name = $("#"+formId+" input[name='name']").val();
 		var pwd = $("#"+formId+" input[name='password']").val();
-        $.post(url, {
-			isReqLogin : true,
+		$.post(url, {
+			isLogin : true,
 			uname : name,
+			upwd : encodeStr(pwd),
+			isRemember : isRemember,
 		}, function(data, status){
 			if (status == "success") {
 				if (!data.isSuccess) {
 					$("#"+formId).prepend(getAlertTips("danger", data.tips));
 					return;
 				}
-				// 提交登陆数据
-				$.post(url, {
-                    isLogin : true,
-                    uname : name,
-                    upwd : eval(data.encodePwd.replace(/\$1/, pwd)),
-					isRemember : isRemember,
-				}, function(data, status){
-					if (status == "success") {
-						if (!data.isSuccess) {
-							$("#"+formId).prepend(getAlertTips("danger", data.tips));
-							return;
-						}
-						console.log("登陆成功。");
-						// 缓存登陆数据
-						setUserLoginInfo(data.name, data.pwd, data.expires);
-						// 登陆成功回调
-						callback();
-					} else {
-						alert("登陆失败！")
-					}
-				});
+				console.log("登陆成功。");
+				// 缓存登陆数据
+				setUserLoginInfo(data.name, data.pwd, data.expires);
+				// 登陆成功回调
+				callback();
 			} else {
-				alert("请求登陆失败！")
+				alert("登陆失败！")
 			}
 		});
     }
@@ -133,7 +127,7 @@ $(function(){
 		createDialog(content, function(){}); // 关闭弹窗时无回调
 	}
 	// 创建定时弹窗
-	createIntervalDialog = function(content, seconds){
+	createIntervalDialog = function(content, seconds, closeCallback){
 		// 设置定时器
 		var intervalId = window.setInterval(function(){
 			seconds--
@@ -149,6 +143,7 @@ $(function(){
 		// 创建弹窗
 		createDialog("<div class='text-center'>"+ content +"<p class='dialog-interval'><span id='timeCountDown'>"+ seconds +"</span>&nbsp;秒后自动关闭</p></div>", function(){
 			window.clearInterval(intervalId);
+			closeCallback();
 		});
 	}
 	// 创建登录弹窗
@@ -226,7 +221,7 @@ $(function(){
 		} else {
 			$.post(loginUrl, {
 				uname : userInfo.name,
-				upwd : userInfo.pwd,
+				upwd : encodeStr(userInfo.pwd),
 			}, function(data, status){
 				if (status == "success" && data.isSuccess) {
 					createLogoutDialog(data);
@@ -250,7 +245,7 @@ $(function(){
 		}
 		$.post("http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}",{
 			uname : userInfo.name,
-			upwd : userInfo.pwd,
+			upwd : encodeStr(userInfo.pwd),
 			content : $content,
 			score : $("#commentScore").val(),
 		}, function(data,status){
@@ -379,36 +374,32 @@ $(function(){
 				verifyCode : "请输入验证码",
 			},
 			submitHandler : function() {
+				var uname = $("#registerForm input[name='name']").val();
+				var upwd = $("#registerForm input[name='password']").val();
 				$.post(registerUrl, {
-					isReq : true,
+					isRegister : true,
+					uname : uname,
+					upwd : encodeStr(upwd),
 					email : $("#registerForm input[name='email']").val(),
+					verifyCode : $("#registerForm input[name='verifyCode']").val(),
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {
 							$("#registerForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						$.post(registerUrl, {
-							isRegister : true,
-							uname : $("#registerForm input[name='name']").val(),
-							upwd : eval(data.encodePwd.replace(/\$1/, $("#registerForm input[name='password']").val())),
-							email : $("#registerForm input[name='email']").val(),
-							verifyCode : $("#registerForm input[name='verifyCode']").val(),
-						}, function(data, status){
-							if (status == "success") {
-								if (!data.isSuccess) {
-									$("#registerForm").prepend(getAlertTips("danger", data.tips));
-									return;
-								}
-								// 创建注册成功的弹窗
-								createIntervalDialog("<h2>注册成功!</h2>", 2);
-							} else {
-								alert("注册失败！")
-							}
+						// 创建注册成功的弹窗
+						createIntervalDialog("<h2>注册成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
+							// 创建登陆界面
+							createLoginDialog();
+							$("#loginForm input[name='name']").val(uname);
+							$("#loginForm input[name='password']").val(upwd);
 						});
+					} else {
+						alert("注册失败！")
 					}
 				});
-			},
+			}
 		});
 	    // 获取验证码
 	    $("#verifyCodeBtn").on("click",function(){
@@ -482,35 +473,27 @@ $(function(){
             },
             submitHandler: function() {
 				$.post(registerUrl, {
-					isReq : true,
+					isResetPwd : true,
+					upwd : encodeStr($("#resetPwdForm input[name='password']").val()),
 					email : $("#resetPwdForm input[name='email']").val(),
+					verifyCode : $("#resetPwdForm input[name='verifyCode']").val(),
 				}, function(data, status){
 					if (status == "success") {
 						if (!data.isSuccess) {
 							$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						$.post(registerUrl, {
-							isResetPwd : true,
-							upwd : eval(data.encodePwd.replace(/\$1/, $("#resetPwdForm input[name='password']").val())),
-							email : $("#resetPwdForm input[name='email']").val(),
-							verifyCode : $("#resetPwdForm input[name='verifyCode']").val(),
-						}, function(data, status){
-							if (status == "success") {
-								if (!data.isSuccess) {
-									$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
-									return;
-								}
-								// 创建登录成功的弹窗
-								createIntervalDialog("<h2>密码更新成功!</h2>", 2);
-							} else {
-								alert("注册失败！")
-							}
+						// 创建登录成功的弹窗
+						createIntervalDialog("<h2>密码更新成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
+							// 创建登陆界面
+							createLoginDialog();
 						});
+					} else {
+						alert("注册失败！")
 					}
 				});
-            }
-       });
+			}
+		});
 	   // 获取验证码
 	   $("#verifyCodeBtn").on("click",function(){
 		   sendVerifyCode("#resetPwdForm");

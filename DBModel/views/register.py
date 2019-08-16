@@ -23,9 +23,6 @@ def register(request):
     # 获取验证码
     if base_util.getPostAsBool(request, "isGetVerifyCode"):
         return getVerifyCode(request);
-    # 请求编码方法
-    if base_util.getPostAsBool(request, "isReq"):
-        return getEncodePwdInfo(request);
     # 注册用户
     if base_util.getPostAsBool(request, "isRegister"):
         return registerUser(request);
@@ -67,23 +64,6 @@ def getVerifyCode(request):
     cache.set("|".join(["verify_code", "register", email]), verifyCode, expires);
     return JsonResponse({"isSuccess" : True, "expires" : expires});
 
-# 获取编码密码信息
-def getEncodePwdInfo(request):
-    email = request.POST.get("email", "");
-    if not email:
-        return {
-            "isSuccess" : False,
-            "tips" : "邮箱不能为空！",
-        };
-    # 返回编码密码函数
-    code = pwd_util.getEncodeCode(); # 编码值
-    _GG("Log").d("===== Register code =====", code);
-    cache.set("|".join(["encode_pwd_code", "register", email]), code, 2*60);
-    return JsonResponse({
-        "isSuccess" : True,
-        "encodePwd" : pwd_util.getEncodePwdFunc(code),
-    });
-
 # 注册玩家
 def registerUser(request):
     uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
@@ -97,14 +77,8 @@ def registerUser(request):
     # 校验验证码
     if cache.get("|".join(["verify_code", "register", email])) != verifyCode:
         return JsonResponse({"isSuccess" : False, "tips" : "验证码不正确！"});
-    # 保存用户数据
-    verifyKey = "|".join(["encode_pwd_code", "register", email]);
-    if not cache.has_key(verifyKey):
-        return {
-            "isSuccess" : False,
-            "tips" : "验证码已过期！",
-        };
-    pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
+    # 保存用户信息
+    pwd = _GG("DecodeStr")(upwd);
     salt = random_util.randomMulti(32);
     password = pwd_util.encodePassword(salt, pwd);
     models.User(name = uname, password = password, salt = salt, email = email, authority = 0).save();
@@ -125,14 +99,8 @@ def resetUserPwd(request):
         user = models.User.objects.get(email = email);
     except Exception as e:
         return JsonResponse({"isSuccess" : True, "tips" : "用户邮箱异常！"});
-    # 更新用户密码
-    verifyKey = "|".join(["encode_pwd_code", "register", email]);
-    if not cache.has_key(verifyKey):
-        return {
-            "isSuccess" : False,
-            "tips" : "验证码已过期！",
-        };
-    pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
+    # 更新密码及salt值
+    pwd = _GG("DecodeStr")(upwd);
     user.salt = random_util.randomMulti(32);
     user.password = pwd_util.encodePassword(salt, pwd);
     user.save();

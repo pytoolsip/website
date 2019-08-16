@@ -17,25 +17,11 @@ import random;
 def login(request):
     uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
     _GG("Log").d("===== login =====", uname, upwd);
-    return JsonResponse(getLoginInfo(uname, upwd = upwd, isReq = base_util.getPostAsBool(request, "isReqLogin"), isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
+    return JsonResponse(getLoginInfo(uname, upwd = upwd, isLogin = base_util.getPostAsBool(request, "isLogin"), isRemember = base_util.getPostAsBool(request, "isRemember")));
 
 # 获取登录信息
-def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = False):
+def getLoginInfo(uname, upwd = "", isLogin = False, isRemember = False):
     result = {"isSuccess" : False};
-    if isReq:
-        if len(models.User.objects.filter(name = uname)) == 0:
-            return {
-                "isSuccess" : False,
-                "tips" : "用户名不存在！",
-            };
-        # 返回编码密码函数
-        code = pwd_util.getEncodeCode(); # 编码值
-        _GG("Log").d("===== Login code =====", code);
-        cache.set("|".join(["encode_pwd_code", "login", uname]), code, 2*60);
-        return {
-            "isSuccess" : True,
-            "encodePwd" : pwd_util.getEncodePwdFunc(code),
-        };
     # 获取登陆玩家
     user = getLoginUser(uname, upwd, isLogin);
     if user:
@@ -64,7 +50,7 @@ def getLoginInfo(uname, upwd = "", isReq = False, isLogin = False, isRemember = 
 # 获取登陆玩家
 def getLoginUser(uname, upwd, isLogin = False):
     try:
-        pwd = upwd;
+        pwd = _GG("DecodeStr")(upwd);
         verifyKey = "|".join(["encode_pwd_code", "login", uname]);
         if isLogin:
             if not cache.has_key(verifyKey):
@@ -72,14 +58,13 @@ def getLoginUser(uname, upwd, isLogin = False):
                     "isSuccess" : False,
                     "tips" : "验证码已过期！",
                 };
-            pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
             user = models.User.objects.get(name = uname);
             password = pwd_util.encodePassword(user.salt, pwd);
-        elif cache.has_key(upwd):
+        elif cache.has_key(pwd):
             # 从缓存中读取密码
-            password = cache.get(upwd);
+            password = cache.get(pwd);
         # 返回数据
-        _GG("Log").d("===== Get Login User By ===== :", uname, pwd);
+        _GG("Log").d("===== Get Login User By ===== :", uname, password);
         return models.User.objects.get(name = uname, password = password);
     except Exception as e:
         _GG("Log").d(e);

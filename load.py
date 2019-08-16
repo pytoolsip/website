@@ -17,6 +17,7 @@ if os.path.join(CURRENT_PATH, "core") not in sys.path:
 # 加载全局变量
 import _Global as _G;
 from logCore.Logger import Logger;
+from rsaCore import decodeStr;
 
 # 初始化全局变量
 def _initGlobal_G_():
@@ -35,6 +36,7 @@ def loadGlobalInfo():
 # 加载全局变量
 def _loadGlobal_():
 	_loadLogger_(); # 加载日志类变量
+	_loadRsaDecode_(); # 加载rsa密钥解码方法
 
 # 加载全局日志类
 def _loadLogger_():
@@ -48,3 +50,7 @@ def _loadLogger_():
 	logger = Logger("Common", isLogFile = True, logFileName = os.path.join(CURRENT_PATH, path, name+("_%s.log"%curTimeStr)), maxBytes = maxBytes, backupCount = backupCount);
 	_G.setGlobalVarTo_Global("Log", logger); # 设置日志类的全局变量
 	return logger;
+
+# 加载rsa密钥解码方法
+def _loadRsaDecode_():
+	_G.setGlobalVarTo_Global("DecodeStr", decodeStr); # 设置日志类的全局变量

@@ -107,7 +107,7 @@ def getReleaseResult(request, user, mkey, isSwitchTab):
         "mkey" : mkey,
         "userInfo" : { # 用户信息
             "name":user.name,
-            "pwd":user.password,
+            "email":user.email,
         },
         "isManager" : user.authority == 1, # 是否显示平台选项
         "requestTips" : "", # 请求提示
