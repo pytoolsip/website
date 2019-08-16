@@ -3,10 +3,15 @@
 import os
 import sys
 
-import _load as Loader;
+import load as Loader;
+
+import build as builder;
 
 def load():
     Loader.loadGlobalInfo(); # 加载全局变量
+
+def build():
+    builder.buildDepends(); # 构建依赖模块
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'website.settings')
@@ -23,4 +28,5 @@ def main():
 
 if __name__ == '__main__':
     load()
+    build()
     main()

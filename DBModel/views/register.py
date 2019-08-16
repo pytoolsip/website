@@ -132,6 +132,8 @@ def resetUserPwd(request):
             "isSuccess" : False,
             "tips" : "验证码已过期！",
         };
-    user.password = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
+    pwd = pwd_util.decodePwd(upwd, int(cache.get(verifyKey)));
+    user.salt = random_util.randomMulti(32);
+    user.password = pwd_util.encodePassword(salt, pwd);
     user.save();
     return JsonResponse({"isSuccess" : True});
