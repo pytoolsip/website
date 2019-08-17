@@ -4,7 +4,7 @@
 # @Last Modified by:   JinZhang
 # @Last Modified time: 2019-03-28 18:34:16
 
-import os,sys,time;
+import re,os,sys,time;
 
 # 当前文件位置
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
@@ -17,7 +17,7 @@ if os.path.join(CURRENT_PATH, "core") not in sys.path:
 # 加载全局变量
 import _Global as _G;
 from logCore.Logger import Logger;
-from rsaCore import decodeStr;
+from rsaCore import decodeStr, getPublicKey;
 
 # 初始化全局变量
 def _initGlobal_G_():
@@ -53,4 +53,26 @@ def _loadLogger_():
 
 # 加载rsa密钥解码方法
 def _loadRsaDecode_():
-	_G.setGlobalVarTo_Global("DecodeStr", decodeStr); # 设置日志类的全局变量
+	# 加载rsa密钥解码方法
+	_G.setGlobalVarTo_Global("DecodeStr", decodeStr);
+	# 更新main.js的公钥
+	publicKey = getPublicKey();
+	publicKey = publicKey.replace("\n", "")
+	mainJSFile, content = os.path.join(CURRENT_PATH, "assets", "static", "js", "main.js"), "";
+	with open(mainJSFile, "r", encoding = "utf-8") as f:
+		isPking = False;
+		for line in f.readlines():
+			if re.search("var PUBLIC_KEY.*\".*\"", line):
+				line = re.sub("\".*\";?", f"\"{publicKey}\";", line);
+			elif re.search("var PUBLIC_KEY.*\".*", line):
+				line = re.sub("\".*;?", f"\"{publicKey}\";", line);
+				isPking = True;
+			else:
+				if isPking:
+					if re.search("\";?", line):
+						isPking = False;
+					continue;
+			content += line;
+	with open(mainJSFile, "w", encoding = "utf-8") as f:
+		f.write(content);
+

@@ -51,21 +51,15 @@ def getLoginInfo(uname, upwd = "", isLogin = False, isRemember = False):
 def getLoginUser(uname, upwd, isLogin = False):
     try:
         pwd = _GG("DecodeStr")(upwd);
-        verifyKey = "|".join(["encode_pwd_code", "login", uname]);
         if isLogin:
-            if not cache.has_key(verifyKey):
-                return {
-                    "isSuccess" : False,
-                    "tips" : "验证码已过期！",
-                };
             user = models.User.objects.get(name = uname);
-            password = pwd_util.encodePassword(user.salt, pwd);
+            pwd = pwd_util.encodePassword(user.salt, pwd);
         elif cache.has_key(pwd):
             # 从缓存中读取密码
-            password = cache.get(pwd);
+            pwd = cache.get(pwd);
         # 返回数据
-        _GG("Log").d("===== Get Login User By ===== :", uname, password);
-        return models.User.objects.get(name = uname, password = password);
+        _GG("Log").d("===== Get Login User By ===== :", uname, pwd);
+        return models.User.objects.get(name = uname, password = pwd);
     except Exception as e:
         _GG("Log").d(e);
     return None;
