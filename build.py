@@ -62,5 +62,5 @@ def main():
 # 加载包时,默认直接构建
 main();
 
-if __name__ == '__main__':
-    buildDepends();
+# if __name__ == '__main__':
+#     buildDepends();
