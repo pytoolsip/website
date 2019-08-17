@@ -43,7 +43,7 @@ def getExeJson(exeList):
         try:
             exe = models.Exe.objects.get(name = name);
             exeDetail = models.ExeDetail.objects.get(eid = exe, version = version);
-            exeJson.append({"url" : exeDetail.file_path.url, "path" : exe.path});
+            exeJson.append({"name" : name, "base_version" : exeDetail.base_version});
         except Exception as e:
             _GG("Log").d(e);
     return json.dumps(exeJson);
@@ -53,8 +53,8 @@ def getEnvJson(envList):
     envJson = [];
     for name in json.loads(envList):
         try:
-            env = models.Depend.objects.get(name);
-            envJson.append({"url" : env.file_path.url, "path" : env.path});
+            env = models.Depend.objects.get(name = name);
+            envJson.append({"name" : name});
         except Exception as e:
             _GG("Log").d(e);
     return json.dumps(envJson);
