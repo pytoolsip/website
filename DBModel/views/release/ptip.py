@@ -120,7 +120,7 @@ def getOlExeInfoList():
         exeInfoList = models.ExeDetail.objects.filter(eid = exe).order_by('time');
         exeInfoList = exeInfoList.values("base_version").distinct().order_by('base_version');
         if len(exeInfoList) > 0:
-            olInfoList.append({"name" : exe.name, "verlist" : [exeInfo.version for exeInfo in exeInfoList]});
+            olInfoList.append({"name" : exe.name, "verlist" : [exeInfo.base_version for exeInfo in exeInfoList]});
     return olInfoList;
 
 # 获取线上依赖黄金信息
