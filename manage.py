@@ -3,12 +3,9 @@
 import os
 import sys
 
+import build; # 导入构建模块
+
 import load as Loader;
-
-import build as builder;
-
-def build():
-    builder.buildDepends(); # 构建依赖模块
 
 def load():
     Loader.loadGlobalInfo(); # 加载全局变量
@@ -27,6 +24,5 @@ def main():
 
 
 if __name__ == '__main__':
-    build()
     load()
     main()

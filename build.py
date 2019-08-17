@@ -55,5 +55,12 @@ def buildDepends():
     if len(failedMods) > 0:
         print(f"{pipPath} install {failedMods} failed!");
 
+# 构建逻辑
+def main():
+    buildDepends();
+
+# 加载包时,默认直接构建
+main();
+
 if __name__ == '__main__':
     buildDepends();
