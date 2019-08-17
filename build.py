@@ -1,7 +1,5 @@
 import os, json, subprocess;
 
-from _Global import _GG;
-
 pipPath = "pip";
 
 # 获取依赖模块表
@@ -50,12 +48,12 @@ def buildDepends():
 
     # 打印未安装模块名称
     if len(unInstallMods) > 0:
-        _GG("Log").i("UnInstallMods:", unInstallMods)
+        print("UnInstallMods:", unInstallMods)
 
     # 安装未安装模块
     failedMods = installMods(unInstallMods);
     if len(failedMods) > 0:
-        _GG("Log").w(f"{pipPath} install {failedMods} failed!");
+        print(f"{pipPath} install {failedMods} failed!");
 
 if __name__ == '__main__':
     buildDepends();

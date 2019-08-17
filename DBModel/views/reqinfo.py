@@ -2,6 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 from DBModel import models
+from base import *;
 
 from _Global import _GG;
 
