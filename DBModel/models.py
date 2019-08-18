@@ -75,7 +75,6 @@ class Ptip(models.Model):
     file_path = models.FileField(upload_to = ptip_directory_path)
     changelog = models.TextField()
     time = models.DateTimeField()
-    download = models.IntegerField()
     base_version = models.CharField(max_length=255)
     update_version = models.CharField(max_length=255)
     status = models.IntegerField()
