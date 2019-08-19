@@ -3,8 +3,9 @@
 # @Date:   2018-04-19 14:22:56
 # @Last Modified by:   JinZhang
 # @Last Modified time: 2019-03-28 18:34:16
-
 import re,os,sys,time;
+
+logLevel = "debug";
 
 # 当前文件位置
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
@@ -47,7 +48,7 @@ def _loadLogger_():
 	maxBytes = 102400000;
 	backupCount = 10;
 	# 保存Logger到全局变量中
-	logger = Logger("Common", isLogFile = True, logFileName = os.path.join(CURRENT_PATH, path, name+("_%s.log"%curTimeStr)), maxBytes = maxBytes, backupCount = backupCount);
+	logger = Logger("Common", level = logLevel, isLogFile = True, logFileName = os.path.join(CURRENT_PATH, path, name+("_%s.log"%curTimeStr)), maxBytes = maxBytes, backupCount = backupCount);
 	_G.setGlobalVarTo_Global("Log", logger); # 设置日志类的全局变量
 	return logger;
 

@@ -6,9 +6,9 @@ $(function(){
 	// 响应窗口尺寸大小变化函数
 	var windowOnresizeFunc = window.onresize;
 	// 登陆链接
-	var loginUrl = "http://jimdreamheart.club/pytoolsip/login";
+	var loginUrl = "http://jimdreamheart.club/pytoolsip/userinfo?k=login";
 	// 注册链接
-	var registerUrl = "http://jimdreamheart.club/pytoolsip/register";
+	var registerUrl = "http://jimdreamheart.club/pytoolsip/userinfo?k=register";
 	// 公钥
 	var PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDmV3i92KI4iaPEFtUfzJgQFByUTbRJIiDqbBYD0aT+JVupMG8Cwdcqqg/p36JAn5+ARL1Ci6H9n/m1+M+DvlUcs6v8S0SQ4dedCBTSgpZI+EgPga1PKdrcHYalQQXRKvHCZ2PAtuTwWcxJZRRhQ85d/j8Qg6xRoZqK/q5stbwwEQIDAQAB-----END PUBLIC KEY-----";
 	// 编码字符串

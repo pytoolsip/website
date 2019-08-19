@@ -23,8 +23,7 @@ urlpatterns = [
     url(r'^$', views.home),
     url(r'^search$', views.search),
     url(r'^detail$', views.detail),
-    url(r'^login$', views.login),
-    url(r'^register$', views.register),
+    url(r'^userinfo$', views.userinfo),
     url(r'^release$', views.release),
     url(r'^reqinfo$', views.reqinfo),
 ]

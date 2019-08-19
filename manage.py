@@ -5,7 +5,7 @@ import sys
 
 # import build; # 导入构建模块
 
-import load as Loader;
+import _load as Loader;
 
 def load():
     Loader.loadGlobalInfo(); # 加载全局变量
