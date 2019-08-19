@@ -8,33 +8,33 @@ from DBModel import models
 # 搜索页请求
 def search(request):
     request.encoding = "utf-8";
-    s = request.GET.get("s", "name");
-    t = request.GET.get("t", "");
-    result = {"isSearchNone" : False, "searchSelect" : s, "searchText" : t, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
+    select = request.GET.get("s", "name");
+    text = request.GET.get("t", "");
+    result = {"isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
     # 校验提交的数据
-    if not t:
+    if not text:
         return render(request, "search.html", result);
     # 从数据库中查找数据
-    if s == "id":
+    if select == "id":
         # 根据tkey获取工具信息
-        ret, toolInfo = getToolInfoByTKey(t);
+        ret, toolInfo = getToolInfoByTKey(text);
         if ret:
             result["toolInfoList"].append(toolInfo);
-    elif s == "author":
+    elif select == "author":
         if request.GET.get("q", "") == "tools":
             # 根据userName获取工具信息列表
-            ret, toolInfoList = getToolInfoListByUserName(t);
+            ret, toolInfoList = getToolInfoListByUserName(text);
             if ret:
                 result["toolInfoList"].extend(toolInfoList);
         else:
             # 根据userName搜索玩家信息列表
-            ret, userInfoList = serachUserInfoListByName(t);
+            ret, userInfoList = serachUserInfoListByName(text);
             if ret:
                 result["userInfoList"].extend(userInfoList);
             result["searchObject"] = "用户";
     else:
         # 根据toolName搜索工具信息列表
-        ret, toolInfoList = serachToolInfoListByName(t);
+        ret, toolInfoList = serachToolInfoListByName(text);
         if ret:
             result["toolInfoList"].extend(toolInfoList);
     # 判断是否搜索出了结果

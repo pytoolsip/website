@@ -147,23 +147,25 @@
 		<script src="http://jimdreamheart.club/resource/jsencrypt/jsencrypt.min.js"></script>
 		<script src={% static "js/main.js" %}></script>
 		<script language="JavaScript">
-			$("#commentScore").rating({
-				min: 0,
-				max: 5,
-				step: 0.5,
-				showClear: false,
-				hoverOnClear: false,
-				clearCaption: "0分",
-				starCaptions: function(val){
-					return val+"分";
-				},
-				starCaptionClasses:function(val){
-					return "label label-info";
-				},
-			});
-			var idClipboard = new ClipboardJS("#copyID");
-			idClipboard.on('success', function(e) {
-				e.clearSelection();
+			$(function(){
+				$("#commentScore").rating({
+					min: 0,
+					max: 5,
+					step: 0.5,
+					showClear: false,
+					hoverOnClear: false,
+					clearCaption: "0分",
+					starCaptions: function(val){
+						return val+"分";
+					},
+					starCaptionClasses:function(val){
+						return "label label-info";
+					},
+				});
+				var idClipboard = new ClipboardJS("#copyID");
+				idClipboard.on('success', function(e) {
+					e.clearSelection();
+				})
 			})
 		</script>
 	</body>

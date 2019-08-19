@@ -23,7 +23,6 @@ def getPtipData():
             "url" : ptipInfo.file_path.url,
             "changelog" : ptipInfo.changelog,
             "uploadTime" : ptipInfo.time,
-            "downloadCount" : ptipInfo.download_count,
     } for ptipInfo in ptipInfos];
     # 最新平台信息
     isHasNewest, newestPtip = False, {};
