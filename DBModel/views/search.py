@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from DBModel import models
 
 # 搜索页请求
+@csrf_exempt
 def search(request):
     request.encoding = "utf-8";
     select = request.GET.get("s", "name");

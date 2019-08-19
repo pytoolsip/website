@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^userinfo$', views.userinfo),
     url(r'^release$', views.release),
     url(r'^reqinfo$', views.reqinfo),
+    url(r'^toollist$', views.toollist),
 ]

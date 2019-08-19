@@ -10,7 +10,7 @@ import os,sys;
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
 sys.path.append(CURRENT_PATH);
 
-__all__ = ["home", "search", "detail", "userinfo", "release", "reqinfo"];
+__all__ = ["home", "search", "detail", "userinfo", "release", "reqinfo", "toollist"];
 
 try:
     from home import home;
@@ -19,6 +19,7 @@ try:
     from userinfo import userinfo;
     from release import release;
     from reqinfo import reqinfo;
+    from toollist import toollist;
 
 except Exception as e:
 	raise e;

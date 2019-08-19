@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from DBModel import models
 
 # 首页请求
+@csrf_exempt
 def home(request):
     ptipInfoList, isHasNewestPtip, newestPtip = getPtipData()
     return render(request, "home.html", {

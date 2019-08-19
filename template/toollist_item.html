@@ -1,0 +1,55 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h4 class="text-center">搜索<span id="tlKeyText"></span></h4>
+            <form id="searchForm" class="input-group">
+                <input id="searchText" name="searchText" type="text" placeholder="工具名称" class="form-control">
+                <div class="input-group-btn">
+                    <button type="submit" class="btn btn-success">搜索</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="alertList">
+    </div>
+    <div id="searchResult">
+        {% if isSearchNone %}
+            <p class="text-center">未搜索到[<b>名称</b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的工具&nbsp;~</p>
+        {% endif %}
+        {% for toolInfo in toolInfoList %}
+            <div class="col-md-4 tool-info-item">
+                <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+                <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+                <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+                <p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
+                <p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+                <p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script language="JavaScript">
+    $(function(){
+        var showAlert = function(type, text) {
+            $("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+                    <span class='alertContent'>"+ text +"</span>\
+                </div>");
+        }
+        var tips = "{{requestFailedTips}}";
+        if (tips != "") {
+            showAlert("danger", tips);
+        }
+        // 更新当前项
+        var tlkey = "{{tlkey}}";
+        var $activeItem = $("#sidebar li.active>._slideItem_");
+        if ($activeItem.length == 0) {
+            $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
+        }else if (tlkey != $activeItem.attr("data-target")) {
+            $activeItem.parent().toggleClass("active");
+            $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
+        }
+        // 重置标题名
+        $("#tlKeyText").text($("#sidebar li.active>._slideItem_").text());
+    })
+</script>
