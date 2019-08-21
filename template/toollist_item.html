@@ -2,15 +2,13 @@
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <h4 class="text-center">搜索<span id="tlKeyText"></span></h4>
-            <form id="searchForm" class="input-group">
-                <input id="searchText" name="searchText" type="text" placeholder="工具名称" class="form-control">
+            <form id="searchForm" class="input-group" role="form" enctype="multipart/form-data">
+                <input name="searchText" class="form-control" type="text" placeholder="工具名称" value="{{ searchText }}">
                 <div class="input-group-btn">
-                    <button type="submit" class="btn btn-success">搜索</button>
+                    <button id="submit" type="button" class="btn btn-success">搜索</button>
                 </div>
             </form>
         </div>
-    </div>
-    <div id="alertList">
     </div>
     <div id="searchResult">
         {% if isSearchNone %}
@@ -30,26 +28,17 @@
 </div>
 <script language="JavaScript">
     $(function(){
-        var showAlert = function(type, text) {
-            $("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
-                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
-                    <span class='alertContent'>"+ text +"</span>\
-                </div>");
-        }
-        var tips = "{{requestFailedTips}}";
-        if (tips != "") {
-            showAlert("danger", tips);
-        }
         // 更新当前项
-        var tlkey = "{{tlkey}}";
-        var $activeItem = $("#sidebar li.active>._slideItem_");
-        if ($activeItem.length == 0) {
-            $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
-        }else if (tlkey != $activeItem.attr("data-target")) {
-            $activeItem.parent().toggleClass("active");
-            $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
-        }
+        setActiveItem("{{tlkey}}");
         // 重置标题名
         $("#tlKeyText").text($("#sidebar li.active>._slideItem_").text());
+        // 点击搜索
+        $("#searchForm").validate({
+            submitHandler: function() {
+                requestToolList({
+                    "searchText" : $("#searchForm").find("input[name='searchText']").val(),
+                });
+            }
+        });
     })
 </script>

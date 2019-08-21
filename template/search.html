@@ -1,108 +1,67 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="PyToolsIP[Python工具集成平台]">
-		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP-Tools-Search</title>
-		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
-		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
-		<link rel="stylesheet" href= {% static "css/style.css" %} />
-	</head>
-	<body>
-		<header id = "header">
-			<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-				<div class="ptip-navbar">
-					<a class="navbar-brand" href="http://jimdreamheart.club" title="DzjH">DzjH</a>
-					<a class="navbar-brand pull-right" href="http://jimdreamheart.club/pytoolsip/release" target="_blank" title="发布后台">发布后台</a>
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<h4 class="text-center">PyToolsIP Tools Search</h4>
+			<form id="searchForm" class="input-group" role="form" enctype="multipart/form-data">
+				<div class="input-group-btn form-group">
+					<select id="searchSelect" name="searchSelect" class="form-control" style="width: auto;">
+						<option value="name">名称</option>
+						<option value="id">ID</option>
+						<option value="author">作者</option>
+					</select>
 				</div>
-				<div class="container">
-					<div class="container-fluid navbar-header">
-						<a class="navbar-brand" href="http://jimdreamheart.club/pytoolsip" title="首页">PyToolsIP</a>
-						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#searchNavCollapse">
-							<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-						</button>
-					</div>
-					<div id="searchNavCollapse" class="navbar-collapse collapse">
-						<ul class="nav navbar-nav">
-							<li><a href="http://jimdreamheart.club/pytoolsip/toollist?k=development" title="开发工具">开发工具</a></li>
-							<li><a href="http://jimdreamheart.club/pytoolsip/toollist?k=product" title="产品工具">产品工具</a></li>
-							<li><a href="http://jimdreamheart.club/pytoolsip/toollist?k=entertainment" title="娱乐工具">娱乐工具</a></li>
-						</ul>
-					</div>
+				<input name="searchText" type="text" placeholder="Search" class="form-control" value="{{searchText}}">
+				<div class="input-group-btn">
+					<button type="submit" class="btn btn-success">Search</button>
 				</div>
-			</nav>
-		</header>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
-					<h4 class="text-center">PyToolsIP Tools Search</h4>
-					<form class="input-group">
-						<div class="input-group-btn form-group">
-							<select id="searchSelect" name="s" class="form-control" style="width: auto;">
-								<option value="name">名称</option>
-								<option value="id">ID</option>
-								<option value="author">作者</option>
-							</select>
-						</div>
-						<input id="searchText" name="t" type="text" placeholder="Search" class="form-control">
-						<div class="input-group-btn">
-							<button type="submit" class="btn btn-success">Search</button>
-						</div>
-					</form>
-				</div>
-			</div>
-			
-			<div id="searchResult" class="row">
-				{% if isSearchNone %}
-					<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
-				{% endif %}
-				{% for toolInfo in toolInfoList %}
-					<div class="col-md-4 tool-info-item">
-						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
-						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
-						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-						<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
-						<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
-						<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
-					</div>
-				{% endfor %}
-				{% for userInfo in userInfoList %}
-					<div class="col-md-4 tool-info-item">
-						<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3><span>&nbsp;[{{ userInfo.email }}]</span></div>
-						<a class="btn btn-info" href="?s=author&q=tools&t={{ userInfo.name }}" role="button">查看该用户上传的工具&nbsp;&raquo;</a>
-					</div>
-				{% endfor %}
-			</div>
+			</form>
 		</div>
-		<div class="fixdRight">
-			<div id="user"><a class="btn btn-default text-center" href="javascript:void(0);" title="个人中心"><span class="glyphicon glyphicon-user"></span></a></div>
-			<div id="toTop"><a href="javascript:void(0);" title="回到顶部">╱╲</a></div>
-		</div>
-		<footer>
-			<div class="container">
-				<span>Copyright&nbsp;&copy;&nbsp;2019&nbsp;</span>
-				<a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
+	</div>
+	
+	<div id="searchResult" class="row">
+		{% if isSearchNone %}
+			<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
+		{% endif %}
+		{% for toolInfo in toolInfoList %}
+			<div class="col-md-4 tool-info-item">
+				<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+				<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+				<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+				<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
+				<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+				<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
 			</div>
-		</footer>
-		<script src="http://jimdreamheart.club/resource/jquery/jquery-3.4.0.min.js"></script>
-		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
-		<script src="http://jimdreamheart.club/resource/jquery/jquerysession.js"></script>
-		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-        <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
-        <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
-		<script src="http://jimdreamheart.club/resource/jsencrypt/jsencrypt.min.js"></script>
-		<script src={% static "js/main.js" %}></script>
-		<script language="JavaScript">
-			$(function(){
-				var $selectOption = $("#searchSelect").find("option[value='{{ searchSelect }}']");
-				$selectOption.attr("selected",true); // 选中选项
-				$("#searchText").val("{{ searchText }}"); // 搜索值
-				$("#searchSelectOption").text($selectOption.text()); // 搜索选项值
-			})
-		</script>
-	</body>
-</html>
+		{% endfor %}
+		{% for userInfo in userInfoList %}
+			<div class="col-md-4 tool-info-item">
+				<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3><span>&nbsp;[{{ userInfo.email }}]</span></div>
+				<a class="btn btn-info request-author-tools" href="javascript:void(0);" role="button" data-target="{{ userInfo.name }}">查看该用户上传的工具&nbsp;&raquo;</a>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+<script language="JavaScript">
+	$(function(){
+		var $selectOption = $("#searchSelect").find("option[value='{{ searchSelect }}']");
+		$selectOption.attr("selected",true); // 选中选项
+		$("#searchSelectOption").text($selectOption.text()); // 搜索选项值
+        // 点击搜索
+        $("#searchForm").validate({
+            submitHandler: function() {
+                requestToolList({
+                    "searchSelect" : $("#searchSelect").val(),
+                    "searchText" : $("#searchForm").find("input[name='searchText']").val(),
+                });
+            }
+		});
+		// 点击用户上传的工具
+		$(".request-author-tools").on("click", function(){
+			requestToolList({
+				"isSearchTools" : true,
+				"searchSelect" : "author",
+				"searchText" : $(this).attr("data-target"),
+			});
+		});
+	})
+</script>

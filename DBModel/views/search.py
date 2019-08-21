@@ -9,8 +9,8 @@ from DBModel import models
 @csrf_exempt
 def search(request):
     request.encoding = "utf-8";
-    select = request.GET.get("s", "name");
-    text = request.GET.get("t", "");
+    select = request.POST.get("searchSelect", "name");
+    text = request.POST.get("searchText", "");
     result = {"isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
     # 校验提交的数据
     if not text:
@@ -22,7 +22,7 @@ def search(request):
         if ret:
             result["toolInfoList"].append(toolInfo);
     elif select == "author":
-        if request.GET.get("q", "") == "tools":
+        if request.POST.get("isSearchTools", False):
             # 根据userName获取工具信息列表
             ret, toolInfoList = getToolInfoListByUserName(text);
             if ret:
@@ -39,7 +39,7 @@ def search(request):
         if ret:
             result["toolInfoList"].extend(toolInfoList);
     # 判断是否搜索出了结果
-    if len(result["toolInfoList"]) == 0 and len(result["userInfoList"]) == 0:
+    if len(result["toolInfoList"]) == 0 and len(result["userInfoList"]) == 0 and text:
         result["isSearchNone"] = True;
     return render(request, "search.html", result);
 

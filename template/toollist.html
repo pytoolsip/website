@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP-发布后台</title>
+		<title>PyToolsIP-工具列表</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
@@ -22,18 +22,9 @@
                     <a class="navbar-brand pull-right" href="http://jimdreamheart.club/pytoolsip/release" target="_blank" title="发布后台">发布后台</a>
                 </div>
                 <div class="container">
-                        <div class="container-fluid navbar-header">
-                            <a class="navbar-brand" href="http://jimdreamheart.club/pytoolsip" title="首页">PyToolsIP</a>
-                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#searchNavCollapse">
-                                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-                            </button>
-                        </div>
-                        <div id="searchNavCollapse" class="navbar-collapse collapse">
-                            <form action="http://jimdreamheart.club/pytoolsip/search" class="navbar-form navbar-right">
-                                <input name="t" type="text" placeholder="搜索工具名称" class="form-control">
-                                <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
-                            </form>
-                        </div>
+                    <div class="container-fluid navbar-header">
+                        <a class="navbar-brand" href="http://jimdreamheart.club/pytoolsip" title="首页">PyToolsIP</a>
+                    </div>
                 </div>
             </nav>
         </header>
@@ -41,7 +32,7 @@
             <div class="row">
                 <div id="sidebar" class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
-                        <li class="active"><a class="_slideItem_" href="javascript:void(0);" data-target="all">所有工具</a></li>
+                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="all">所有工具</a></li>
                     </ul>
                     <ul class="nav nav-sidebar">
                         <li><a class="_slideItem_" href="javascript:void(0);" data-target="development">开发工具</a></li>
@@ -70,9 +61,20 @@
         <script src={% static "js/release_validate.js" %}></script>
         <script language="JavaScript">
             $(function(){
+                var toolListUrl = "http://jimdreamheart.club/pytoolsip/toollist?k=";
+                // 设置当前选中项
+                setActiveItem = function(tlkey) {
+                    var $activeItem = $("#sidebar li.active>._slideItem_");
+                    if ($activeItem.length == 0) {
+                        $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
+                    }else if (tlkey != $activeItem.attr("data-target")) {
+                        $activeItem.parent().toggleClass("active");
+                        $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
+                    }
+                }
                 // 请求管理后台
                 requestToolList = function(data){
-                    $.post("http://localhost:8000/toollist", data, function(data, status){
+                    $.post(window.location.href, data, function(data, status){
                         if (status == "success") {
                             $("#mainContent").html(data);
                         }
@@ -85,31 +87,28 @@
                         if ($activeItem.attr("data-target") != $(this).attr("data-target")) {
                             $activeItem.parent().toggleClass("active");
                             $(this).parent().toggleClass("active");
-                            // 请求信息
-                            requestToolList({
-                                "isSwitchTab" : true,
-                                "tlkey" : $(this).attr("data-target"),
-                            });
+                            // 跳转页面
+                            window.location.href = toolListUrl+$(this).attr("data-target");
                         }
                     }
                 });
-                // 获取当前工具列表key值
-                var getCurTlKey = function(){
+                // 检测并请求请求数据
+                (function(){
                     var arr = window.location.href.split("?");
                     if (arr.length > 1){
                         var arr1 = arr[1].split("&");
                         for (i in arr1) {
                             var arr2 = arr1[i].split("=");
                             if (arr2.length > 1 && arr2[0] == "k") {
-                                return arr2[1];
+                                setActiveItem(arr2[1]);
+                                return;
                             }
                         }
                     }
-                    return "";
-                }
+                })();
+                // 请求数据
                 requestToolList({
-                    "isSwitchTab" : true,
-                    "tlkey" : getCurTlKey(),
+                    "searchText" : "",
                 })
             })
         </script>
