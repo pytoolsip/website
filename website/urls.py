@@ -21,7 +21,6 @@ from DBModel import views
 
 urlpatterns = [
     url(r'^$', views.home),
-    url(r'^search$', views.search),
     url(r'^detail$', views.detail),
     url(r'^userinfo$', views.userinfo),
     url(r'^release$', views.release),
