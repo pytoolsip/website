@@ -13,8 +13,8 @@ def search(request):
     text = request.POST.get("searchText", "");
     result = {"isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
     # 校验提交的数据
-    if not text:
-        return render(request, "search.html", result);
+    if "searchSelect" not in request.POST:
+        return render(request, "toollist.html", result);
     # 从数据库中查找数据
     if select == "id":
         # 根据tkey获取工具信息
