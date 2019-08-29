@@ -18,7 +18,7 @@ def home(request):
 
 # 获取平台数据
 def getPtipData():
-    ptipInfos = models.Ptip.objects.order_by('time');
+    ptipInfos = models.Ptip.objects.all().order_by('time');
     ptipInfoList = [{
             "version" : ptipInfo.version,
             "url" : ptipInfo.file_path.url,
