@@ -19,13 +19,14 @@ try:
     import ptip;
     import depend;
     import tool;
+    import installer;
 except Exception as e:
 	raise e;
 finally:
 	sys.path.remove(CURRENT_PATH);
 
 # 平台键值列表
-PtipKeyList = ["ptip_examination", "ptip_script", "ptip_exe", "depend_lib", "pt_ol_examination"];
+PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
 # 工具键值列表
 PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
 
@@ -118,6 +119,8 @@ def getReleaseResult(request, user, mkey, isSwitchTab):
         ptip.examine(request, user, result, isSwitchTab);
     elif mkey == "ptip_script": # 更新平台脚本
         ptip.upload(request, user, result, isSwitchTab);
+    elif mkey == "ptip_installer": # 更新平台安装程序
+        installer.uploadInstaller(request, user, result, isSwitchTab);
     elif mkey == "depend_lib": # 上传依赖库
         depend.uploadDepend(request, user, result, isSwitchTab);
     elif mkey == "ptip_exe": # 更新平台启动/更新程序

@@ -64,6 +64,24 @@ class ExeDetail(models.Model):
         managed = False
         db_table = 'exe_detail'
 
+
+# 安装程序文件路径
+def installer_directory_path(instance, filename):
+    ext = os.path.splitext(filename)[1];
+    return os.path.join("release", "installer", f"pytoolsip_installer_{instance.version}{ext}");
+class Installer(models.Model):
+    id = models.IntegerField(primary_key=True)
+    version = models.CharField(max_length=255)
+    changelog = models.CharField(max_length=255)
+    file_path = models.FileField(upload_to = installer_directory_path)
+    base_version = models.CharField(max_length=255)
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'installer'
+
+
 # 平台脚本文件路径
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
