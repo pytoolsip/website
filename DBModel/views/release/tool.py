@@ -5,6 +5,8 @@ from utils import base_util;
 
 from _Global import _GG;
 
+from base import *
+
 # 上传新工具
 def uploadNew(request, user, result, isSwitchTab):
     if not isSwitchTab:
@@ -78,8 +80,7 @@ def getOlIPBaseVerList():
 
 # 获取线上信息列表
 def getOnlineInfoList(baseInfo):
-    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('time');
-    ptInfoList = ptInfoList.values("base_version").distinct();
+    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('base_version', 'time');
     return [{
         "name" : baseInfo.name,
         "category" : baseInfo.category,

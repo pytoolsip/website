@@ -52,7 +52,7 @@
         <input name="version" class="form-control" type="text" placeholder="1.0.0" required autofocus />
     </div>
     <div class="input-group">
-        <label class="input-group-addon" for="file">更新包(zip格式)</label>
+        <label class="input-group-addon" for="file">更新文件(exe格式)</label>
         <input name="file" class="form-control" type="file" required />
     </div>
     <div class="input-group">
@@ -87,7 +87,7 @@
                     checkVersion: 3,
                 },
                 file: {
-                    checkFileType: "zip",
+                    checkFileType: "exe",
                 },
                 changelog: {
                     required: true,

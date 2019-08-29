@@ -25,7 +25,7 @@ class Comment(models.Model):
 # 依赖库路径
 def depend_lib_path(instance, filename):
     ext = os.path.splitext(filename)[1];
-    return os.path.join("release", "depend", f"{instance.name}.{ext}");
+    return os.path.join("release", "depend", f"{instance.name}{ext}");
 class Depend(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -51,7 +51,7 @@ class Exe(models.Model):
 # 运行程序文件路径
 def exe_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
-    return os.path.join("release", "exe", f"{instance.name}-{instance.version}.{ext}");
+    return os.path.join("release", "exe", instance.eid.name, f"{instance.eid.name}_{instance.version}{ext}");
 class ExeDetail(models.Model):
     eid = models.ForeignKey(Exe, models.DO_NOTHING, db_column='eid')
     version = models.CharField(max_length=255)
@@ -68,7 +68,7 @@ class ExeDetail(models.Model):
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
-    return os.path.join("release", "ptip", "script", ".".join(vList[:1]), f"{instance.version}.{ext}");
+    return os.path.join("release", "ptip", "script", ".".join(vList[:1]), f"ptip_{instance.version}{ext}");
 class Ptip(models.Model):
     id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
@@ -106,7 +106,7 @@ class Tool(models.Model):
 def tool_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
-    return os.path.join("release", "tools", instance.tkey, ".".join(vList[:1]), f"{instance.version}.{ext}");
+    return os.path.join("release", "tools", instance.tkey, ".".join(vList[:1]), f"{instance.tkey}_{instance.version}{ext}");
 class ToolDetail(models.Model):
     tkey = models.ForeignKey(Tool, models.DO_NOTHING, db_column='tkey', to_field='tkey')
     version = models.CharField(max_length=255)

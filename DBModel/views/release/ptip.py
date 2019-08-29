@@ -65,7 +65,7 @@ def savePtip(request, result):
     exeList, envList = request.POST.get("exeList", None), request.FILES.get("envList", None);
     if version and file_path and changelog and exeList and envList:
         vList = version.split(".");
-        base_version = ".".join(vList[:1]);
+        base_version = ".".join(vList[:2]);
         if base_util.verifyVersion(version, [ptipInfo.version for ptipInfo in models.Ptip.objects.filter(base_version = base_version)]):
             # 保存脚本文件
             p = models.Ptip(version = version, file_path = file_path, changelog = changelog, time = timezone.now(), base_version = base_version, update_version = base_version, status = Status.Uploading.value, exe_list = getExeJson(exeList), env_list = getEnvJson(envList));
@@ -96,8 +96,7 @@ def updateBaseVer(request, result):
 # 获取线上信息列表
 def getOlInfoList():
     olInfoList = [];
-    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('time');
-    ptipList = ptipList.values("base_version").distinct().order_by('base_version');
+    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('base_version', 'time');
     if len(ptipList) > 0:
         baseVerList = [];
         for ptipInfo in ptipList:
@@ -117,8 +116,7 @@ def getOlInfoList():
 def getOlExeInfoList():
     olInfoList = [];
     for exe in models.Exe.objects.all():
-        exeInfoList = models.ExeDetail.objects.filter(eid = exe).order_by('time');
-        exeInfoList = exeInfoList.values("base_version").distinct().order_by('base_version');
+        exeInfoList = models.ExeDetail.objects.filter(eid = exe).order_by('base_version', 'time');
         if len(exeInfoList) > 0:
             olInfoList.append({"name" : exe.name, "verlist" : [exeInfo.base_version for exeInfo in exeInfoList]});
     return olInfoList;
@@ -152,7 +150,7 @@ def releasePtip(request, user, result):
 
 # 删除除指定版本外的其他版本
 def delOtherVers(version):
-    base_version = ".".join(version.split(".")[:1]);
+    base_version = ".".join(version.split(".")[:2]);
     if len(models.Ptip.objects.filter(status = Status.Released.value, base_version = base_version, version = version)) > 0:
         for ptip in models.Ptip.objects.filter(status = Status.Released.value, base_version = base_version):
             if ptip.version != version:

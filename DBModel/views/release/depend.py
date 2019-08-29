@@ -5,6 +5,8 @@ from utils import base_util;
 
 from _Global import _GG;
 
+from base import *
+
 # 上传程序文件
 def uploadExe(request, user, result, isSwitchTab):
     if not isSwitchTab:
@@ -35,7 +37,7 @@ def saveExe(request, name, result):
             exe.save();
         # 保存程序详情
         vList = version.split(".");
-        base_version = ".".join(vList[:1]);
+        base_version = ".".join(vList[:2]);
         if  base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
             exeDetail = models.ExeDetail(eid = exe, version = version, file_path = file_path, base_version = base_version, changelog = changelog, time = timezone.now());
             exeDetail.save();
@@ -48,7 +50,6 @@ def saveExe(request, name, result):
 # 获取线上信息列表
 def getOlExeInfoList():
     exeList = models.ExeDetail.objects.all().order_by('time');
-    exeList = exeList.values("base_version").distinct();
     if len(exeList) > 0:
         return [{
             "name" : exeInfo.eid.name,
@@ -89,9 +90,9 @@ def getOlDependInfoList():
 
 # 删除除指定版本外的其他版本
 def delOtherVers(version):
-    base_version = ".".join(version.split(".")[:1]);
-    if len(models.ExeDetail.objects.filter(status = Status.Released.value, base_version = base_version, version = version)) > 0:
-        for ptip in models.ExeDetail.objects.filter(status = Status.Released.value, base_version = base_version):
+    base_version = ".".join(version.split(".")[:2]);
+    if len(models.ExeDetail.objects.filter(base_version = base_version, version = version)) > 0:
+        for ptip in models.ExeDetail.objects.filter(base_version = base_version):
             if ptip.version != version:
                 ptip.delete();
     else:
