@@ -34,12 +34,11 @@ def getOlInstallerInfoList():
     installerList = models.Installer.objects.all().order_by('time');
     if len(installerList) > 0:
         return [{
-            "name" : exeInfo.eid.name,
-            "version" : exeInfo.version,
-            "time" : exeInfo.time,
-            "changelog" : exeInfo.changelog,
-            "url" : exeInfo.file_path.url,
-        } for exeInfo in installerList];
+            "version" : installerInfo.version,
+            "time" : installerInfo.time,
+            "changelog" : installerInfo.changelog,
+            "url" : installerInfo.file_path.url,
+        } for installerInfo in installerList];
     return [];
 
 # 删除除指定版本外的其他版本
