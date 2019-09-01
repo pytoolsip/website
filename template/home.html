@@ -59,10 +59,10 @@
 						<p>在使用工具时，除了可使用本平台自带的工具外，还允许<b>用户开发自定义功能</b>的工具，而用户可选择将所开发的工具上传到本平台，以共享给其他人下载使用。</p>
 					</div>
 					<ul class="jumbotron-btn-group">
-						{% if isHasNewestPtip %}
-						<li><a class="btn btn-primary btn-lg" href="{{ newestPtip.url }}" target="_blank" role="button" title="下载后进行解压，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。需要注意的是：初次运行程序时，为确保成功拉取依赖模块，请保证网络能正常连接！"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestPtip.version }}]</a></li>
+						{% if isHasNewestInstaller %}
+						<li><a class="btn btn-primary btn-lg" href="{{ newestInstaller.url }}" target="_blank" role="button" title="双击安装程序进行安装，待安装成功后，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。需要注意的是：初次运行程序时，为确保成功拉取依赖模块，请保证网络能正常连接！"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestInstaller.version }}]</a></li>
 						{% else %}
-						<li><a class="btn btn-primary btn-lg" href="javascript:void(0);" role="button" title="" disabled>暂无平台下载</a></li>
+						<li><a class="btn btn-primary btn-lg" href="javascript:void(0);" role="button" title="" disabled>暂无安装程序下载</a></li>
 						{% endif %}
 						<li><a class="btn btn-default btn-lg" href="http://jimdreamheart.club/gitbook/PyToolsIP/" target="_blank" role="button"><span class="glyphicon glyphicon-book"></span>&nbsp;开发文档</a></li>
 					</ul>
@@ -71,8 +71,8 @@
 		</header>
 		<div id="mainContent" class="container">
 			<div class="row">
-				<div id="downloadList" class="col-md-12">
-					<h2>下载列表</h2>
+				<div class="col-md-12">
+					<h2>平台版本列表</h2>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
@@ -80,7 +80,6 @@
 									<th>版本号</th>
 									<th>更新日志</th>
 									<th>上传时间</th>
-									<th>下载</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -89,26 +88,12 @@
 										<td>{{ ptipInfo.version }}</td>
 										<td style="width:50%">{{ ptipInfo.changelog }}</td>
 										<td>{{ ptipInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
-										<td><a href="{{ ptipInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
 									</tr>
 								{% endfor %}
 							</tbody>
 						</table>
 					</div>
 				</div>
-				<div class="col-md-12">
-					<h2>最新工具</h2>
-					{% for toolInfo in toolInfoList %}
-						<div class="col-md-4 tool-info-item">
-							<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
-							<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
-							<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-							<p class="tool-info-detail"><a class="btn btn-info" href="http://jimdreamheart.club/pytoolsip/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
-							<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
-							<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
-						</div>
-					{% endfor %}
-				<div>
 			</div>
 		</div>
 		<div class="fixdRight">
