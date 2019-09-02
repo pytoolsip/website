@@ -70,16 +70,9 @@ def release(request):
 # 登陆平台
 def loginIP(request):
     # 判断是否请求登陆
-    uname = request.POST.get("uname", "");
-    if base_util.getPostAsBool(request, "isReqLogin"):
-        return JsonResponse(userinfo.getLoginInfo(uname, isReq = True));
-    # 登陆时的返回数据
     if base_util.getPostAsBool(request, "isLogin"):
-        loginInfo = userinfo.getLoginInfo(uname, upwd = request.POST.get("upwd", ""), isLogin = True);
-        if loginInfo.get("isSuccess", False):
-            return JsonResponse(loginInfo);
-        else:
-            return render(request, "release/login.html", {"HOME_URL": settings.HOME_URL, "requestFailedTips" : "用户名和密码不匹配！"});
+        loginInfo = userinfo.getLoginInfo(request.POST.get("uname", ""), upwd = request.POST.get("upwd", ""), isLogin = True);
+        return JsonResponse(loginInfo);
     return None;
 
 # 校验逻辑
