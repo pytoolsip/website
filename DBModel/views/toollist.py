@@ -3,6 +3,7 @@ from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse
 
+from website import settings
 from DBModel import models
 from utils import base_util
 
@@ -24,7 +25,7 @@ def toollist(request):
     request.encoding = "utf-8";
     # 判断提交数据中是否包含tlkey
     if "tl" in request.POST:
-        return render(request, "toollist.html", {});
+        return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL});
     # 获取工具列表键值
     tlkey = request.GET.get("k", "all");
     if tlkey not in TlKeyMap:
@@ -36,14 +37,14 @@ def toollist(request):
             return search(request);
         # 搜索其他模块
         searchText = request.POST["searchText"];
-        result = {"tlkey" : tlkey, "searchText" : searchText, "isSearchNone" : False, "toolInfoList" : []};
+        result = {"HOME_URL": settings.HOME_URL, "tlkey" : tlkey, "searchText" : searchText, "isSearchNone" : False, "toolInfoList" : []};
         # 根据searchText搜索工具信息列表
         result["toolInfoList"].extend(serachToolListByName(tlkey, searchText));
         # 判断是否搜索出了结果
         if searchText:
             result["isSearchNone"] = len(result["toolInfoList"]) == 0;
         return render(request, "toollist_item.html", result);
-    return render(request, "toollist.html", {});
+    return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL});
 
 # 根据toolName搜索工具信息列表
 def serachToolListByName(tlkey, name):

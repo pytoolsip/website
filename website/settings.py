@@ -157,3 +157,7 @@ EMAIL_PORT = 994
 EMAIL_HOST_USER = "jimdreamheart@163.com"
 EMAIL_HOST_PASSWORD = "94caf63fecc75550"
 EMAIL_USE_SSL = True
+
+# home url
+HOME_URL = "http://jimdreamheart.club/pytoolsip"
+# HOME_URL = "http://localhost:8000"

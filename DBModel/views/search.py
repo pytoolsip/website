@@ -3,6 +3,7 @@ from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse
 
+from website import settings
 from DBModel import models
 
 # 搜索页请求
@@ -11,7 +12,7 @@ def search(request):
     request.encoding = "utf-8";
     select = request.POST.get("searchSelect", "name");
     text = request.POST.get("searchText", "");
-    result = {"isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
+    result = {"HOME_URL": settings.HOME_URL, "isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
     # 校验提交的数据
     if "searchSelect" not in request.POST:
         return render(request, "toollist.html", result);

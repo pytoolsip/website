@@ -3,6 +3,7 @@ from django.shortcuts import render
 import django.utils.timezone as timezone
 from django.http import JsonResponse
 
+from website import settings
 from DBModel import models
 
 from release.base import *;
@@ -12,6 +13,7 @@ from release.base import *;
 def home(request):
     isHasNewestInstaller, newestInstaller = getInstallerData()
     return render(request, "home.html", {
+        "HOME_URL": settings.HOME_URL,
         "ptipInfoList" : getPtipData(),
         "isHasNewestInstaller" : isHasNewestInstaller,
         "newestInstaller" : newestInstaller,

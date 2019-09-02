@@ -43,12 +43,12 @@ def release(request):
         return loginInfo;
     # 判断是否已登陆
     if "uname" not in request.POST or "upwd" not in request.POST:
-        return render(request, "release/index.html");
+        return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL});
     # 获取登陆玩家
     user = userinfo.getLoginUser(request.POST["uname"], request.POST["upwd"]);
     if not user:
         # 返回登陆页面信息
-        ret = {};
+        ret = {"HOME_URL": settings.HOME_URL};
         if request.POST["uname"] and request.POST["upwd"]:
             ret = {"requestFailedTips" : "登陆信息已过期！"};
         return render(request, "release/login.html", ret);
@@ -79,7 +79,7 @@ def loginIP(request):
         if loginInfo.get("isSuccess", False):
             return JsonResponse(loginInfo);
         else:
-            return render(request, "release/login.html", {"requestFailedTips" : "用户名和密码不匹配！"});
+            return render(request, "release/login.html", {"HOME_URL": settings.HOME_URL, "requestFailedTips" : "用户名和密码不匹配！"});
     return None;
 
 # 校验逻辑
@@ -105,6 +105,7 @@ def verify(request):
 def getReleaseResult(request, user, mkey, isSwitchTab):
     # 返回页面内容
     result = {
+        "HOME_URL": settings.HOME_URL,
         "mkey" : mkey,
         "userInfo" : { # 用户信息
             "name":user.name,
