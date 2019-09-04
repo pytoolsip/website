@@ -1,0 +1,3 @@
+[submodule "assets/media/gitbook"]
+	path = assets/media/gitbook
+	url = https://github.com/pytoolsip/gitbook.git
