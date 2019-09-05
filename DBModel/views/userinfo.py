@@ -16,7 +16,7 @@ import random;
 # 用户信息请求
 @csrf_exempt
 def userinfo(request):
-    key = request.POST.get("k", "");
+    key = request.GET.get("k", "");
     if key == "login": # 登陆
         return login(request);
     elif key == "register": # 注册
