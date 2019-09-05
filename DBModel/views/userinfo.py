@@ -16,6 +16,7 @@ import random;
 # 用户信息请求
 @csrf_exempt
 def userinfo(request):
+    request.encoding = "utf-8";
     key = request.GET.get("k", "");
     if key == "login": # 登陆
         return login(request);

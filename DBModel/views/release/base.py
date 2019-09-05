@@ -8,10 +8,9 @@ from enum import Enum;
 
 # 上传状态穷举值
 class Status(Enum):
-    Uploading = 0 # 上传中
-    Examing = 1   # 审核中
-    Released = 2  # 已发布
-    Withdrew = 3  # 已撤回
+    Examing = 0   # 审核中
+    Released = 1  # 已发布
+    Withdrew = 2  # 已撤回
 
 # 发送消息给所有管理员
 def sendMsgToAllMgrs(msg):

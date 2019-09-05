@@ -34,6 +34,7 @@ PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
 @csrf_exempt
 def release(request):
     _GG("Log").d("release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
+    request.encoding = "utf-8";
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);

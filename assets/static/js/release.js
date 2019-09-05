@@ -1,6 +1,6 @@
 $(function(){
     // 请求管理后台
-    requestManage = function(data){
+    requestCallback = function(data, callback){
         var userInfo = getUserLoginInfo();
         data.uname = userInfo.name;
         data.upwd = encodeStr(userInfo.pwd);
@@ -8,7 +8,12 @@ $(function(){
             if (status == "success") {
                 $("#mainContent").html(data);
             }
+            callback();
         });
+    }
+    // 请求管理后台
+    requestManage = function(data){
+        requestCallback(data, function(){});
     }
     // 添加input到form中
     var addInputToForm = function(item, name, value, type){

@@ -2,7 +2,6 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>名称</th>
             <th>版本号</th>
             <th>更新日志</th>
             <th>发布时间</th>
@@ -11,7 +10,6 @@
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
-            <th>{{ olInfo.name }}</th>
             <th>{{ olInfo.version }}</th>
             <th>{{ olInfo.changelog }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>

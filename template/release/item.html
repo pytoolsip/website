@@ -46,6 +46,11 @@
 		var tips = "{{requestFailedTips}}";
 		if (tips != "") {
 			showAlert("danger", tips);
+		} else {
+			tips = "{{requestTips}}";
+			if (tips != "") {
+				showAlert("success", tips);
+			}
 		}
 		// 更新用户名
 		$("#userName").text("{{userInfo.name}}");

@@ -28,6 +28,8 @@ def saveInstaller(request, name, result):
             result["requestTips"] = f"安装程序文件【{version}】上传成功。";
         else:
             result["requestFailedTips"] = f"已存在更高的更新安装程序版本号，请修改版本号【{version}】后重试！";
+    else:
+        result["requestFailedTips"] = f"上传安装程序的信息不完整，请重新上传！";
 
 # 获取线上信息列表
 def getOlInstallerInfoList():

@@ -45,7 +45,9 @@ def saveExe(request, name, result):
             delOtherVers(version);
             result["requestTips"] = f"更新文件【{name}, {version}】上传成功。";
         else:
-            result["requestFailedTips"] = f"已存在更高的更新程序版本号，请修改版本号【{name}, {version}】后重试！";
+            result["requestFailedTips"] = f"已存在更高的依赖程序版本号，请修改版本号【{name}, {version}】后重试！";
+    else:
+        result["requestFailedTips"] = f"上传依赖程序的信息不完整，请重新上传！";
 
 # 获取线上信息列表
 def getOlExeInfoList():
@@ -75,6 +77,8 @@ def saveDepend(request, user, result):
             depend = models.Depend(name = name, file_path = file_path, description = description, time = timezone.now());
             depend.save();
             result["requestTips"] = f"依赖库【{name}】上传成功。";
+    else:
+        result["requestFailedTips"] = f"上传依赖库的信息不完整，请重新上传！";
 
 # 获取线上依赖库信息
 def getOlDependInfoList():

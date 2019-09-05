@@ -62,20 +62,19 @@ def getEnvJson(envList):
 # 保存平台信息
 def savePtip(request, result):
     version, file_path, changelog = request.POST.get("version", None), request.FILES.get("file", None), request.POST.get("changelog", None);
-    exeList, envList = request.POST.get("exeList", None), request.FILES.get("envList", None);
+    exeList, envList = request.POST.get("exeList", None), request.POST.get("envList", None);
     if version and file_path and changelog and exeList and envList:
         vList = version.split(".");
         base_version = ".".join(vList[:2]);
         if base_util.verifyVersion(version, [ptipInfo.version for ptipInfo in models.Ptip.objects.filter(base_version = base_version)]):
             # 保存脚本文件
-            p = models.Ptip(version = version, file_path = file_path, changelog = changelog, time = timezone.now(), base_version = base_version, update_version = base_version, status = Status.Uploading.value, exe_list = getExeJson(exeList), env_list = getEnvJson(envList));
-            p.save();
-            # 更新状态
-            p.status = Status.Examing.value;
+            p = models.Ptip(version = version, file_path = file_path, changelog = changelog, time = timezone.now(), base_version = base_version, update_version = base_version, status = Status.Examing.value, exe_list = getExeJson(exeList), env_list = getEnvJson(envList));
             p.save();
             result["requestTips"] = f"PTIP平台脚本【{version}】上传成功。";
         else:
             result["requestFailedTips"] = f"已存在更高的平台版本号，请修改版本号【{version}】后重试！";
+    else:
+        result["requestFailedTips"] = f"上传平台的信息不完整，请重新上传！";
 
 # 保存平台信息
 def updateBaseVer(request, result):
@@ -146,6 +145,7 @@ def releasePtip(request, user, result):
             # 发送邮件通知
             sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**PTIP平台【{p.version}】。\n{reasonMsg}");
         except Exception as e:
+            _GG("Log").w(e);
             result["requestTips"] = f"平台【{p.version}】审核失败！";
 
 # 删除除指定版本外的其他版本

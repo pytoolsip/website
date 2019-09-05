@@ -86,7 +86,7 @@ class Installer(models.Model):
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
-    return os.path.join("release", "ptip", "script", ".".join(vList[:1]), f"ptip_{instance.version}{ext}");
+    return os.path.join("release", "ptip", "script", ".".join(vList[:2]), f"ptip_{instance.version}{ext}");
 class Ptip(models.Model):
     id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
@@ -124,7 +124,7 @@ class Tool(models.Model):
 def tool_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     vList = instance.version.split(".");
-    return os.path.join("release", "tools", instance.tkey, ".".join(vList[:1]), f"{instance.tkey}_{instance.version}{ext}");
+    return os.path.join("release", "tools", instance.tkey, ".".join(vList[:2]), f"{instance.tkey}_{instance.version}{ext}");
 class ToolDetail(models.Model):
     tkey = models.ForeignKey(Tool, models.DO_NOTHING, db_column='tkey', to_field='tkey')
     version = models.CharField(max_length=255)

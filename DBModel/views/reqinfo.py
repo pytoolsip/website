@@ -10,6 +10,7 @@ from _Global import _GG;
 @csrf_exempt
 def reqinfo(request):
     _GG("Log").d("===== request info =====", request.GET);
+    request.encoding = "utf-8";
     key, req = request.GET.get("key", ""), request.GET.get("req", "");
     if key == "ptip":
         if req == "verList":

@@ -27,7 +27,7 @@ def uploadNew(request, user, result, isSwitchTab):
                 tool.save();
             result["requestTips"] = f"新工具【{tkey}， {version}】上传成功。";
         else:
-            result["requestFailedTips"] = "上传信息不完整，请重新上传！";
+            result["requestFailedTips"] = "上传工具的信息不完整，请重新上传！";
     result["olIPBaseVerList"] = getOlIPBaseVerList();
 
 # 更新线上工具
@@ -71,7 +71,7 @@ def saveOl(request, user, tool, result):
             else:
                 result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
     else:
-        result["requestFailedTips"] = "上传信息不完整，请重新上传！";
+        result["requestFailedTips"] = "上传工具的信息不完整，请重新上传！";
 
 # 获取线上平台基础版本
 def getOlIPBaseVerList():

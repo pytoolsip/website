@@ -65,6 +65,9 @@ a:hover{
     color: #008000;
     font-weight: normal;
 }
+.examination {
+    font-size: 4px;
+}
 /* validation */
 .error {
     border: 1px solid red;
