@@ -75,12 +75,12 @@ def saveOl(request, user, tool, result):
 
 # 获取线上平台基础版本
 def getOlIPBaseVerList():
-    ptipList =  models.Ptip.objects.all().order_by('time');
+    ptipList =  models.Ptip.objects.all().order_by('-time');
     return ptipList.values("base_version").distinct();
 
 # 获取线上信息列表
 def getOnlineInfoList(baseInfo):
-    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('base_version', 'time');
+    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('-base_version', '-time');
     return [{
         "name" : baseInfo.name,
         "category" : baseInfo.category,
@@ -170,7 +170,7 @@ def releaseTool(t):
 
 # 获取所有审核的工具信息
 def getToolExamination():
-    toolList = models.ToolExamination.objects.all().order_by('time');
+    toolList = models.ToolExamination.objects.all().order_by('-time');
     if len(toolList) > 0:
         return [{
             "id" : toolInfo.id,
@@ -206,7 +206,7 @@ def examOlTool(request, user, result, isSwitchTab):
     # 设置权限
     result["isReleased"] = True;
     # 返回线上版本
-    toolList = models.Tool.objects.all().order_by('time');
+    toolList = models.Tool.objects.all().order_by('-time');
     for toolInfo in toolList:
         result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));
 

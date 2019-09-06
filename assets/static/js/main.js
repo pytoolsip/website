@@ -73,7 +73,7 @@ $(function(){
 		});
     }
 	// 关闭弹窗
-	var closeDialogPage = function(){
+	closeDialogPage = function(){
 		if ($('#dialogPage').length > 0) 	{
 			$('#dialogPage').remove();
 		}

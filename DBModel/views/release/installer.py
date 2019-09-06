@@ -33,7 +33,7 @@ def saveInstaller(request, name, result):
 
 # 获取线上信息列表
 def getOlInstallerInfoList():
-    installerList = models.Installer.objects.all().order_by('time');
+    installerList = models.Installer.objects.all().order_by('-time');
     if len(installerList) > 0:
         return [{
             "version" : installerInfo.version,

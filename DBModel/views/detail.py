@@ -49,7 +49,7 @@ def doComment(postData, user, tool):
 # 根据tkey获取工具信息结果
 def getToolResultByTkey(tkey):
     result = {"HOME_URL": settings.HOME_URL, "hasTool" : False};
-    toolInfos = models.ToolDetail.objects.filter(tkey = tkey).order_by('time');
+    toolInfos = models.ToolDetail.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
         # 获取工具基础信息
         baseInfo = toolInfos[0].tkey;

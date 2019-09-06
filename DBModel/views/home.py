@@ -21,7 +21,7 @@ def home(request):
 
 # 获取安装程序数据
 def getInstallerData():
-    installerList = models.Installer.objects.all().order_by('base_version', 'time');
+    installerList = models.Installer.objects.all().order_by('-base_version', '-time');
     retList = [{
             "version" : installerInfo.version,
             "url" : installerInfo.file_path.url,
@@ -32,7 +32,7 @@ def getInstallerData():
 
 # 获取平台数据
 def getPtipData():
-    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('base_version', 'time');
+    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('-base_version', '-time');
     return [{
             "version" : ptipInfo.version,
             "url" : ptipInfo.file_path.url,

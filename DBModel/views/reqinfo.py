@@ -15,7 +15,7 @@ def reqinfo(request):
     if key == "ptip":
         if req == "verList":
             ptipList = models.Ptip.objects.filter(status = Status.Released.value);
-            ptipList = ptipList.values("update_version").distinct().order_by('update_version');
+            ptipList = ptipList.values("update_version").distinct().order_by('-update_version');
             return JsonResponse({"verList" : [ptip.version for ptip in ptipList]});
         elif req == "urlList":
             urlList = [];
@@ -30,7 +30,7 @@ def reqinfo(request):
                 for exeInfo in exeList:
                     try:
                         exe = models.Exe.objects.get(name = exeInfo["name"]);
-                        exeDetail = models.ExeDetail.objects.filter(eid = exe, base_version = exeInfo["base_version"]).order_by("time")[0];
+                        exeDetail = models.ExeDetail.objects.filter(eid = exe, base_version = exeInfo["base_version"]).order_by("-time")[0];
                         urlList.append({"url" : exeDetail.file_path.url, "path" : exe.path});
                     except Exception as e:
                         _GG("Log").d(e);

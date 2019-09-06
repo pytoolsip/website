@@ -27,7 +27,9 @@ def _splitVersion_(version):
 def verifyVersion(ver, olVerList):
     verList = _splitVersion_(ver);
     for olVer in olVerList:
+        if ver == olVer:
+            return False;
         for i, v in enumerate(_splitVersion_(olVer)):
-            if v >= verList[i]:
+            if v > verList[i]:
                 return False;
     return True;

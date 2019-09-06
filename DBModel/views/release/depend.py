@@ -12,7 +12,7 @@ def uploadExe(request, user, result, isSwitchTab):
     if not isSwitchTab:
         saveExe(request, user, result);
     # 所有线上工具的名称
-    result["olNamelist"] = [exeInfo.name for exeInfo in models.Exe.objects.all().order_by('name')];
+    result["olNamelist"] = [exeInfo.name for exeInfo in models.Exe.objects.all().order_by('-name')];
     # 返回线上版本数据
     result["onlineInfoList"] = getOlExeInfoList();
 
@@ -21,7 +21,7 @@ def uploadDepend(request, user, result, isSwitchTab):
     if not isSwitchTab:
         saveDepend(request, user, result);
     # 所有线上依赖库的名称
-    result["olNamelist"] = [exeInfo.name for exeInfo in models.Depend.objects.all().order_by('name')];
+    result["olNamelist"] = [exeInfo.name for exeInfo in models.Depend.objects.all().order_by('-name')];
     # 返回线上版本信息
     result["onlineInfoList"] = getOlDependInfoList();
 
@@ -51,7 +51,7 @@ def saveExe(request, name, result):
 
 # 获取线上信息列表
 def getOlExeInfoList():
-    exeList = models.ExeDetail.objects.all().order_by('time');
+    exeList = models.ExeDetail.objects.all().order_by('-time');
     if len(exeList) > 0:
         return [{
             "name" : exeInfo.eid.name,
@@ -82,7 +82,7 @@ def saveDepend(request, user, result):
 
 # 获取线上依赖库信息
 def getOlDependInfoList():
-    dependList = models.Depend.objects.all().order_by('time');
+    dependList = models.Depend.objects.all().order_by('-time');
     if len(dependList) > 0:
         return [{
             "name" : dependInfo.name,
