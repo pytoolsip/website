@@ -51,7 +51,7 @@
         <label class="input-group-addon" for="ip_base_version">依赖平台版本</label>
         <select name="ip_base_version" class="form-control" required>
             {% for olBaseVer in olIPBaseVerList %}
-            <option>olBaseVer</option>
+            <option>{{ olBaseVer }}</option>
             {% endfor %}
         </select>
     </div>
@@ -61,13 +61,13 @@
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="description">工具描述</label>
-        <textarea name="description" class="form-control" rows="4"  value="{{ baseToolInfo.description }}" required></textarea>
+        <textarea name="description" class="form-control" rows="4" required>{{ baseToolInfo.description }}</textarea>
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="changelog">更新日志</label>
         <textarea name="changelog" class="form-control" rows="4" required></textarea>
     </div>
-    <input id="uploadButton" class="form-control btn btn-success" type="button" value="上传更新包" />
+    <input class="form-control btn btn-success" type="submit" value="上传更新包" />
 </form>
 {% else %}
 <form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">

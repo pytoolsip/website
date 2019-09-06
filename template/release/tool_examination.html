@@ -29,16 +29,16 @@
             <th>
                 {% if isManager %}
                     {% if isReleased %}
-                        <a class="btn btn-success examination" name="delete" data-target="{{ olInfo.tid }}">下架</a>
+                        <a class="btn btn-success examination" name="delete" data-target="{{ olInfo.id }}">下架</a>
                     {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
-                        <a class="btn btn-success examination" name="release" data-target="{{ olInfo.tid }}">发布</a>
+                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
+                        <a class="btn btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
                     {% endif %}
                 {% else %}
                     {% if isReleased %}
                         已发布
                     {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.tid }}">撤回</a>
+                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
                     {% endif %}
                 {% endif %}
             </th>
@@ -85,7 +85,9 @@
                         },
                     },
                     submitHandler: function() {
-                        requestManageByExamType(examType, tid, closeDialogPage); // 请求后关闭弹窗
+                        requestManageByExamType(examType, tid, function(){
+                            closeDialogPage(); // 请求后关闭弹窗
+                        }); // 请求后关闭弹窗
                     }
                 });
             }

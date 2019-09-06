@@ -12,7 +12,7 @@
             <select id="secondCategory" class="category" required>
                 <option value="">--请选择--</option>
             </select>
-            <input name="category" placeholder="扩展分类" type="text" />
+            <input placeholder="扩展分类" type="text" />
         </div>
     </div>
     <div class="input-group">
@@ -27,7 +27,7 @@
         <label class="input-group-addon" for="ip_base_version">依赖平台版本</label>
         <select name="ip_base_version" class="form-control" required>
             {% for olBaseVer in olIPBaseVerList %}
-            <option>olBaseVer</option>
+            <option>{{ olBaseVer }}</option>
             {% endfor %}
         </select>
     </div>
@@ -43,6 +43,22 @@
 </form>
 <script language="JavaScript">
 	$(function(){
+        var getCategory = function() {
+            // 获取分类值
+            var categorys = [];
+            $("#category>select").each(function(index,element){
+                categorys.push($(element).val())
+            });
+            $("#category>input").val().split("/").forEach(function(item){
+                if (item != "") {
+                    categorys.push(item);
+                }
+            });
+            if (categorys.length == 0) {
+                return "";
+            }
+            return categorys.join("/");
+        }
         $("#uploadForm").validate({
             rules: {
                 name: {
@@ -54,18 +70,7 @@
                         data : {
                             isVerify : true,
                             toolname : function() {
-                                // 获取分类值
-                                var categorys = [];
-                                $("#category>select").each(function(index,element){
-                                    categorys.push($(element).val())
-                                });
-                                $("#category>input").val().split("/").forEach(function(item){
-                                    if (item != "") {
-                                        categorys.push(item);
-                                    }
-                                });
-                                // 获取完整名称
-                                return categorys.join("/") + $("#toolname").val();
+                                return getCategory() + "/" + $("#toolname").val();
                             }
                         }
                     },
@@ -95,7 +100,8 @@
             },
             submitHandler: function() {
                 uploadManageForm($("#uploadForm"), [
-                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                    {"key":"category", "val":getCategory(), "type":"text"}
                 ]);
             }
         });

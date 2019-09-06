@@ -9,7 +9,6 @@ from DBModel import models
 # 搜索页请求
 @csrf_exempt
 def search(request):
-    request.encoding = "utf-8";
     select = request.POST.get("searchSelect", "name");
     text = request.POST.get("searchText", "");
     result = {"HOME_URL": settings.HOME_URL, "isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};

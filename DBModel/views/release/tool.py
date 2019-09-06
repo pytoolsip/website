@@ -54,12 +54,14 @@ def uploadOl(request, user, tkey, result, isSwitchTab):
 # 保存线上工具的更新信息
 def saveOl(request, user, tool, result):
     file_path = request.FILES.get("file", None);
+    if not file_path:
+        return; # 未上传文件表示仅请求更新工具的界面，则直接返回
     changelog, description, version, ip_base_version = request.POST.get("changelog", None), request.POST.get("description", None), request.POST.get("version", None), request.POST.get("ip_base_version", None);
     if file_path and changelog and description and version and ip_base_version:
         if checkHasUnExamination(version):
-            result["requestFailedTips"] = f"存在审核中的工具版本号，需撤回审核中的版本【{version}】后，才能发布新版本！";
+            result["requestFailedTips"] = f"存在审核中的工具版本号，需撤回审核中的版本【{version}】后，才能发布该版本！";
         else:
-            if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
+            if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and base_util.verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
                 try:
                     # 保存ToolExamination
                     t = models.ToolExamination(uid = tool.uid, tkey = tool.tkey, name = tool.name, category = tool.category, description = description,
@@ -76,11 +78,12 @@ def saveOl(request, user, tool, result):
 # 获取线上平台基础版本
 def getOlIPBaseVerList():
     ptipList =  models.Ptip.objects.all().order_by('-time');
-    return ptipList.values("base_version").distinct();
+    ptipList = ptipList.values("base_version").distinct();
+    return [ptip["base_version"] for ptip in ptipList];
 
 # 获取线上信息列表
 def getOnlineInfoList(baseInfo):
-    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('-base_version', '-time');
+    ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('-time');
     return [{
         "name" : baseInfo.name,
         "category" : baseInfo.category,

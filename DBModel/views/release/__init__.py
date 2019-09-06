@@ -128,7 +128,7 @@ def getReleaseResult(request, user, mkey, isSwitchTab):
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
         if tkey:
-            tool.uploadOl(request, user, result, tkey, isSwitchTab)
+            tool.uploadOl(request, user, tkey, result, isSwitchTab)
         else:
             # 搜索工具信息数据
             tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), user.id);

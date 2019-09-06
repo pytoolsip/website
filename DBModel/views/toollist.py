@@ -21,8 +21,8 @@ TlKeyMap = {
 # 搜索页请求
 @csrf_exempt
 def toollist(request):
-    _GG("Log").d("toollist GET :", request.GET, "; POST :", request.POST, "; FILES :", request.FILES);
     request.encoding = "utf-8";
+    _GG("Log").d("toollist GET :", request.GET, "; POST :", request.POST, "; FILES :", request.FILES);
     # 判断提交数据中是否包含tlkey
     if "tl" in request.POST:
         return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL});

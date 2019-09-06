@@ -143,13 +143,13 @@ class ToolExamination(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+    category = models.CharField(max_length=255)
     description = models.TextField()
     version = models.CharField(max_length=255)
     ip_base_version = models.CharField(max_length=255)
     changelog = models.TextField()
     file_path = models.FileField(upload_to = tool_directory_path)
     time = models.DateTimeField()
-    status = models.IntegerField()
 
     class Meta:
         managed = False

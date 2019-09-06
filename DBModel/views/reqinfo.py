@@ -10,13 +10,10 @@ from _Global import _GG;
 @csrf_exempt
 def reqinfo(request):
     _GG("Log").d("===== request info =====", request.GET);
-    request.encoding = "utf-8";
     key, req = request.GET.get("key", ""), request.GET.get("req", "");
     if key == "ptip":
         if req == "verList":
-            ptipList = models.Ptip.objects.filter(status = Status.Released.value);
-            ptipList = ptipList.values("update_version").distinct().order_by('-update_version');
-            return JsonResponse({"verList" : [ptip.version for ptip in ptipList]});
+            return JsonResponse({"verList" : getVerListByUpdateVer()});
         elif req == "urlList":
             urlList = [];
             version = request.GET.get("version", "");
@@ -42,3 +39,13 @@ def reqinfo(request):
                         _GG("Log").d(e);
             return JsonResponse({"urlList" : urlList});
     return JsonResponse({});
+
+# 根据更新版本，获取版本列表
+def getVerListByUpdateVer():
+    verList, updateVerList = [], [];
+    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by("-update_version", "-time");
+    for ptip in ptipList:
+        if ptip.update_version not in updateVerList:
+            verList.append(ptip.version);
+        updateVerList.append(ptip.update_version);
+    return verList;
