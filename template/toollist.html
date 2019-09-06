@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <footer style="position: fixed;bottom: 0px;">
+        <footer>
             <div class="container">
                 <span>Copyright&nbsp;&copy;&nbsp;2019&nbsp;</span>
                 <a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
@@ -75,6 +75,7 @@
                     $.post(window.location.href, data, function(data, status){
                         if (status == "success") {
                             $("#mainContent").html(data);
+                            updateFooterPosition(); // 更新footer的位置
                         }
                     });
                 }

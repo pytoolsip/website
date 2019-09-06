@@ -7,6 +7,7 @@ $(function(){
         $.post(window.location.href, data, function(data, status){
             if (status == "success") {
                 $("#mainContent").html(data);
+                updateFooterPosition(); // 更新footer的位置
             }
             callback();
         });
@@ -57,6 +58,7 @@ $(function(){
             contentType : false,
             success : function(data){
                 $("#mainContent").html(data);
+                updateFooterPosition(); // 更新footer的位置
             },
             error: function(e) {
                 console.log(e);

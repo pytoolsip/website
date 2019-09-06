@@ -1,10 +1,28 @@
 $(function(){
+	// 更新footer的位置
+	updateFooterPosition = function() {
+		if ($(window).height() > $("body").height()) {
+			$("footer").css({position:"fixed", bottom:0});
+		} else {
+			$("footer").css({position:"static", bottom:0});
+		}
+	};
+	// 监听窗口尺寸大小变化
+	(function(){
+		var windowOnresizeFunc = window.onresize; // 响应窗口尺寸大小变化函数
+		window.onresize = function(){
+			if (windowOnresizeFunc != null) {
+				windowOnresizeFunc();
+			}
+			updateFooterPosition();
+		}
+		updateFooterPosition();
+	})();
+
 	$(".carousel").carousel();
 	$("#toTop").on("click",function(){
 		$('body,html').animate({scrollTop:0},280);
 	});
-	// 响应窗口尺寸大小变化函数
-	var windowOnresizeFunc = window.onresize;
 	// 首页链接
 	var HOME_URL = "http://jimdreamheart.club/pytoolsip";
 	// var HOME_URL = "http://localhost:8000";
@@ -95,6 +113,26 @@ $(function(){
 		</div>";
 		// 添加弹窗
 		$("body").append(dialogPage);
+		// 更新弹窗页尺寸方法
+		function updateDialogPageSize(){
+			if ($('#dialogPage').length > 0) {
+				var pageWidth = Math.max($(window).width(), $("body").width());
+				$('#dialogPage').width(pageWidth);
+				var pageHeight = Math.max($(window).height(), $("body").height());
+				$('#dialogPage').height(pageHeight);
+				// 移动到弹窗中心
+				$('body,html').animate({scrollLeft : (pageWidth - $(window).width())/2, scrollTop: (pageHeight - $(window).height())/2}, 0);
+			}
+		}
+		updateDialogPageSize();
+		// 监听窗口尺寸变化方法
+		var windowOnresizeFunc = window.onresize;
+		window.onresize = function(){
+			if (windowOnresizeFunc != null) {
+				windowOnresizeFunc();
+			}
+			updateDialogPageSize();
+		}
 		// 点击关闭的事件
 		$("#closeDialogPage").on("click",function(){
 			// 移除弹窗页
@@ -104,26 +142,6 @@ $(function(){
 			// 回调关闭函数
 			closeCallback();
 		});
-		// 更新弹窗页尺寸方法
-		function updateDialogPageSize(){
-			if ($('#dialogPage').length > 0) {
-				var pageWidth = Math.max($(window).width(), $("body").width());
-				$('#dialogPage').width(pageWidth);
-				var pageHeight = Math.max($(window).height(), $("body").height());
-				$('#dialogPage').height(pageHeight);
-				// 移动到弹窗中心
-				$('body,html').animate({scrollLeft : (pageWidth - $(window).width())/2, scrollTop: (pageHeight - $(window).height())/2},280);
-			}
-		}
-		updateDialogPageSize();
-		// 监听窗口尺寸变化方法
-		window.onresize = function(){
-			if (windowOnresizeFunc != null) {
-				windowOnresizeFunc();
-			}
-			updateDialogPageSize();
-		}
-		
 	}
 	// 创建弹窗函数
 	createDialogPage = function(content){

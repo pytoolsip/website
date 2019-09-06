@@ -60,7 +60,11 @@
 					</div>
 					<ul class="jumbotron-btn-group">
 						{% if isHasNewestInstaller %}
-						<li><a class="btn btn-primary btn-lg" href="{{ newestInstaller.url }}" target="_blank" role="button" title="双击安装程序进行安装，待安装成功后，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。需要注意的是：初次运行程序时，为确保成功拉取依赖模块，请保证网络能正常连接！"><span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载最新版本[{{ newestInstaller.version }}]</a></li>
+						<li>
+							<a class="btn btn-primary btn-lg" href="{{ newestInstaller.url }}" target="_blank" role="button" title="双击安装程序进行安装，待安装成功后，双击PyToolsIP文件夹下的pytoolsip.exe，进行运行。需要注意的是：初次运行程序时，为确保成功拉取依赖模块，请保证网络能正常连接！">
+								<span class="glyphicon glyphicon-download-alt"></span>&nbsp;下载安装程序
+							</a>
+						</li>
 						{% else %}
 						<li><a class="btn btn-primary btn-lg" href="javascript:void(0);" role="button" title="" disabled>暂无安装程序下载</a></li>
 						{% endif %}

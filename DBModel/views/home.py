@@ -28,7 +28,7 @@ def getInstallerData():
             "changelog" : installerInfo.changelog,
             "uploadTime" : installerInfo.time,
     } for installerInfo in installerList];
-    return len(retList) > 0, retList;
+    return len(retList) > 0, retList[0];
 
 # 获取平台数据
 def getPtipData():
