@@ -26,7 +26,7 @@ def examine(request, user, result, isSwitchTab):
         # 发布平台
         releasePtip(request, user, result);
     # 返回线上版本
-    ptipList = models.Ptip.objects.filter(status = Status.Examing.value).order_by('time');
+    ptipList = models.Ptip.objects.filter(status = Status.Examing.value).order_by('-time');
     if len(ptipList) > 0:
         result["onlineInfoList"] = [{
             "id" : ptipInfo.id,
@@ -95,7 +95,7 @@ def updateBaseVer(request, result):
 # 获取线上信息列表
 def getOlInfoList():
     olInfoList = [];
-    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('base_version', 'time');
+    ptipList = models.Ptip.objects.filter(status = Status.Released.value).order_by('-base_version', '-time');
     if len(ptipList) > 0:
         baseVerList = [];
         for ptipInfo in ptipList:
@@ -115,14 +115,14 @@ def getOlInfoList():
 def getOlExeInfoList():
     olInfoList = [];
     for exe in models.Exe.objects.all():
-        exeInfoList = models.ExeDetail.objects.filter(eid = exe).order_by('base_version', 'time');
+        exeInfoList = models.ExeDetail.objects.filter(eid = exe).order_by('-base_version', '-time');
         if len(exeInfoList) > 0:
             olInfoList.append({"name" : exe.name, "verlist" : [exeInfo.base_version for exeInfo in exeInfoList]});
     return olInfoList;
 
 # 获取线上依赖黄金信息
 def getOlEnvInfoList():
-    envInfoList = models.Depend.objects.all().order_by('time');
+    envInfoList = models.Depend.objects.all().order_by('-time');
     if len(envInfoList) > 0:
         return [{"name" : envInfo.name} for envInfo in envInfoList];
     return [];
@@ -135,6 +135,7 @@ def releasePtip(request, user, result):
             p, msg, reasonMsg = models.Ptip.objects.get(id = pid), "", "";
             if examType == "release":
                 p.status = Status.Released.value;
+                p.save();
                 # 删除除指定版本外的其他版本
                 delOtherVers(p.version);
                 msg = "发布";

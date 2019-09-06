@@ -18,7 +18,7 @@
             <th>
                 <select class="update-version" data-target="{{ olInfo.id }}" data-version="{{ olInfo.update_version }}">
                     {% for baseVer in olInfo.baseVerList %}
-                    <option>baseVer</option>
+                    <option>{{ baseVer }}</option>
                     {% endfor %}
                 </select>
             </th>

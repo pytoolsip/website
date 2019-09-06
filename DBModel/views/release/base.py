@@ -1,5 +1,6 @@
 
 from django.core.mail import send_mail
+from DBModel import models
 from website import settings
 
 from _Global import _GG;

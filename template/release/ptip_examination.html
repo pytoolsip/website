@@ -57,7 +57,9 @@
                         },
                     },
                     submitHandler: function() {
-                        requestManageByExamType(examType, pid, closeDialogPage);  // 请求后关闭弹窗
+                        requestManageByExamType(examType, pid, function(){
+                            closeDialogPage(); // 请求后关闭弹窗
+                        });
                     }
                 });
             }
