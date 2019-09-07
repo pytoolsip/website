@@ -32,20 +32,20 @@
             <label class="input-group-addon" for="name">名称</label>
             <input name="name" class="form-control" type="text" placeholder="请使用英文名称" required />
         </div>
-        <div class="input-group">
-            <label class="input-group-addon" for="path">路径</label>
-            <input name="path" class="form-control" type="text" placeholder="请使用英文路径" required />
-        </div>
     </div>
     <div id="olExeName">
         <div class="input-group">
             <label class="input-group-addon" for="name">名称</label>
             <select  name="name" class="form-control">
-                {% for olName in olNamelist %}
-                <option>{{ olName }}</option>
+                {% for olInfo in olExeInfolist %}
+                <option data-target="{{ olInfo.path }}">{{ olInfo.name }}</option>
                 {% endfor %}
             </select>
         </div>
+    </div>
+    <div class="input-group">
+        <label class="input-group-addon" for="path">路径</label>
+        <input name="path" class="form-control" type="text" placeholder="请使用英文路径" required />
     </div>
     <div class="input-group">
         <label class="input-group-addon" for="version">版本号</label>
@@ -83,6 +83,9 @@
                         }
                     },
                 },
+                path: {
+                    required: true,
+                },
                 version: {
                     checkVersion: 3,
                 },
@@ -98,6 +101,7 @@
                     required: "依赖程序名称不能为空",
                     remote: "依赖程序名已存在！请重新输入",
                 },
+                path: "路径信息不能为空",
                 version: {
                     required: "请输入版本号",
                 },
@@ -112,6 +116,19 @@
                 ]);
             }
         });
+        // 检测工具名变换
+        var chengePath = function() {
+            var $selectedOpt = $("#olExeName select[name='name'] option:selected");
+            if (!$("#olExeName").hasClass("hidden")) {
+                $("input[name='path']").val($selectedOpt.attr("data-target"));
+            } else {
+                $("input[name='path']").val("");
+            }
+        }
+        $("#olExeName select[name='name']").change(function(){
+            chengePath();
+        });
+        chengePath();
         // 监测是否选中上传新依赖程序选框
         var checkIsUploadNew = function() {
             if ($("#isUploadNew").is(":checked")) {
@@ -121,6 +138,7 @@
                 $("#newExeName").addClass("hidden");
                 $("#olExeName").removeClass("hidden");
             }
+            chengePath();
         }
         $("#isUploadNew").change(function(){
             checkIsUploadNew();

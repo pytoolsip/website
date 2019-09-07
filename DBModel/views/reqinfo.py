@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from DBModel import models
 from base import *;
 
+import json;
+
 from _Global import _GG;
 
 # 请求信息
@@ -21,7 +23,7 @@ def reqinfo(request):
             if len(ptipList) > 0:
                 # 平台信息
                 ptipInfo = ptipList[0];
-                urlList,append({"url" : ptipInfo.file_path.url, "path" : ""});
+                urlList.append({"url" : ptipInfo.file_path.url, "path" : ""});
                 # 依赖信息
                 exeList, envList = json.loads(ptipInfo.exe_list), json.loads(ptipInfo.env_list);
                 for exeInfo in exeList:

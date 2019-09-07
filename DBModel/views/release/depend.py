@@ -12,7 +12,7 @@ def uploadExe(request, user, result, isSwitchTab):
     if not isSwitchTab:
         saveExe(request, user, result);
     # 所有线上工具的名称
-    result["olNamelist"] = [exeInfo.name for exeInfo in models.Exe.objects.all().order_by('-name')];
+    result["olExeInfolist"] = [{"name" : exeInfo.name, "path" : exeInfo.path} for exeInfo in models.Exe.objects.all().order_by('-name')];
     # 返回线上版本数据
     result["onlineInfoList"] = getOlExeInfoList();
 
@@ -21,7 +21,7 @@ def uploadDepend(request, user, result, isSwitchTab):
     if not isSwitchTab:
         saveDepend(request, user, result);
     # 所有线上依赖库的名称
-    result["olNamelist"] = [exeInfo.name for exeInfo in models.Depend.objects.all().order_by('-name')];
+    result["olDependInfolist"] = [{"name" : dependInfo.name, "path" : dependInfo.path} for dependInfo in models.Depend.objects.all().order_by('-name')];
     # 返回线上版本信息
     result["onlineInfoList"] = getOlDependInfoList();
 
@@ -29,9 +29,11 @@ def uploadDepend(request, user, result, isSwitchTab):
 def saveExe(request, name, result):
     name, path = request.POST.get("name", None), request.POST.get("path", None);
     version, file_path, changelog = request.POST.get("version", None), request.FILES.get("file", None), request.POST.get("changelog", None);
-    if name and version and file_path and changelog:
+    if name and path and version and file_path and changelog:
         try:
             exe = models.Exe.objects.get(name = name);
+            exe.path = path;
+            exe.save();
         except Exception as e:
             exe = models.Exe(name = name, path = path);
             exe.save();
@@ -66,15 +68,16 @@ def getOlExeInfoList():
 def saveDepend(request, user, result):
     name, path = request.POST.get("name", None), request.POST.get("path", None);
     file_path, description = request.FILES.get("file", None), request.POST.get("description", None);
-    if name and file_path and description:
+    if name and path and file_path and description:
         try:
             depend = models.Depend.objects.get(name = name);
+            depend.path = path;
             depend.file_path = file_path;
             depend.description = description;
             depend.save();
             result["requestTips"] =  f"依赖库【{name}】更新成功！";
         except Exception as e:
-            depend = models.Depend(name = name, file_path = file_path, description = description, time = timezone.now());
+            depend = models.Depend(name = name, path = path, file_path = file_path, description = description, time = timezone.now());
             depend.save();
             result["requestTips"] = f"依赖库【{name}】上传成功。";
     else:
