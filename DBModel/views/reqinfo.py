@@ -30,13 +30,13 @@ def reqinfo(request):
                     try:
                         exe = models.Exe.objects.get(name = exeInfo["name"]);
                         exeDetail = models.ExeDetail.objects.filter(eid = exe, base_version = exeInfo["base_version"]).order_by("-time")[0];
-                        urlList.append({"url" : exeDetail.file_path.url, "path" : exe.path});
+                        urlList.append({"name" : exeInfo["name"], "url" : exeDetail.file_path.url, "path" : exe.path});
                     except Exception as e:
                         _GG("Log").d(e);
                 for envInfo in envList:
                     try:
                         env = models.Depend.objects.get(name = envInfo["name"]);
-                        urlList.append({"url" : env.file_path.url, "path" : env.path});
+                        urlList.append({"name" : envInfo["name"], "url" : env.file_path.url, "path" : env.path});
                     except Exception as e:
                         _GG("Log").d(e);
             return JsonResponse({"urlList" : urlList});
