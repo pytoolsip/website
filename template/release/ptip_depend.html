@@ -28,13 +28,13 @@
     <div id="newExeName">
         <div class="input-group">
             <label class="input-group-addon" for="name">名称</label>
-            <input name="name" class="form-control" type="text" placeholder="请使用英文名称" required />
+            <input name="newName" class="form-control" type="text" placeholder="请使用英文名称" required />
         </div>
     </div>
     <div id="olExeName">
         <div class="input-group">
             <label class="input-group-addon" for="name">名称</label>
-            <select  name="name" class="form-control">
+            <select  name="olName" class="form-control">
                 {% for olInfo in olDependInfolist %}
                 <option data-target="{{ olInfo.path }}">{{ olInfo.name }}</option>
                 {% endfor %}
@@ -59,7 +59,7 @@
 	$(function(){
         $("#uploadForm").validate({
             rules: {
-                name: {
+                newName: {
                     required: true,
                     check_LetterNum0: true,
                     remote: {
@@ -67,12 +67,9 @@
                         type : "post",
                         dataType: "json",
                         data : {
-                            isVerify : $("#isUploadNew").is(':checked'),
+                            isVerify : true,
                             dependName : function() {
-                                if ($("#isUploadNew").is(':checked')) {
-                                    return $("#newExeName input[name='name']").val();
-                                }
-                                return "";
+                                return $("input[name='newName']").val();
                             }
                         }
                     },
@@ -88,7 +85,7 @@
                 },
             },
             messages: {
-                name: {
+                newName: {
                     required: "依赖库名称不能为空",
                     remote: "依赖库名已存在！请重新输入",
                 },
@@ -99,21 +96,42 @@
                 description: "请输入描述信息",
             },
             submitHandler: function() {
-                uploadManageForm($("#uploadForm"), [
-                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
-                ]);
+                if ($("#isUploadNew").is(":checked")) {
+                    var name = $("input[name='newName']").val();
+                    uploadManageForm($("#uploadForm"), [
+                        {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                        {"key":"name", "val":name, "type":"text"}
+                    ]);
+                }else{
+                    var name = $("select[name='olName']").val();
+                    // 创建弹窗
+                    createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
+                                    <h2>更新线上依赖程序</h2>\
+                                    <p class='text-center' style='color: red;'>是否确认更新依赖程序到线上？</p>\
+                                    <p class='text-center'>（注意：上传后不能撤回）</p>\
+                                    <button id='confirmBtn' class='btn btn-lg btn-danger form-control' type='button'>确认上传更新包</button>\
+                                </form>");
+                    $("#confirmBtn").on("click", function(){
+                        uploadManageForm($("#uploadForm"), [
+                            {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                            {"key":"name", "val":name, "type":"text"}
+                        ]);
+                        // 请求后关闭弹窗
+                        closeDialogPage();
+                    });
+                }
             }
         });
         // 检测工具名变换
         var chengePath = function() {
-            var $selectedOpt = $("#olExeName select[name='name'] option:selected");
+            var $selectedOpt = $("select[name='olName'] option:selected");
             if (!$("#olExeName").hasClass("hidden")) {
                 $("input[name='path']").val($selectedOpt.attr("data-target"));
             } else {
                 $("input[name='path']").val("");
             }
         }
-        $("#olExeName select[name='name']").change(function(){
+        $("select[name='olName']").change(function(){
             chengePath();
         });
         chengePath();
