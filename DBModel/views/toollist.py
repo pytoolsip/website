@@ -44,7 +44,7 @@ def toollist(request):
         if searchText:
             result["isSearchNone"] = len(result["toolInfoList"]) == 0;
         return render(request, "toollist_item.html", result);
-    return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL});
+    return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL, "tlkey" : tlkey});
 
 # 根据toolName搜索工具信息列表
 def serachToolListByName(tlkey, name):
