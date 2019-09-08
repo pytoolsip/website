@@ -23,7 +23,7 @@
         -&nbsp;上传依赖库&nbsp;-
     </h3>
     <div class="input-group">
-        <input id="isUploadNew" name="isUploadNew" type="checkbox" /><label for="isUploadNew">是否上传新依赖程序</label>
+        <input id="isUploadNew" name="isUploadNew" type="checkbox" /><label for="isUploadNew">是否上传新依赖库</label>
     </div>
     <div id="newExeName">
         <div class="input-group">
@@ -106,8 +106,8 @@
                     var name = $("select[name='olName']").val();
                     // 创建弹窗
                     createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
-                                    <h2>更新线上依赖程序</h2>\
-                                    <p class='text-center' style='color: red;'>是否确认更新依赖程序到线上？</p>\
+                                    <h2>更新线上依赖库</h2>\
+                                    <p class='text-center' style='color: red;'>是否确认更新依赖库到线上？</p>\
                                     <p class='text-center'>（注意：上传后不能撤回）</p>\
                                     <button id='confirmBtn' class='btn btn-lg btn-danger form-control' type='button'>确认上传更新包</button>\
                                 </form>");
@@ -135,7 +135,7 @@
             chengePath();
         });
         chengePath();
-        // 监测是否选中上传新依赖程序选框
+        // 监测是否选中上传新依赖库选框
         var checkIsUploadNew = function() {
             if ($("#isUploadNew").is(":checked")) {
                 $("#newExeName").removeClass("hidden");
