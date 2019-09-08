@@ -53,18 +53,19 @@
 {% endifequal %}
 <script language="JavaScript">
 	$(function(){
-        var requestManageByExamType = function(examType, id, callback) {
+        var requestManageByExamType = function(examType, id, reason, callback) {
             requestCallback({
                 "mk" : "{{mkey}}",
                 "examType" : examType,
                 "id": id,
+                "reason" : reason,
             }, callback);
         };
         $(".examination").on("click",function(){
             var examType = $(this).attr("name");
             var tid = $(this).attr("data-target");
             if (examType  == "release") {
-                requestManageByExamType(examType, tid, function(){});
+                requestManageByExamType(examType, tid, "", function(){});
             } else {
                 // 创建弹窗
                 createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
@@ -85,7 +86,7 @@
                         },
                     },
                     submitHandler: function() {
-                        requestManageByExamType(examType, tid, function(){
+                        requestManageByExamType(examType, tid, $("#reasonForm input[name='reason']").val(), function(){
                             closeDialogPage(); // 请求后关闭弹窗
                         }); // 请求后关闭弹窗
                     }

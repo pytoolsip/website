@@ -85,6 +85,7 @@ def getOlIPBaseVerList():
 def getOnlineInfoList(baseInfo):
     ptInfoList = models.ToolDetail.objects.filter(tkey = baseInfo.tkey).order_by('-time');
     return [{
+        "id" : ptInfo.id,
         "name" : baseInfo.name,
         "category" : baseInfo.category,
         "tkey" : baseInfo.tkey,
@@ -199,13 +200,17 @@ def examOlTool(request, user, result, isSwitchTab):
                     t.delete();
                     if len(models.ToolDetail.objects.filter(tkey = t.tkey)) == 0:
                         t.tkey.delete();
-                    result["requestTips"] = f"工具【{t.tkey}，{t.version}】下架成功。";
+                    result["requestTips"] = f"工具【{t.tkey.tkey}，{t.version}】下架成功。";
                     # 发送邮件通知
-                    sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
-                    exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
-                    sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**下架**。\n{exMsg}");
+                    try:
+                        sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
+                        exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
+                        sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**下架**。\n{exMsg}");
+                    except Exception as e:
+                        _GG("Log").e(f"Failed to send message to all managers! Error({e})!")
             except Exception as e:
-                result["requestFailedTips"] = f"工具【{t.tkey}，{t.version}】审核失败！";
+                _GG("Log").e(f"Failed to examine online tool! Error({e})!")
+                result["requestFailedTips"] = f"工具【{t.tkey.tkey}，{t.version}】审核失败！";
     # 设置权限
     result["isReleased"] = True;
     # 返回线上版本
