@@ -47,12 +47,12 @@
     <div class="clearfix dependE">
         <h5 class="pull-left">依赖环境</h5>
         <div id="dependEnvList" class="pull-left">
+            {% for olEnvInfo in onlineEnvInfoList %}
             <label class="checkbox-inline">
-                {% for olEnvInfo in onlineEnvInfoList %}
                 <input type="checkbox" value="{{ olEnvInfo.name }}" checked disabled />
                 {{ olEnvInfo.name }}&nbsp;&nbsp;
-                {% endfor %}
             </label>
+            {% endfor %}
         </div>
     </div>
     <div class="input-group">
