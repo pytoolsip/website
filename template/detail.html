@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>{{toolInfo.name}}</title>
+		<title>工具详情-{{baseInfo.name}}</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
@@ -42,7 +42,7 @@
 			</nav>
 		</header>
 		
-		<div class="container">
+		<div id="mainContainer" class="container">
 			{% if hasTool %}
 			<div class="row">
 				<div class="col-md-8">
@@ -63,7 +63,7 @@
 					</p>
 				</div>
 				<div class="col-md-4" style="padding-top: 40px;">
-					<a class="btn btn-lg btn-info" href="javascript:void(0);" target="_blank" title="收藏功能正在开发中...">
+					<a class="btn btn-lg btn-primary disabled" href="javascript:void(0);" target="_blank" title="收藏功能正在开发中...">
 						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;点击收藏&nbsp;&nbsp;
 					</a>
 				</div>
@@ -76,7 +76,7 @@
 							<thead>
 								<tr>
 									<th>版本号</th>
-									<th>平台版本</th>
+									<th>平台基础版本</th>
 									<th>更新日志</th>
 									<th>上传时间</th>
 									<th>下载</th>
@@ -86,7 +86,7 @@
 								{% for toolInfo in toolInfoList %}
 								<tr>
 									<td>{{ toolInfo.version }}</td>
-									<td>{{ toolInfo.IPVersion }}</td>
+									<td>{{ toolInfo.IPBaseVersion }}</td>
 									<td>{{ toolInfo.changelog }}</td>
 									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
 									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
@@ -95,18 +95,18 @@
 							</tbody>
 						</table>
 					</div>
-					<div id="toolComment" style="border-top: 1px #BCBCBC solid;padding-top: 40px;margin-top: 40px;">
-						<form role="form">
-							<textarea  id="commentContent" name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
-							<input id="commentScore" name="score" type="number" class="rating" />
-							<button id="commentButton" type="button" class="btn btn-info right" >评论</button>
+					<div style="border-top: 1px #BCBCBC solid;padding-top: 40px;margin-top: 40px;">
+						<form id="commentToolForm" role="form" enctype="multipart/form-data" method="POST">
+							<textarea name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
+							<input name="score" type="number" class="rating" />
+							<input class="btn btn-primary" type="submit" value="提交评论" />
 						</form>
 						<ul class="row" style="margin-top: 60px;border-bottom: 1px #BCBCBC dashed;">
 							{% for commentInfo in commentInfoList %}
 							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
 								<div class="col-md-3 text-center">
 									<p>{{ commentInfo.user }}</p>
-									<p style="color: #A0A0A0;">{{ commentInfo.time }}</p>
+									<p style="color: #A0A0A0;">{{ commentInfo.time|date:"Y-m-d H:i:s" }}</p>
 								</div>
 								<div class="col-md-9">
 									<p>评分：<span style="color: darkgoldenrod;">{{ commentInfo.score }}</span></p>
@@ -148,7 +148,24 @@
 		<script src={% static "js/main.js" %}></script>
 		<script language="JavaScript">
 			$(function(){
-				$("#commentScore").rating({
+				// 显示评论结果信息
+				var showAlert = function(type, text) {
+					$("#mainContainer").prepend("<div class='alert alert-"+ type +"' role='alert'>\
+							<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+							<span class='alertContent'>"+ text +"</span>\
+						</div>");
+				}
+				var tips = "{{requestFailedTips}}";
+				if (tips != "") {
+					showAlert("danger", tips);
+				} else {
+					tips = "{{requestTips}}";
+					if (tips != "") {
+						showAlert("success", tips);
+					}
+				}
+				// 显示评分组件
+				$("#commentToolForm input[name='score']").rating({
 					min: 0,
 					max: 5,
 					step: 0.5,
@@ -166,6 +183,30 @@
 				idClipboard.on('success', function(e) {
 					e.clearSelection();
 				})
+				// 提交评论内容
+				$("#commentToolForm").validate({
+					rules: {
+						content: {
+							required: true,
+						},
+					},
+					messages: {
+						content: "评论内容不能为空",
+					},
+					submitHandler: function(form) {
+						var content = $("#commentToolForm textarea[name='content']").val();
+						var score = $("#commentToolForm input[name='score']").val();
+						requestToolDetailForm($("#commentToolForm"), [
+							{"key":"submit", "val":"comment", "type":"text"}
+						], function(data){
+							if (data.isSuccess) {
+								window.location.href = window.location.href
+							}else{
+								alert("评论失败，请重新评论！");
+							}
+						});
+					}
+				});
 			})
 		</script>
 	</body>

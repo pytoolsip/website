@@ -252,29 +252,56 @@ $(function(){
 			});
 		}
 	});
-	// 评论按钮点击事件
-	$("#commentButton").click(function(){
+    // 添加input到form中
+    var addInputToForm = function(item, name, value, type){
+        var $input = item.find("input[name='" + name + "']");
+        if ($input.length > 0) {
+            $input.val(value);
+            if ($input.attr("type") != type) {
+                $input.attr("type", type)
+            }
+        } else {
+            item.append("<input name='" + name + "' class='hidden' type='" + type + "' value='" + value + "' />");
+        }
+    }
+    // 添加数据到表单
+    addInputsToForm = function(item, exIpts){
+        // 添加扩展输入
+        if (exIpts instanceof Array && exIpts.length > 0) {
+            for (var i = 0; i < exIpts.length; i++) {
+                var ipt = exIpts[i];
+                addInputToForm(item, ipt.key, ipt.val, ipt.type);
+            }
+        }
+        // 添加用户名和密码
+        var userInfo = getUserLoginInfo();
+        addInputToForm(item, "uname", userInfo.name, "text");
+        addInputToForm(item, "upwd", encodeStr(userInfo.pwd), "text");
+    }
+	// 更新工具详情表单
+	requestToolDetailForm = function(form, exIpts, callback){
 		var userInfo = getUserLoginInfo();
 		if (userInfo.name == "" || userInfo.pwd == "") {
 			createLoginDialog();
 			return;
 		}
-		var $content = $("#commentContent").val();
-		if ($content == "") {
-			alert("评论内容不能为空！");
-			return;
-		}
-		$.post(HOME_URL+"/detail?t={{ toolInfo.tkey }}",{
-			uname : userInfo.name,
-			upwd : encodeStr(userInfo.pwd),
-			content : $content,
-			score : $("#commentScore").val(),
-		}, function(data,status){
-			if (status != "success") {
-				alert("提交评论失败，请重新提交！")
-			}
-		});
-	});
+		addInputsToForm(form, exIpts);
+        // 提交数据
+        $.ajax({
+            url : window.location.href,
+            type : "post",
+            data : new FormData(form[0]),
+            processData : false,
+            contentType : false,
+            success : function(data){
+                callback(data);
+            },
+            error: function(e) {
+                console.log(e);
+                alert("提交表单失败！");
+            }
+        })
+	};
 	// 发送验证码
 	var sendVerifyCode = function(formSelector){
 		if($(formSelector).validate().element(formSelector + " input[name='email']")) {

@@ -16,32 +16,6 @@ $(function(){
     requestManage = function(data){
         requestCallback(data, function(){});
     }
-    // 添加input到form中
-    var addInputToForm = function(item, name, value, type){
-        var $input = item.find("input[name='" + name + "']");
-        if ($input.length > 0) {
-            $input.val(value);
-            if ($input.attr("type") != type) {
-                $input.attr("type", type)
-            }
-        } else {
-            item.append("<input name='" + name + "' class='hidden' type='" + type + "' value='" + value + "' />");
-        }
-    }
-    // 添加数据到表单
-    var addInputsToForm = function(item, exIpts){
-        // 添加扩展输入
-        if (exIpts instanceof Array && exIpts.length > 0) {
-            for (var i = 0; i < exIpts.length; i++) {
-                var ipt = exIpts[i];
-                addInputToForm(item, ipt.key, ipt.val, ipt.type);
-            }
-        }
-        // 添加用户名和密码
-        var userInfo = getUserLoginInfo();
-        addInputToForm(item, "uname", userInfo.name, "text");
-        addInputToForm(item, "upwd", encodeStr(userInfo.pwd), "text");
-    }
     // 添加用户信息到表单
     uploadManageForm = function(item, exIpts){
         if (item.length == 0) {
