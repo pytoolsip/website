@@ -8,7 +8,7 @@ import json;
 
 from _Global import _GG;
 
-ptipPath = "assets";
+ptipPath = "";
 
 # 请求信息
 @csrf_exempt
