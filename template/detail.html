@@ -63,8 +63,11 @@
 					</p>
 				</div>
 				<div class="col-md-4" style="padding-top: 40px;">
-					<a class="btn btn-lg btn-primary disabled" href="javascript:void(0);" target="_blank" title="收藏功能正在开发中...">
-						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;点击收藏&nbsp;&nbsp;
+					<a id="collectTool" class="btn btn-lg btn-primary hidden" href="javascript:void(0);" title="点击收藏">
+						&nbsp;<span class="glyphicon glyphicon-star"></span>&nbsp;<span class="collect-text">点击收藏</span>&nbsp;&nbsp;
+					</a>
+					<a id="cancelCollectTool" class="btn btn-lg btn-warning hidden" href="javascript:void(0);" title="取消收藏">
+						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;<span class="collect-text">取消收藏</span>&nbsp;&nbsp;
 					</a>
 				</div>
 				<div class="col-md-12">
@@ -206,6 +209,36 @@
 							}
 						});
 					}
+				});
+				// 显示点击/取消收藏按钮函数
+				var showCollectTool = function(isCollect){
+					if (isCollect) {
+						$("#cancelCollectTool").removeClass("hidden");
+                		$("#collectTool").addClass("hidden");
+					} else {
+						$("#collectTool").removeClass("hidden");
+                		$("#cancelCollectTool").addClass("hidden");
+					}
+				}
+				showCollectTool("{{isCollect}}" == "True");
+				// 点击/取消收藏按钮回调
+				var reqCollectTool = function(isCollect, text){
+					requestCollectTool({
+						"submit" : "collect",
+						"isCollect" : isCollect,
+					}, function(data, status){
+						if (status == "success" && data.isSuccess) {
+							showCollectTool(isCollect);
+						}else{
+							alert(text+"失败，请重新"+text+"！");
+						}
+					});
+				}
+				$("#collectTool").on("click", function(){
+					reqCollectTool(true, "收藏工具");
+				});
+				$("#cancelCollectTool").on("click", function(){
+					reqCollectTool(false, "取消收藏");
 				});
 			})
 		</script>

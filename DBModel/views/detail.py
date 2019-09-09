@@ -17,31 +17,39 @@ def detail(request):
     request.encoding = "utf-8";
     _GG("Log").d("detail get :", request.GET, "detail post :", request.POST);
     tkey = request.GET.get("t", "");
-    try:
-        user = userinfo.getLoginUser(request.POST["uname"], request.POST["upwd"]);
-        if user:
-            if "submit" in request.POST:
+    if "submit" in request.POST:
+        result = {"isLoginFailed" : False, "isSuccess" : False};
+        try:
+            user = userinfo.getLoginUser(request.POST["uname"], request.POST["upwd"]);
+            if user:
                 tool = models.Tool.objects.get(tkey = tkey);
                 # 保存收藏
-                if request.POST["submit"] == "collection":
-                    return JsonResponse({"isSuccess" : doCollection(request.POST, user, tool)});
+                if request.POST["submit"] == "collect":
+                    result["isSuccess"] = doCollect(request.POST, user, tool);
+                    return JsonResponse(result);
                 # 保存评论
                 if request.POST["submit"] == "comment":
-                    return JsonResponse({"isSuccess" : doComment(request.POST, user, tool)});
-    except Exception as e:
-        _GG("Log").d(e);
+                    result["isSuccess"] = doComment(request.POST, user, tool);
+                    return JsonResponse(result);
+            else:
+                result["isLoginFailed"] = True;
+        except Exception as e:
+            _GG("Log").d(e);
+        return JsonResponse(result);
     return render(request, "detail.html", getResultByTkey(tkey));
 
 # 处理收藏
-def doCollection(postData, user, tool):
+def doCollect(postData, user, tool):
+    isCollect = postData.get("isCollect", "") == "true";
     try:
         collections = models.Collection.objects.filter(uid = user.id, tkey = tool);
-        if len(collections) == 0:
+        if isCollect and len(collections) == 0:
             c = models.Collection(uid = user, tkey = tool);
             c.save();
-        else:
+            return True;
+        elif not isCollect and len(collections) > 0:
             collections.delete();
-        return True;
+            return True;
     except Exception as e:
         _GG("Log").d(e);
     return False;
@@ -82,9 +90,9 @@ def getResultByTkey(tkey):
             "time" :  baseInfo.time,
         };
         # 是否收藏了工具
-        collections = models.Collection.objects.filter(uid = baseInfo.uid, tkey = tkey);
+        collections = models.Collection.objects.filter(uid = baseInfo.uid, tkey = baseInfo);
         if len(collections) > 0:
-            result["isCollected"] = True;
+            result["isCollect"] = True;
         # 工具列表
         result["toolInfoList"] = [{
             "version" : toolInfo.version,

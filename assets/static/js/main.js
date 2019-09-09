@@ -278,7 +278,7 @@ $(function(){
         addInputToForm(item, "uname", userInfo.name, "text");
         addInputToForm(item, "upwd", encodeStr(userInfo.pwd), "text");
     }
-	// 更新工具详情表单
+	// 请求工具详情表单
 	requestToolDetailForm = function(form, exIpts, callback){
 		var userInfo = getUserLoginInfo();
 		if (userInfo.name == "" || userInfo.pwd == "") {
@@ -301,6 +301,24 @@ $(function(){
                 alert("提交表单失败！");
             }
         })
+	};
+	// 请求收藏工具
+	requestCollectTool = function(data, callback){
+		var userInfo = getUserLoginInfo();
+		if (userInfo.name == "" || userInfo.pwd == "") {
+			createLoginDialog();
+			return;
+		}
+		data.uname = userInfo.name;
+		data.upwd = encodeStr(userInfo.pwd);
+		$.post(window.location.href, data, function(resp, status){
+			if (status == "success" && resp.isLoginFailed) {
+				setUserLoginInfo(null, null, 0);
+				createLoginDialog();
+			} else {
+				callback(resp, status);
+			}
+		});
 	};
 	// 发送验证码
 	var sendVerifyCode = function(formSelector){
