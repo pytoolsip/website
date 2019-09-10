@@ -31,6 +31,7 @@ class Depend(models.Model):
     name = models.CharField(max_length=255)
     path = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = depend_lib_path)
+    file_key = models.CharField(max_length=255)
     description = models.TextField()
     time = models.DateTimeField()
 

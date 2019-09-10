@@ -1,6 +1,8 @@
 import django.utils.timezone as timezone;
 from DBModel import models;
 
+import hashlib;
+
 from utils import base_util;
 
 from _Global import _GG;
@@ -69,15 +71,17 @@ def saveDepend(request, user, result):
     name, path = request.POST.get("name", None), request.POST.get("path", None);
     file_path, description = request.FILES.get("file", None), request.POST.get("description", None);
     if name and path and file_path and description:
+        file_key = hashlib.md5(file_path.read()).hexdigest();
         try:
             depend = models.Depend.objects.get(name = name);
             depend.path = path;
             depend.file_path = file_path;
+            depend.file_key = file_key;
             depend.description = description;
             depend.save();
             result["requestTips"] =  f"依赖库【{name}】更新成功！";
         except Exception as e:
-            depend = models.Depend(name = name, path = path, file_path = file_path, description = description, time = timezone.now());
+            depend = models.Depend(name = name, path = path, file_path = file_path, file_key = file_key, description = description, time = timezone.now());
             depend.save();
             result["requestTips"] = f"依赖库【{name}】上传成功。";
     else:
