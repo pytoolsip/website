@@ -25,20 +25,20 @@ def reqinfo(request):
             if len(ptipList) > 0:
                 # 平台信息
                 ptipInfo = ptipList[0];
-                urlList.append({"url" : ptipInfo.file_path.url, "path" : ptipPath});
+                urlList.append({"url" : ptipInfo.file_path.url, "path" : ptipPath, "version" : version});
                 # 依赖信息
                 exeList, envList = json.loads(ptipInfo.exe_list), json.loads(ptipInfo.env_list);
                 for exeInfo in exeList:
                     try:
                         exe = models.Exe.objects.get(name = exeInfo["name"]);
                         exeDetail = models.ExeDetail.objects.filter(eid = exe, base_version = exeInfo["base_version"]).order_by("-time")[0];
-                        urlList.append({"name" : exeInfo["name"], "url" : exeDetail.file_path.url, "path" : exe.path});
+                        urlList.append({"name" : exeInfo["name"], "url" : exeDetail.file_path.url, "path" : exe.path, "version" : exeDetail.version});
                     except Exception as e:
                         _GG("Log").d(e);
                 for envInfo in envList:
                     try:
                         env = models.Depend.objects.get(name = envInfo["name"]);
-                        urlList.append({"name" : envInfo["name"], "url" : env.file_path.url, "path" : env.path});
+                        urlList.append({"name" : envInfo["name"], "url" : env.file_path.url, "path" : env.path, "key" : env.file_key});
                     except Exception as e:
                         _GG("Log").d(e);
             return JsonResponse({"urlList" : urlList});
