@@ -148,7 +148,7 @@ def examTool(request, user, result, isSwitchTab):
                 if user.authority == 1:
                     userIdentity, opMsg = "管理员", "被管理员";
                 sendMsgToAllMgrs(f"{userIdentity}【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
-                sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}**{msg}**。\n{reasonMsg}", [t.uid.email]);
+                sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [t.uid.email]);
             except Exception as e:
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
     # 返回线上版本
@@ -205,7 +205,7 @@ def examOlTool(request, user, result, isSwitchTab):
                     try:
                         sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
                         exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
-                        sendToEmails(f"您在{t.time.strftime('%Y-%m-%d %H:%M:%S')}上传的工具【{t.tkey}，{t.version}】，于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}进行了**下架**。\n{exMsg}");
+                        sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功进行了下架。\n{exMsg}");
                     except Exception as e:
                         _GG("Log").e(f"Failed to send message to all managers! Error({e})!")
             except Exception as e:
