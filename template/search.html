@@ -19,18 +19,20 @@
 		</div>
 	</div>
 	
-	<div id="searchResult" class="row">
+	<div id="searchResult">
 		{% if isSearchNone %}
 			<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
 		{% endif %}
 		{% for toolInfo in toolInfoList %}
-			<div class="col-md-4 tool-info-item">
-				<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
-				<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
-				<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-				<p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击详情&nbsp;&raquo;</a></p>
-				<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
-				<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+			<div class="col-md-4">
+				<div class="tool-info-item">
+					<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+					<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+					<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+					<p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
+					<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+					<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+				</div>
 			</div>
 		{% endfor %}
 		{% for userInfo in userInfoList %}
