@@ -163,6 +163,6 @@ def resetUserPwd(request):
     # 更新密码及salt值
     pwd = _GG("DecodeStr")(upwd);
     user.salt = random_util.randomMulti(32);
-    user.password = pwd_util.encodePassword(salt, pwd);
+    user.password = pwd_util.encodePassword(user.salt, pwd);
     user.save();
     return JsonResponse({"isSuccess" : True});
