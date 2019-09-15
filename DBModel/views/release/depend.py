@@ -42,7 +42,7 @@ def saveExe(request, name, result):
         # 保存程序详情
         vList = version.split(".");
         base_version = ".".join(vList[:2]);
-        if  base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
+        if base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
             exeDetail = models.ExeDetail(eid = exe, version = version, file_path = file_path, base_version = base_version, changelog = changelog, time = timezone.now());
             exeDetail.save();
             # 删除除指定版本外的其他版本
@@ -78,6 +78,7 @@ def saveDepend(request, user, result):
             depend.file_path = file_path;
             depend.file_key = file_key;
             depend.description = description;
+            depend.time = timezone.now();
             depend.save();
             result["requestTips"] =  f"依赖库【{name}】更新成功！";
         except Exception as e:

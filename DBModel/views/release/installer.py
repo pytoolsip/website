@@ -21,7 +21,7 @@ def saveInstaller(request, name, result):
         # 保存程序详情
         vList = version.split(".");
         base_version = ".".join(vList[:2]);
-        if  base_util.verifyVersion(version, [installerInfo.version for installerInfo in models.Installer.objects.filter(base_version = base_version)]):
+        if base_util.verifyVersion(version, [installerInfo.version for installerInfo in models.Installer.objects.filter(base_version = base_version)]):
             models.Installer(version = version, file_path = file_path, base_version = base_version, changelog = changelog, time = timezone.now()).save();
             # 删除除指定版本外的其他版本
             delOtherVers(version);
