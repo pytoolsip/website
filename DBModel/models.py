@@ -1,3 +1,5 @@
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
 from django.db import models
 import os
 
@@ -39,6 +41,11 @@ class Depend(models.Model):
         managed = False
         db_table = 'depend'
 
+# 删除文件
+@receiver(pre_delete, sender=Depend)
+def depend_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
+
 
 class Exe(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -65,6 +72,11 @@ class ExeDetail(models.Model):
         managed = False
         db_table = 'exe_detail'
 
+# 删除文件
+@receiver(pre_delete, sender=ExeDetail)
+def exeDetail_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
+
 
 # 安装程序文件路径
 def installer_directory_path(instance, filename):
@@ -81,6 +93,11 @@ class Installer(models.Model):
     class Meta:
         managed = False
         db_table = 'installer'
+
+# 删除文件
+@receiver(pre_delete, sender=Installer)
+def installer_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
 
 
 # 平台脚本文件路径
@@ -103,6 +120,11 @@ class Ptip(models.Model):
     class Meta:
         managed = False
         db_table = 'ptip'
+
+# 删除文件
+@receiver(pre_delete, sender=Ptip)
+def ptip_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
 
 
 class Tool(models.Model):
@@ -138,6 +160,11 @@ class ToolDetail(models.Model):
         managed = False
         db_table = 'tool_detail'
 
+# 删除文件
+@receiver(pre_delete, sender=ToolDetail)
+def toolDetail_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
+
 
 class ToolExamination(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -155,6 +182,11 @@ class ToolExamination(models.Model):
     class Meta:
         managed = False
         db_table = 'tool_examination'
+
+# 删除文件
+@receiver(pre_delete, sender=ToolExamination)
+def toolExamination_delete(sender, instance, **kwargs):
+    instance.file_path.delete(False)
 
 
 class User(models.Model):

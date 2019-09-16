@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pytoolsip',
         'USER': 'root',
-        'PASSWORD': 'Pwd@123456',
+        'PASSWORD': 'pwdis123456',
         'HOST':'localhost',
         'PORT':'3306',
         'OPTIONS':{
