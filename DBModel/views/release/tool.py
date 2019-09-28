@@ -205,9 +205,9 @@ def examOlTool(request, userAuth, result, isSwitchTab):
                     result["requestTips"] = f"工具【{t.tkey.tkey}，{t.version}】下架成功。";
                     # 发送邮件通知
                     try:
-                        sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
+                        sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey.tkey}，{t.version}】。");
                         exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
-                        sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功进行了下架。\n{exMsg}");
+                        sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功进行了下架。\n{exMsg}");
                     except Exception as e:
                         _GG("Log").e(f"Failed to send message to all managers! Error({e})!")
             except Exception as e:
