@@ -120,7 +120,7 @@ def getOlExeInfoList():
             olInfoList.append({"name" : exe.name, "verlist" : [exeInfo.version for exeInfo in exeInfoList]});
     return olInfoList;
 
-# 获取线上依赖黄金信息
+# 获取线上依赖环境信息
 def getOlEnvInfoList():
     envInfoList = models.Depend.objects.all().order_by('-time');
     if len(envInfoList) > 0:
