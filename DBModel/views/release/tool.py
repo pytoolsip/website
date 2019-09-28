@@ -172,7 +172,7 @@ def releaseTool(t):
     toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);
     toolDetail.save();
     # 删除除指定版本外的其他版本
-    delOtherVers(t.version, t.ip_base_version);
+    delOtherVers(tool, t.version, t.ip_base_version);
 
 # 获取所有审核的工具信息
 def getToolExamination():
@@ -225,9 +225,9 @@ def checkHasUnExamination(version):
     return len(models.ToolExamination.objects.filter(version = version)) > 0;
 
 # 删除除指定版本外的其他版本
-def delOtherVers(version, ip_base_version):
-    if len(models.ToolDetail.objects.filter(version = version, ip_base_version = ip_base_version)) > 0:
-        for t in models.ToolDetail.objects.filter(ip_base_version = ip_base_version):
+def delOtherVers(tool, version, ip_base_version):
+    if len(models.ToolDetail.objects.filter(tkey = tool, version = version, ip_base_version = ip_base_version)) > 0:
+        for t in models.ToolDetail.objects.filter(tkey = tool, ip_base_version = ip_base_version):
             if t.version != version:
                 t.delete();
     else:
