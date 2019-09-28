@@ -45,8 +45,8 @@ def release(request):
     if "uname" not in request.POST or "upwd" not in request.POST:
         return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL});
     # 获取登陆玩家
-    user = userinfo.getLoginUser(request.POST["uname"], request.POST["upwd"]);
-    if not user:
+    userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+    if not userAuth:
         # 返回登陆页面信息
         ret = {"HOME_URL": settings.HOME_URL};
         if request.POST["uname"] and request.POST["upwd"]:
@@ -57,15 +57,15 @@ def release(request):
     # 获取请求键值
     mkey = request.POST.get("mk", "");
     # 判断是否重定向
-    if (mkey not in PtipKeyList and mkey not in PtKeyList) or (mkey in PtipKeyList and user.authority == 0):
+    if (mkey not in PtipKeyList and mkey not in PtKeyList) or (mkey in PtipKeyList and userAuth.authority == 0):
         # 重置mkey
-        if user.authority == 0:
+        if userAuth.authority == 0:
             mkey = PtKeyList[0];
         else:
             mkey = PtipKeyList[0];
         isSwitchTab = True;
     # 返回管理项的内容
-    return render(request, "release/item.html", getReleaseResult(request, user, mkey, isSwitchTab));
+    return render(request, "release/item.html", getReleaseResult(request, userAuth, mkey, isSwitchTab));
 
 # 登陆平台
 def loginIP(request):
@@ -95,41 +95,41 @@ def verify(request):
     return HttpResponse("false");
 
 # 获取管理页返回结果
-def getReleaseResult(request, user, mkey, isSwitchTab):
+def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     # 返回页面内容
     result = {
         "HOME_URL": settings.HOME_URL,
         "mkey" : mkey,
         "userInfo" : { # 用户信息
-            "name":user.name,
-            "email":user.email,
+            "name":userAuth.uid.name,
+            "email":userAuth.uid.email,
         },
-        "isManager" : user.authority == 1, # 是否显示平台选项
+        "isManager" : userAuth.authority == 1, # 是否显示平台选项
         "requestTips" : "", # 请求提示
         "requestFailedTips" : "", # 请求失败提示
         "onlineInfoList" : [], # 线上信息列表
     };
     if mkey == "ptip_examination": # 更新平台脚本
-        ptip.examine(request, user, result, isSwitchTab);
+        ptip.examine(request, userAuth, result, isSwitchTab);
     elif mkey == "ptip_script": # 更新平台脚本
-        ptip.upload(request, user, result, isSwitchTab);
+        ptip.upload(request, userAuth, result, isSwitchTab);
     elif mkey == "ptip_installer": # 更新平台安装程序
-        installer.uploadInstaller(request, user, result, isSwitchTab);
+        installer.uploadInstaller(request, userAuth, result, isSwitchTab);
     elif mkey == "depend_lib": # 上传依赖库
-        depend.uploadDepend(request, user, result, isSwitchTab);
+        depend.uploadDepend(request, userAuth, result, isSwitchTab);
     elif mkey == "ptip_exe": # 更新平台启动/更新程序
-        depend.uploadExe(request, user, result, isSwitchTab);
+        depend.uploadExe(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_ol_examination": # 审核线上工具
-        tool.examOlTool(request, user, result, isSwitchTab);
+        tool.examOlTool(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_examination": # 审核工具
-        tool.examTool(request, user, result, isSwitchTab);
+        tool.examTool(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_new_script": # 上传新工具脚本
-        tool.uploadNew(request, user, result, isSwitchTab);
+        tool.uploadNew(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
         if tkey:
-            tool.uploadOl(request, user, tkey, result, isSwitchTab)
+            tool.uploadOl(request, userAuth, tkey, result, isSwitchTab)
         else:
             # 搜索工具信息数据
-            tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), user.id);
+            tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), userAuth);
     return result;

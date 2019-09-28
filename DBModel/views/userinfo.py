@@ -34,8 +34,9 @@ def login(request):
 def getLoginInfo(uname, upwd = "", isLogin = False, isRemember = False):
     result = {"isSuccess" : False};
     # 获取登陆玩家
-    user = getLoginUser(uname, upwd, isLogin);
-    if user:
+    userAuth = getLoginUserAuth(uname, upwd, isLogin);
+    if userAuth:
+        user = userAuth.uid;
         result = {
             "isSuccess" : True,
             "name" : user.name,
@@ -44,13 +45,13 @@ def getLoginInfo(uname, upwd = "", isLogin = False, isRemember = False):
         # 缓存玩家密码对应的md5
         if isLogin:
             randCode = random_util.randomNum(8); # 8位随机码
-            result["pwd"] = hashlib.md5("|".join([user.password, randCode]).encode("utf-8")).hexdigest();
+            result["pwd"] = hashlib.md5("|".join([userAuth.password, randCode]).encode("utf-8")).hexdigest();
             result["expires"] = 12*60*60; # 默认12小时
             if isRemember:
                 result["expires"] = 10*24*60*60; # 10天
             # 缓存密码信息
-            cache.set(result["pwd"], user.password, result["expires"]);
-            pwdKey = "|".join(["password", user.name, user.password]);
+            cache.set(result["pwd"], userAuth.password, result["expires"]);
+            pwdKey = "|".join(["password", user.name, userAuth.password]);
             if cache.has_key(pwdKey) and cache.has_key(cache.get(pwdKey)):
                 cache.delete(cache.get(pwdKey));
             cache.set(pwdKey, result["pwd"], result["expires"]);
@@ -59,20 +60,21 @@ def getLoginInfo(uname, upwd = "", isLogin = False, isRemember = False):
     return result;
 
 # 获取登陆玩家
-def getLoginUser(uname, upwd, isLogin = False):
+def getLoginUserAuth(uname, upwd, isLogin = False):
     try:
         pwd = _GG("DecodeStr")(upwd);
+        user = models.User.objects.get(name = uname);
         if isLogin:
-            user = models.User.objects.get(name = uname);
-            pwd = pwd_util.encodePassword(user.salt, pwd);
+            userAuth = models.UserAuthority.objects.get(uid = user);
+            pwd = pwd_util.encodePassword(userAuth.salt, pwd);
         elif cache.has_key(pwd):
             # 从缓存中读取密码
             pwd = cache.get(pwd);
         # 返回数据
         _GG("Log").d("===== Get Login User By ===== :", uname, pwd);
-        return models.User.objects.get(name = uname, password = pwd);
+        return models.UserAuthority.objects.get(uid = user, password = pwd);
     except Exception as e:
-        _GG("Log").d(e);
+        _GG("Log").w(e);
     return None;
 
 # 注册请求
@@ -114,15 +116,15 @@ def getVerifyCode(request):
         return JsonResponse({"isSuccess" : False, "tips" : "邮箱信息不能为空！"});
     # 生成8位随机验证码
     verifyCode = random_util.randomNum(6); # 6位随机码
+    # 缓存验证码
+    expires = 2*60; # 缓存2分钟
+    cache.set("|".join(["verify_code", "register", email]), verifyCode, expires);
     # 发送邮件给指定邮箱
     try:
         send_mail("PyToolsIP", "平台验证码："+verifyCode, settings.EMAIL_HOST_USER, [email], fail_silently=False);
     except Exception as e:
-        _GG("Log").d(e);
+        _GG("Log").w(e, f"-> verifyCode[{verifyCode}]");
         return JsonResponse({"isSuccess" : False, "tips" : "验证码发送失败，请检查邮箱是否正确！"});
-    # 缓存验证码
-    expires = 2*60; # 缓存2分钟
-    cache.set("|".join(["verify_code", "register", email]), verifyCode, expires);
     return JsonResponse({"isSuccess" : True, "expires" : expires});
 
 # 注册玩家
@@ -142,7 +144,9 @@ def registerUser(request):
     pwd = _GG("DecodeStr")(upwd);
     salt = random_util.randomMulti(32);
     password = pwd_util.encodePassword(salt, pwd);
-    models.User(name = uname, password = password, salt = salt, email = email, authority = 0).save();
+    user = models.User(name = uname, email = email);
+    user.save();
+    models.UserAuthority(uid = user, password = password, salt = salt, authority = 0).save();
     return JsonResponse({"isSuccess" : True});
 
 # 重置用户密码
@@ -158,11 +162,16 @@ def resetUserPwd(request):
     # 根据邮箱获取用户
     try:
         user = models.User.objects.get(email = email);
+        # 获取用户权限数据
+        if len(models.UserAuthority.objects.filter(uid = user)) == 0:
+            models.UserAuthority(uid = user, password = "", salt = "", authority = 0).save();
+        userAuth = models.UserAuthority.objects.get(uid = user);
     except Exception as e:
-        return JsonResponse({"isSuccess" : True, "tips" : "用户邮箱异常！"});
+        _GG("Log").w(e);
+        return JsonResponse({"isSuccess" : False, "tips" : "用户邮箱异常！"});
     # 更新密码及salt值
     pwd = _GG("DecodeStr")(upwd);
-    user.salt = random_util.randomMulti(32);
-    user.password = pwd_util.encodePassword(user.salt, pwd);
-    user.save();
+    userAuth.salt = random_util.randomMulti(32);
+    userAuth.password = pwd_util.encodePassword(userAuth.salt, pwd);
+    userAuth.save();
     return JsonResponse({"isSuccess" : True});

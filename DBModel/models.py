@@ -191,11 +191,20 @@ def toolExamination_delete(sender, instance, **kwargs):
 
 class User(models.Model):
     name = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'user'
+
+
+class UserAuthority(models.Model):
+    id = models.IntegerField(primary_key=True)
+    uid = models.ForeignKey(User, models.DO_NOTHING, db_column='uid')
+    password = models.CharField(max_length=255)
     authority = models.IntegerField()
     salt = models.CharField(max_length=32)
 
     class Meta:
         managed = False
-        db_table = 'user'
+        db_table = 'user_authority'

@@ -8,7 +8,7 @@ import json;
 from _Global import _GG;
 
 # 上传平台脚本
-def upload(request, user, result, isSwitchTab):
+def upload(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         # 保存平信息
         savePtip(request, result);
@@ -21,10 +21,10 @@ def upload(request, user, result, isSwitchTab):
     result["onlineEnvInfoList"] = getOlEnvInfoList();
 
 # 审核平台
-def examine(request, user, result, isSwitchTab):
-    if not isSwitchTab and user.authority == 1:
+def examine(request, userAuth, result, isSwitchTab):
+    if not isSwitchTab and userAuth.authority == 1:
         # 发布平台
-        releasePtip(request, user, result);
+        releasePtip(request, userAuth, result);
     # 返回线上版本
     ptipList = models.Ptip.objects.filter(status = Status.Examing.value).order_by('-time');
     if len(ptipList) > 0:
@@ -128,7 +128,7 @@ def getOlEnvInfoList():
     return [];
 
 # 发布平台
-def releasePtip(request, user, result):
+def releasePtip(request, userAuth, result):
     pid, examType = request.POST.get("id", None), request.POST.get("examType", "");
     if pid and examType:
         try:
@@ -144,7 +144,7 @@ def releasePtip(request, user, result):
                 msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
             result["requestTips"] = f"PTIP平台【{p.version}】成功{msg}。";
             # 发送邮件通知
-            sendMsgToAllMgrs(f"管理员【{user.name}】于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}），成功{msg}了平台脚本【{p.version}】。\n{reasonMsg}");
+            sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}），成功{msg}了平台脚本【{p.version}】。\n{reasonMsg}");
         except Exception as e:
             _GG("Log").w(e);
             result["requestTips"] = f"平台【{p.version}】审核失败！";

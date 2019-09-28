@@ -10,25 +10,25 @@ from _Global import _GG;
 from base import *
 
 # 上传程序文件
-def uploadExe(request, user, result, isSwitchTab):
+def uploadExe(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        saveExe(request, user, result);
+        saveExe(request, userAuth, result);
     # 所有线上工具的名称
     result["olExeInfolist"] = [{"name" : exeInfo.name, "path" : exeInfo.path} for exeInfo in models.Exe.objects.all().order_by('-name')];
     # 返回线上版本数据
     result["onlineInfoList"] = getOlExeInfoList();
 
 # 上传依赖库
-def uploadDepend(request, user, result, isSwitchTab):
+def uploadDepend(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        saveDepend(request, user, result);
+        saveDepend(request, userAuth, result);
     # 所有线上依赖库的名称
     result["olDependInfolist"] = [{"name" : dependInfo.name, "path" : dependInfo.path} for dependInfo in models.Depend.objects.all().order_by('-name')];
     # 返回线上版本信息
     result["onlineInfoList"] = getOlDependInfoList();
 
 # 保存exe
-def saveExe(request, name, result):
+def saveExe(request, userAuth, result):
     name, path = request.POST.get("name", None), request.POST.get("path", None);
     version, file_path, changelog = request.POST.get("version", None), request.FILES.get("file", None), request.POST.get("changelog", None);
     if name and path and version and file_path and changelog:
@@ -67,7 +67,7 @@ def getOlExeInfoList():
     return [];
 
 # 保存依赖库
-def saveDepend(request, user, result):
+def saveDepend(request, userAuth, result):
     name, path = request.POST.get("name", None), request.POST.get("path", None);
     file_path, description = request.FILES.get("file", None), request.POST.get("description", None);
     if name and path and file_path and description:

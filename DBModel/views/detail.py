@@ -20,16 +20,16 @@ def detail(request):
     if "submit" in request.POST:
         result = {"isLoginFailed" : False, "isSuccess" : False};
         try:
-            user = userinfo.getLoginUser(request.POST["uname"], request.POST["upwd"]);
-            if user:
+            userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+            if userAuth:
                 tool = models.Tool.objects.get(tkey = tkey);
                 # 保存收藏
                 if request.POST["submit"] == "collect":
-                    result["isSuccess"] = doCollect(request.POST, user, tool);
+                    result["isSuccess"] = doCollect(request.POST, userAuth, tool);
                     return JsonResponse(result);
                 # 保存评论
                 if request.POST["submit"] == "comment":
-                    result["isSuccess"] = doComment(request.POST, user, tool);
+                    result["isSuccess"] = doComment(request.POST, userAuth, tool);
                     return JsonResponse(result);
             else:
                 result["isLoginFailed"] = True;
@@ -39,12 +39,12 @@ def detail(request):
     return render(request, "detail.html", getResultByTkey(tkey));
 
 # 处理收藏
-def doCollect(postData, user, tool):
+def doCollect(postData, userAuth, tool):
     isCollect = postData.get("isCollect", "") == "true";
     try:
-        collections = models.Collection.objects.filter(uid = user.id, tkey = tool);
+        collections = models.Collection.objects.filter(uid = userAuth.uid, tkey = tool);
         if isCollect and len(collections) == 0:
-            c = models.Collection(uid = user, tkey = tool);
+            c = models.Collection(uid = userAuth.uid, tkey = tool);
             c.save();
             return True;
         elif not isCollect and len(collections) > 0:
@@ -55,7 +55,7 @@ def doCollect(postData, user, tool):
     return False;
 
 # 处理评论
-def doComment(postData, user, tool):
+def doComment(postData, userAuth, tool):
     isSave = True;
     for k in ["score", "content"]:
         if k not in postData:
@@ -64,7 +64,7 @@ def doComment(postData, user, tool):
     if isSave:
         tkey = tool.tkey;
         try:
-            c = models.Comment(uid = user, tkey = tool, score = postData["score"], content = postData["content"], time = timezone.now());
+            c = models.Comment(uid = userAuth.uid, tkey = tool, score = postData["score"], content = postData["content"], time = timezone.now());
             c.save();
             return True;
         except Exception as e:

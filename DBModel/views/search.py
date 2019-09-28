@@ -64,7 +64,7 @@ def getToolInfoByTKey(tkey):
 def getToolInfoListByUserName(name):
     userInfos = models.User.objects.filter(name = name);
     if len(userInfos) > 0:
-        toolInfoList = models.Tool.objects.filter(uid = userInfos[0].id);
+        toolInfoList = models.Tool.objects.filter(uid = userInfos[0]);
         return True, [{
             "name" : toolInfo.name,
             "category" : toolInfo.category,

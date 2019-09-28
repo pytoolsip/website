@@ -8,14 +8,14 @@ from _Global import _GG;
 from base import *
 
 # 上传安装程序文件
-def uploadInstaller(request, user, result, isSwitchTab):
+def uploadInstaller(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        saveInstaller(request, user, result);
+        saveInstaller(request, userAuth, result);
     # 返回线上版本数据
     result["onlineInfoList"] = getOlInstallerInfoList();
 
 # 保存安装程序信息
-def saveInstaller(request, name, result):
+def saveInstaller(request, userAuth, result):
     version, file_path, changelog = request.POST.get("version", None), request.FILES.get("file", None), request.POST.get("changelog", None);
     if version and file_path and changelog:
         # 保存程序详情

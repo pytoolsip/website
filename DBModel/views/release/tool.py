@@ -8,7 +8,7 @@ from _Global import _GG;
 from base import *
 
 # 上传新工具
-def uploadNew(request, user, result, isSwitchTab):
+def uploadNew(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         file_path = request.FILES.get("file", None);
         name, category, description, version, ip_base_version = request.POST.get("name", None), request.POST.get("category", None), request.POST.get("description", None), request.POST.get("version", None), request.POST.get("ip_base_version", None);
@@ -22,7 +22,7 @@ def uploadNew(request, user, result, isSwitchTab):
                 category = base_util._verifyCategory_(category, False);
                 tkey = base_util._getMd5_(name, category);
                 # 保存ToolExamination
-                tool = models.ToolExamination(uid = user, tkey = tkey, name = name, category = category, description = description,
+                tool = models.ToolExamination(uid = userAuth.uid, tkey = tkey, name = name, category = category, description = description,
                 version = version, ip_base_version = ip_base_version, file_path = file_path, changelog = "初始版本。", time = timezone.now());
                 tool.save();
             result["requestTips"] = f"新工具【{tkey}， {version}】上传成功。";
@@ -31,12 +31,12 @@ def uploadNew(request, user, result, isSwitchTab):
     result["olIPBaseVerList"] = getOlIPBaseVerList();
 
 # 更新线上工具
-def uploadOl(request, user, tkey, result, isSwitchTab):
+def uploadOl(request, userAuth, tkey, result, isSwitchTab):
     try:
-        tool = models.Tool.objects.get(tkey = tkey, uid = user);
+        tool = models.Tool.objects.get(tkey = tkey, uid = userAuth.uid);
         if not isSwitchTab:
             # 保存线上工具的更新信息
-            saveOl(request, user, tool, result);
+            saveOl(request, userAuth, tool, result);
         # 获取线上信息
         result["onlineInfoList"] = getOnlineInfoList(tool);
         result["baseToolInfo"] = {
@@ -52,7 +52,7 @@ def uploadOl(request, user, tkey, result, isSwitchTab):
         result["searchNoneTips"] = f"您未曾发布过ID为【{tkey}】工具，请重新搜索！";
 
 # 保存线上工具的更新信息
-def saveOl(request, user, tool, result):
+def saveOl(request, userAuth, tool, result):
     file_path = request.FILES.get("file", None);
     if not file_path:
         return; # 未上传文件表示仅请求更新工具的界面，则直接返回
@@ -97,16 +97,16 @@ def getOnlineInfoList(baseInfo):
     } for ptInfo in ptInfoList];
 
 # 搜索工具信息数据
-def searchTool(result, searchType, searchText, uid):
+def searchTool(result, searchType, searchText, userAuth):
     searchNoneTips = "";
     if searchType == "name":
-        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = uid);
+        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = userAuth.uid);
         searchNoneTips = f"您未发布过名称包含为【{searchText}】工具，请重新搜索！";
     elif searchType == "tkey":
-        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = uid);
+        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = userAuth.uid);
         searchNoneTips = f"您未曾发布过ID为【{searchText}】工具，请重新搜索！";
     else:
-        toolInfoList = models.Tool.objects.filter(uid = uid);
+        toolInfoList = models.Tool.objects.filter(uid = userAuth.uid);
         searchNoneTips = f"您还未曾发布过工具到线上，请先上传新工具！";
     # 设置返回数据
     result["searchType"] = searchType;
@@ -125,14 +125,14 @@ def searchTool(result, searchType, searchText, uid):
     } for toolInfo in toolInfoList];
 
 # 审核工具
-def examTool(request, user, result, isSwitchTab):
+def examTool(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         examType, tid = request.POST.get("examType", None), request.POST.get("id", None);
         if examType and tid:
             try:
                 t, msg, reasonMsg = models.ToolExamination.objects.get(id = tid), "", "";
                 # 判断用户权限
-                if user.authority == 0 and t.uid.id != user.id:
+                if userAuth.authority == 0 and t.uid.id != userAuth.uid.id:
                     result["requestFailedTips"] = f"您没有权限审核工具【{t.tkey}，{t.version}】！";
                     return;
                 if examType == "release":
@@ -145,9 +145,9 @@ def examTool(request, user, result, isSwitchTab):
                 result["requestTips"] = f"工具【{t.tkey}，{t.version}】成功{msg}。";
                 # 发送邮件通知
                 userIdentity, opMsg = "用户", "完成";
-                if user.authority == 1:
+                if userAuth.authority == 1:
                     userIdentity, opMsg = "管理员", "被管理员";
-                sendMsgToAllMgrs(f"{userIdentity}【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
+                sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
                 sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [t.uid.email]);
             except Exception as e:
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
@@ -190,8 +190,8 @@ def getToolExamination():
     return [];
 
 # 审核线上工具
-def examOlTool(request, user, result, isSwitchTab):
-    if not isSwitchTab and user.authority == 1:
+def examOlTool(request, userAuth, result, isSwitchTab):
+    if not isSwitchTab and userAuth.authority == 1:
         examType, tid = request.POST.get("examType", None), request.POST.get("id", None);
         if examType and tid:
             try:
@@ -203,7 +203,7 @@ def examOlTool(request, user, result, isSwitchTab):
                     result["requestTips"] = f"工具【{t.tkey.tkey}，{t.version}】下架成功。";
                     # 发送邮件通知
                     try:
-                        sendMsgToAllMgrs(f"管理员【{user.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
+                        sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**下架**工具【{t.tkey}，{t.version}】。");
                         exMsg = f"【下架原因：{request.POST.get('reason', '无。')}】";
                         sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功进行了下架。\n{exMsg}");
                     except Exception as e:
