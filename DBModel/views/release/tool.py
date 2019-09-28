@@ -58,10 +58,10 @@ def saveOl(request, userAuth, tool, result):
         return; # 未上传文件表示仅请求更新工具的界面，则直接返回
     changelog, description, version, ip_base_version = request.POST.get("changelog", None), request.POST.get("description", None), request.POST.get("version", None), request.POST.get("ip_base_version", None);
     if file_path and changelog and description and version and ip_base_version:
-        if checkHasUnExamination(version):
+        if checkHasUnExamination(tool.tkey, version):
             result["requestFailedTips"] = f"存在审核中的工具版本号，需撤回审核中的版本【{version}】后，才能发布该版本！";
         else:
-            if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.all()]) and base_util.verifyVersion(version, [td.version for td in models.ToolDetail.objects.all()]):
+            if base_util.verifyVersion(version, [te.version for te in models.ToolExamination.objects.filter(tkey = tool.tkey)]) and base_util.verifyVersion(version, [td.version for td in models.ToolDetail.objects.filter(tkey = tool)]):
                 try:
                     # 保存ToolExamination
                     t = models.ToolExamination(uid = tool.uid, tkey = tool.tkey, name = tool.name, category = tool.category, description = description,
@@ -221,8 +221,8 @@ def examOlTool(request, userAuth, result, isSwitchTab):
         result["onlineInfoList"].extend(getOnlineInfoList(toolInfo));
 
 # 检测是否存在有未审核的版本号
-def checkHasUnExamination(version):
-    return len(models.ToolExamination.objects.filter(version = version)) > 0;
+def checkHasUnExamination(tkey, version):
+    return len(models.ToolExamination.objects.filter(tkey = tkey, version = version)) > 0;
 
 # 删除除指定版本外的其他版本
 def delOtherVers(tool, version, ip_base_version):

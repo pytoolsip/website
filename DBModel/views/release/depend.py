@@ -43,7 +43,7 @@ def saveExe(request, userAuth, result):
         # 保存程序详情
         vList = version.split(".");
         base_version = ".".join(vList[:2]);
-        if base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(base_version = base_version)]):
+        if base_util.verifyVersion(version, [exeInfo.version for exeInfo in models.ExeDetail.objects.filter(eid = exe, base_version = base_version)]):
             exeDetail = models.ExeDetail(eid = exe, version = version, file_path = file_path, base_version = base_version, changelog = changelog, time = timezone.now());
             exeDetail.save();
             # 删除除指定版本外的其他版本
@@ -106,7 +106,7 @@ def getOlDependInfoList():
 def delOtherVers(exe, version):
     base_version = ".".join(version.split(".")[:2]);
     if len(models.ExeDetail.objects.filter(eid = exe, base_version = base_version, version = version)) > 0:
-        for ptip in models.ExeDetail.objects.filter(base_version = base_version):
+        for ptip in models.ExeDetail.objects.filter(eid = exe, base_version = base_version):
             if ptip.version != version:
                 ptip.delete();
     else:
