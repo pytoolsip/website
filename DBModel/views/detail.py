@@ -34,7 +34,7 @@ def detail(request):
             else:
                 result["isLoginFailed"] = True;
         except Exception as e:
-            _GG("Log").d(e);
+            _GG("Log").w(e);
         return JsonResponse(result);
     return render(request, "detail.html", getResultByTkey(tkey));
 
@@ -51,7 +51,7 @@ def doCollect(postData, userAuth, tool):
             collections.delete();
             return True;
     except Exception as e:
-        _GG("Log").d(e);
+        _GG("Log").w(e);
     return False;
 
 # 处理评论
@@ -68,7 +68,7 @@ def doComment(postData, userAuth, tool):
             c.save();
             return True;
         except Exception as e:
-            _GG("Log").d(e);
+            _GG("Log").w(e);
     return False;
 
 # 根据tkey获取工具信息结果

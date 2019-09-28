@@ -16,7 +16,7 @@ class Status(Enum):
 # 发送消息给所有管理员
 def sendMsgToAllMgrs(msg):
     managers = models.UserAuthority.objects.filter(authority = 1); # 获取有管理员权限的用户
-    mgrEmails = [manager.email for manager in managers if manager.uid.email != settings.EMAIL_HOST_USER];
+    mgrEmails = [manager.uid.email for manager in managers if manager.uid.email != settings.EMAIL_HOST_USER];
     return sendToEmails(msg, mgrEmails);
 
 def sendToEmails(msg, emails):

@@ -47,7 +47,7 @@ def uploadOl(request, userAuth, tkey, result, isSwitchTab):
         };
         result["olIPBaseVerList"] = getOlIPBaseVerList();
     except Exception as e:
-        _GG("Log").d(e);
+        _GG("Log").w(e);
         result["isSearchNone"] = True;
         result["searchNoneTips"] = f"您未曾发布过ID为【{tkey}】工具，请重新搜索！";
 
@@ -69,7 +69,7 @@ def saveOl(request, userAuth, tool, result):
                     t.save();
                     result["requestTips"] = f"线上工具新版本【{tool.tkey}， {version}】上传成功。";
                 except Exception as e:
-                    _GG("Log").d(e);
+                    _GG("Log").w(e);
             else:
                 result["requestFailedTips"] = f"已存在更高的工具版本号，请修改版本号【{version}】后重试！";
     else:
@@ -150,6 +150,7 @@ def examTool(request, userAuth, result, isSwitchTab):
                 sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**工具【{t.tkey}，{t.version}】。");
                 sendToEmails(f"您在（{t.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的工具【{t.tkey}，{t.version}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [t.uid.email]);
             except Exception as e:
+                _GG("Log").w(e);
                 result["requestFailedTips"] = f"未找到工具【{t.tkey}，{t.version}】，审核失败！";
     # 返回线上版本
     result["onlineInfoList"] = getToolExamination();

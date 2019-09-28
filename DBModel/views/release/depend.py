@@ -37,6 +37,7 @@ def saveExe(request, userAuth, result):
             exe.path = path;
             exe.save();
         except Exception as e:
+            _GG("Log").w(e);
             exe = models.Exe(name = name, path = path);
             exe.save();
         # 保存程序详情
@@ -82,6 +83,7 @@ def saveDepend(request, userAuth, result):
             depend.save();
             result["requestTips"] =  f"依赖库【{name}】更新成功！";
         except Exception as e:
+            _GG("Log").w(e);
             depend = models.Depend(name = name, path = path, file_path = file_path, file_key = file_key, description = description, time = timezone.now());
             depend.save();
             result["requestTips"] = f"依赖库【{name}】上传成功。";

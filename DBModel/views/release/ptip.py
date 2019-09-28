@@ -45,7 +45,7 @@ def getExeJson(exeList):
             exeDetail = models.ExeDetail.objects.get(eid = exe, version = version);
             exeJson.append({"name" : name, "base_version" : exeDetail.base_version});
         except Exception as e:
-            _GG("Log").d(e);
+            _GG("Log").w(e);
     return json.dumps(exeJson);
 
 # 获取依赖环境url的json
@@ -56,7 +56,7 @@ def getEnvJson(envList):
             env = models.Depend.objects.get(name = name);
             envJson.append({"name" : name});
         except Exception as e:
-            _GG("Log").d(e);
+            _GG("Log").w(e);
     return json.dumps(envJson);
 
 # 保存平台信息
@@ -87,7 +87,7 @@ def updateBaseVer(request, result):
                 p.save();
                 result["requestTips"] = f"PTIP平台版本【{request.POST['updateVersion']}】更新成功。";
             except Exception as e:
-                _GG("Log").d(e);
+                _GG("Log").w(e);
                 result["requestFailedTips"] = "所要更新版本的平台版本不存在，请刷新后重试！";
         else:
             result["requestFailedTips"] = "所选择的更新版本不存在，请重新选择！";
