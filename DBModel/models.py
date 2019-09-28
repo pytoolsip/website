@@ -183,10 +183,10 @@ class ToolExamination(models.Model):
         managed = False
         db_table = 'tool_examination'
 
-# 删除文件
-@receiver(pre_delete, sender=ToolExamination)
-def toolExamination_delete(sender, instance, **kwargs):
-    instance.file_path.delete(False)
+# # 删除文件
+# @receiver(pre_delete, sender=ToolExamination)
+# def toolExamination_delete(sender, instance, **kwargs):
+#     instance.file_path.delete(False)
 
 
 class User(models.Model):

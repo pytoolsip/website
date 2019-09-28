@@ -140,6 +140,7 @@ def examTool(request, userAuth, result, isSwitchTab):
                     releaseTool(t);
                     msg = "发布";
                 else:
+                    t.file_path.delete(False); # 删除审核的工具文件
                     msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
                 t.delete(); # 移除审核中的工具信息
                 result["requestTips"] = f"工具【{t.tkey}，{t.version}】成功{msg}。";
