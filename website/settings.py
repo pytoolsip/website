@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "DBModel",
+    "ckeditor",
+    "ckeditor_uploader",
 ]
 
 MIDDLEWARE = [
@@ -111,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 USE_TZ=True
 
@@ -160,6 +162,15 @@ EMAIL_HOST_USER = "jimdreamheart@163.com"
 EMAIL_HOST_PASSWORD = "94caf63fecc75550"
 EMAIL_USE_SSL = True
 
+# ckeditor
+CKEDITOR_UPLOAD_PATH = "upload"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_CONFIGS = {
+    "default" : {
+        "language" : "zh-cn"
+    },
+}
+
 # home url
 HOME_URL = "http://jimdreamheart.club/pytoolsip"
-# HOME_URL = "http://localhost:8000"
+HOME_URL = "http://localhost:8000"

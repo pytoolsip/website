@@ -1,3 +1,4 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db import models
@@ -208,3 +209,19 @@ class UserAuthority(models.Model):
     class Meta:
         managed = False
         db_table = 'user_authority'
+
+
+# 图片文件路径
+def pic_directory_path(instance, filename):
+    return os.path.join("upload", "image", instance.uid, filename);
+class Article(models.Model):
+    id = models.IntegerField(primary_key=True)
+    uid = models.IntegerField()
+    title = models.CharField(max_length=255, verbose_name="标题")
+    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
+    content = RichTextUploadingField(verbose_name="内容")
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'article'

@@ -24,14 +24,14 @@ $(function(){
 		$('body,html').animate({scrollTop:0},280);
 	});
 	// 首页链接
-	var HOME_URL = "http://jimdreamheart.club/pytoolsip";
-	// var HOME_URL = "http://localhost:8000";
+	// var HOME_URL = "http://jimdreamheart.club/pytoolsip";
+	var HOME_URL = "http://localhost:8000";
 	// 登陆链接
 	var loginUrl = HOME_URL+"/userinfo?k=login";
 	// 注册链接
 	var registerUrl = HOME_URL+"/userinfo?k=register";
 	// 公钥
-	var PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDmV3i92KI4iaPEFtUfzJgQFByUTbRJIiDqbBYD0aT+JVupMG8Cwdcqqg/p36JAn5+ARL1Ci6H9n/m1+M+DvlUcs6v8S0SQ4dedCBTSgpZI+EgPga1PKdrcHYalQQXRKvHCZ2PAtuTwWcxJZRRhQ85d/j8Qg6xRoZqK/q5stbwwEQIDAQAB-----END PUBLIC KEY-----";
+	var PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDYeNBCn22B90arUKX7Tmgrg6dVZN20e+6u+KChIByh/ozfVJkL21xx36tcLdnKH0TFHu5HEVlo7TonUGSuQZoYRNvCprWIdf9SHwlID1pm3/D3ZrAQsVPmEZUharShAEqGe1fkOPzzRfae/MIwvrZji1RSgzCW69kMTv/70+wXIQIDAQAB-----END PUBLIC KEY-----";
 	// 编码字符串
 	encodeStr = function(s) {
 		var ec = new JSEncrypt();

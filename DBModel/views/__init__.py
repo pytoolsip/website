@@ -19,6 +19,7 @@ try:
     from release import release;
     from reqinfo import reqinfo;
     from toollist import toollist;
+    from texteditor import texteditor;
 
 except Exception as e:
 	raise e;

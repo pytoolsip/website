@@ -16,7 +16,10 @@ Including another URLconf
 
 from django.views.static import serve
 from django.conf.urls import url
-from django.urls import path
+from django.urls import path, include
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 from website import settings
 from DBModel import views
@@ -29,4 +32,8 @@ urlpatterns = [
     url(r'^reqinfo$', views.reqinfo),
     url(r'^toollist$', views.toollist),
     url(r'^pytoolsip/media/(?P<path>.*)', serve, {"document_root":settings.MEDIA_ROOT}),
+    url(r'^texteditor$', views.texteditor),
+    path("ckeditor", include("ckeditor_uploader.urls")),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
