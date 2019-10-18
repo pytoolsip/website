@@ -167,7 +167,23 @@ CKEDITOR_UPLOAD_PATH = "upload"
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_CONFIGS = {
     "default" : {
-        "language" : "zh-cn"
+        "skin": "moono-lisa",
+        "language" : "zh-cn",
+        "toolbar" : "Custom",
+        "toolbar_Custom" : [
+            ["Preview"],
+            ["Undo", "Redo"],
+            ["TextColor", "BGColor"],
+            ["Bold", "Italic", "Underline", "Strike", "-", "Subscript", "Superscript", "-", "RemoveFormat"],
+            ["Image", "Link", "Unlink", "Table", "SpecialChar", "-", "CodeSnippet"],
+            ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+            ["NumberedList", "BulletedList", "-", "Outdent", "Indent", "Blockquote"],
+            ["Styles", "Format", "Font", "FontSize"],
+        ],
+        "extraPlugins": ",".join(["codesnippet"]),
+        "tabSpaces": 4,
+        "uiColor": "#AADC6E",
+        "width" : "100%",
     },
 }
 

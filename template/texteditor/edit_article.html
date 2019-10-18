@@ -44,8 +44,16 @@
 		</header>
 		
 		<div id="mainContainer" class="container">
-            {{ form.media }}
-            {{ form.as_p }}
+			<form id="releaseForm" class="form-group" role="form" enctype="multipart/form-data">
+				<h2 class="text-center" style="padding: 20px; color:forestgreen; border: 1px grey solid; background-color: #F1F1F1;">
+					发布文章
+				</h2>
+				<div id="releaseContent">
+					{{ form.media }}
+					{{ form.as_p }}
+					<input class="pull-right btn btn-success" type="submit" value="点击发布" />
+				</div>
+			</form>
 		</div>
 		<div class="fixdRight">
 			<div id="user"><a class="btn btn-default text-center" href="javascript:void(0);" title="个人中心"><span class="glyphicon glyphicon-user"></span></a></div>
@@ -66,7 +74,6 @@
         <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
         <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
         <script src="http://jimdreamheart.club/resource/jsencrypt/jsencrypt.min.js"></script>
-        <script src="http://jimdreamheart.club/resource/ckeditor/ckeditor.js"></script>
 		<script src={% static "js/main.js" %}></script>
 		<script language="JavaScript">
 			$(function(){
@@ -86,6 +93,37 @@
 						showAlert("success", tips);
 					}
 				}
+				// 更新releaseContent
+				if ($("#releaseContent").length > 0) {
+					$("#releaseContent").children("p").each(function(idx, elem){
+						var $label = $(elem).find("label");
+						if ($label.length > 0) {
+							$(elem).addClass("input-group").css("margin-top", "30px");
+						}
+						$label.addClass("input-group-addon");
+						$label.next().addClass("form-control");
+					})
+				}
+				// 提交发布表单
+				$("#releaseForm").validate({
+					rules: {
+						title: {
+							required: true,
+						},
+						content: {
+							required: true,
+						},
+					},
+					messages: {
+						title: "请输入文章标题",
+						content: "请输入文章内容",
+					},
+					submitHandler: function() {
+						console.log("========================");
+						alert("提交表单");
+						// uploadManageForm($("#releaseForm"), []);
+					}
+				});
 			})
 		</script>
 	</body>

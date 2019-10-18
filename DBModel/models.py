@@ -217,9 +217,9 @@ def pic_directory_path(instance, filename):
 class Article(models.Model):
     id = models.IntegerField(primary_key=True)
     uid = models.IntegerField()
-    title = models.CharField(max_length=255, verbose_name="标题")
-    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
-    content = RichTextUploadingField(verbose_name="内容")
+    title = models.CharField(max_length=255, verbose_name="文章标题")
+    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="文章缩略图")
+    content = RichTextUploadingField(verbose_name="文章内容", help_text="*请注意文章内容不能违规，否则会导致您本次的发布审核不通过！")
     time = models.DateTimeField()
 
     class Meta:
