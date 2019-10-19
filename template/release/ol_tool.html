@@ -96,6 +96,7 @@
             <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
             <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
             <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+            <p class="tool-info-detail"><a class="btn btn-default update-tool-detail-btn" href="javascript:void(0);" role="button" data-target="{{ HOME_URL }}/texteditor?ek=tool&tkey={{ toolInfo.tkey }}">更新工具详情</a></p>
             <p class="tool-info-detail"><a class="btn btn-info update-ol-tool-btn" href="javascript:void(0);" role="button" data-target="{{ toolInfo.tkey }}">更新工具版本</a></p>
             <p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
             <p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
@@ -145,6 +146,21 @@
         var $selectOption = $("#searchType").find("option[value='{{ searchType }}']");
         $selectOption.attr("selected",true); // 选中选项
         $("#searchText").val("{{ searchText }}"); // 搜索值
+        // 点击更新工具详情按钮
+        $(".update-tool-detail-btn").on("click",function(){
+            var url = $(this).attr("data-target");
+            console.log("============url", url);
+            var userInfo = getUserLoginInfo();
+            $.post(url, {
+                uname : userInfo.name,
+                upwd : encodeStr(userInfo.pwd),
+            }, function(data, status){
+                if (status == "success") {
+                    document.write(data);
+                    updateFooterPosition(); // 更新footer的位置
+                }
+            });
+		});
         // 点击更新工具按钮
         $(".update-ol-tool-btn").on("click",function(){
 			requestManage({"mk" : "{{mkey}}", "tkey" : $(this).attr("data-target")});

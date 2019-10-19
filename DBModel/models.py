@@ -137,6 +137,7 @@ class Tool(models.Model):
     score = models.FloatField(blank=True, null=True)
     download = models.IntegerField(blank=True, null=True)
     time = models.DateTimeField()
+    detail = RichTextUploadingField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -179,6 +180,7 @@ class ToolExamination(models.Model):
     changelog = models.TextField()
     file_path = models.FileField(upload_to = tool_directory_path)
     time = models.DateTimeField()
+    detail = RichTextUploadingField(blank=True, null=True)
 
     class Meta:
         managed = False
