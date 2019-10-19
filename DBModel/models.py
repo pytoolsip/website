@@ -190,9 +190,15 @@ class ToolExamination(models.Model):
 #     instance.file_path.delete(False)
 
 
+# 头像文件路径
+def img_directory_path(instance, filename):
+    ext = os.path.splitext(filename)[1];
+    return os.path.join("userinfo", "image", instance.name, f"head_portrait{ext}");
 class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
+    img = models.ImageField(upload_to=img_directory_path, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

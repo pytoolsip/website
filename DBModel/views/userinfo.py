@@ -22,6 +22,8 @@ def userinfo(request):
         return login(request);
     elif key == "register": # 注册
         return register(request);
+    elif key == "detail": # 用户详情
+        return detail(request);
     return JsonResponse({"isSuccess" : False});
 
 # 登陆页请求
@@ -175,3 +177,18 @@ def resetUserPwd(request):
     userAuth.password = pwd_util.encodePassword(userAuth.salt, pwd);
     userAuth.save();
     return JsonResponse({"isSuccess" : True});
+
+def detail(request):
+    uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
+    # 获取登陆玩家
+    userAuth = getLoginUserAuth(uname, upwd);
+    if userAuth:
+        user = userAuth.uid;
+        return JsonResponse({
+            "isSuccess" : True,
+            "name" : user.name,
+            "email" : user.email,
+            "img" : user.img or "/pytoolsip/static/img/dzjh-icon.png",
+            "bio" : user.bio or "",
+        });
+    return JsonResponse({"isSuccess" : False, "tips" : "用户状态异常！"});

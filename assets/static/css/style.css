@@ -207,3 +207,19 @@ label.error {
 	font-size: 14px;
 	color: #FFFFFF;
 }
+
+.userinfoContent .tab-content{
+	padding-top: 10px;
+}
+
+.userinfoContent .tab-content form{
+	margin-top: 20px;
+}
+
+.userinfoContent .tab-content form > div, .userinfoContent .tab-content form > button{
+	margin-top: 20px;
+}
+
+#showUserInfo p{
+	margin-top: 10px;
+}

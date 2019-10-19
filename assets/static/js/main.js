@@ -26,10 +26,12 @@ $(function(){
 	// 首页链接
 	// var HOME_URL = "http://jimdreamheart.club/pytoolsip";
 	var HOME_URL = "http://localhost:8000";
+	// 用户信息链接
+	var userInfoUrl = HOME_URL+"/userinfo";
 	// 登陆链接
-	var loginUrl = HOME_URL+"/userinfo?k=login";
+	var loginUrl = userInfoUrl + "?k=login";
 	// 注册链接
-	var registerUrl = HOME_URL+"/userinfo?k=register";
+	var registerUrl = userInfoUrl + "?k=register";
 	// 公钥
 	var PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDYeNBCn22B90arUKX7Tmgrg6dVZN20e+6u+KChIByh/ozfVJkL21xx36tcLdnKH0TFHu5HEVlo7TonUGSuQZoYRNvCprWIdf9SHwlID1pm3/D3ZrAQsVPmEZUharShAEqGe1fkOPzzRfae/MIwvrZji1RSgzCW69kMTv/70+wXIQIDAQAB-----END PUBLIC KEY-----";
 	// 编码字符串
@@ -45,12 +47,12 @@ $(function(){
 			<span class='alertContent'>"+ tips +"</span>\
 		</div>";
 	}
-    // 设置玩家登录信息
+    // 设置用户登录信息
     setUserLoginInfo = function(name, pwd, expires){
         $.cookie("ptip_username", name, {expires: expires, path: "/"});
         $.cookie("ptip_userpwd", pwd, {expires: expires, path: "/"});
     }
-    // 获取玩家登录信息
+    // 获取用户登录信息
     getUserLoginInfo = function(){
         var $uname = $.cookie("ptip_username");
         var $upwd = $.cookie("ptip_userpwd");
@@ -215,24 +217,74 @@ $(function(){
 			createResetDialog();
 		});
 	}
-	// 创建登出弹窗
-	createLogoutDialog = function(data){
+	// 创建用户信息弹窗
+	createUserInfoDialog = function(data){
 		// 创建弹窗
-		createDialogPage("<div class='text-center'>\
-							<h2>玩家信息</h2>\
-							<p>用户名：<span>" + data.name + "</span></p>\
-							<p>邮箱：<span>" + data.email + "</span></p>\
-							<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
+		createDialogPage("<div class='userinfoContent'>\
+							<h2 class='text-center'>用户信息</h2>\
+							<ul id='userInfoTab' class='nav nav-tabs nav-justified' role='tablist'>\
+								<li role='presentation' class='active'><a href='#showUserInfo' role='tab' data-toggle='tab'>展示信息</a></li>\
+								<li role='presentation'><a href='#changeUserInfo' role='tab' data-toggle='tab'>更改信息</a></li>\
+							</ul>\
+							<div class='tab-content'>\
+								<div id='showUserInfo' class='tab-pane fade in active'>\
+									<div style='margin-top:10px; width: 60px;height: 60px;'>\
+										<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
+									</div>\
+									<div>\
+										<p>用户名：<span>" + data.name + "</span></p>\
+										<p>邮箱：<span>" + data.email + "</span></p>\
+										<p>个性签名：<span>" + data.bio + "</span></p>\
+									</div>\
+									<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
+								</div>\
+								<form id='changeUserInfo' class='tab-pane fade' action='" + data.url + "' method='POST'>\
+									<div class='input-group'>\
+										<label class='input-group-addon' for='uname'>用户名</label>\
+										<input name='uname' type='text' placeholder='" + data.name + "' class='form-control' readOnly>\
+										<div class='input-group-btn'>\
+											<button type='button' class='btn btn-default'>更改</button>\
+										</div>\
+									</div>\
+									<div class='input-group'>\
+										<label class='input-group-addon' for='email'>邮箱</label>\
+										<input name='email' type='text' placeholder='" + data.email + "' class='form-control' readOnly>\
+										<div class='input-group-btn'>\
+											<button type='button' class='btn btn-default'>更改</button>\
+										</div>\
+									</div>\
+									<div class='input-group'>\
+										<label class='input-group-addon' for='uname'>头像</label>\
+										<div class='input-group-btn' style='padding:0;'>\
+											<div style='width: 36px;height: 36px;'>\
+												<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
+											</div>\
+										</div>\
+										<input type='file' name='file' class='form-control' accept='.png,.jpg' onchange='javascript:void(0);'>\
+									</div>\
+									<div class='input-group'>\
+										<label class='input-group-addon' for='bio'>个性签名</label>\
+										<textarea name='bio' class='form-control' rows='4'>" + data.bio + "</textarea>\
+									</div>\
+									<button type='submit' class='form-control btn btn-success'><span class='glyphicon glyphicon-refresh'></span>&nbsp;更新用户信息</button>\
+								</div>\
 						</div>");
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
-			// 重置玩家的登录信息
+			// 重置用户的登录信息
 			setUserLoginInfo(null, null, 0);
 			// 关闭弹窗
 			closeDialogPage();
 			// 创建登陆弹窗
 			createLoginDialog();
 		});
+		// 更新用户信息
+		$("#changeUserInfo").validate({
+            submitHandler: function() {
+				// uploadManageForm($("#changeUserInfo"), []);
+				alert("更新用户信息！");
+            }
+        });
 	}
 	// 点击用户事件
 	$("#user").on("click",function(){
@@ -240,12 +292,12 @@ $(function(){
 		if (userInfo.name == "" || userInfo.pwd == "") {
 			createLoginDialog();
 		} else {
-			$.post(loginUrl, {
+			$.post(userInfoUrl+"?k=detail", {
 				uname : userInfo.name,
 				upwd : encodeStr(userInfo.pwd),
 			}, function(data, status){
 				if (status == "success" && data.isSuccess) {
-					createLogoutDialog(data);
+					createUserInfoDialog(data);
 				} else {
 					createLoginDialog();
 				}
