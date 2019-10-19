@@ -176,7 +176,7 @@ $(function(){
 						<h2>登陆PyToolsIP</h2>\
 						<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
 						<input name='password' class='form-control' type='password' placeholder='密码' required />\
-						<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>\
+						<label id='loginRemember'><input type='checkbox' checked>&nbsp;记住用户</label>\
 						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
 						<div class='login-link clearfix'>\
 							<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>\
@@ -220,7 +220,7 @@ $(function(){
 	// 创建用户信息弹窗
 	createUserInfoDialog = function(data){
 		// 创建弹窗
-		createDialogPage("<div class='userinfoContent'>\
+		createDialogPage("<div id='userinfoContent' class='userinfoContent'>\
 							<h2 class='text-center'>用户信息</h2>\
 							<ul id='userInfoTab' class='nav nav-tabs nav-justified' role='tablist'>\
 								<li role='presentation' class='active'><a href='#showUserInfo' role='tab' data-toggle='tab'>展示信息</a></li>\
@@ -228,47 +228,83 @@ $(function(){
 							</ul>\
 							<div class='tab-content'>\
 								<div id='showUserInfo' class='tab-pane fade in active'>\
-									<div style='margin-top:10px; width: 60px;height: 60px;'>\
-										<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
-									</div>\
-									<div>\
+									<div class='tab-pane-sub'>\
+										<h5 class='text-center'>基础信息</h5>\
 										<p>用户名：<span>" + data.name + "</span></p>\
 										<p>邮箱：<span>" + data.email + "</span></p>\
+									</div>\
+									<div class='tab-pane-sub'>\
+										<h5 class='text-center'>扩展信息</h5>\
+										<div style='width: 60px;height: 60px;'>\
+											<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
+										</div>\
 										<p>个性签名：<span>" + data.bio + "</span></p>\
 									</div>\
 									<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
 								</div>\
-								<form id='changeUserInfo' class='tab-pane fade' action='" + data.url + "' method='POST'>\
-									<div class='input-group'>\
-										<label class='input-group-addon' for='uname'>用户名</label>\
-										<input name='uname' type='text' placeholder='" + data.name + "' class='form-control' readOnly>\
-										<div class='input-group-btn'>\
-											<button type='button' class='btn btn-default'>更改</button>\
-										</div>\
-									</div>\
-									<div class='input-group'>\
-										<label class='input-group-addon' for='email'>邮箱</label>\
-										<input name='email' type='text' placeholder='" + data.email + "' class='form-control' readOnly>\
-										<div class='input-group-btn'>\
-											<button type='button' class='btn btn-default'>更改</button>\
-										</div>\
-									</div>\
-									<div class='input-group'>\
-										<label class='input-group-addon' for='uname'>头像</label>\
-										<div class='input-group-btn' style='padding:0;'>\
-											<div style='width: 36px;height: 36px;'>\
-												<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
+								<div id='changeUserInfo' class='tab-pane fade'>\
+									<div class='tab-pane-sub'>\
+										<h5 class='text-center'>基础信息</h5>\
+										<div class='input-group'>\
+											<label class='input-group-addon' for='newName'>用户名</label>\
+											<input name='newName' type='text' placeholder='" + data.name + "' class='form-control' readOnly>\
+											<div class='input-group-btn'>\
+												<button type='button' class='btn btn-default changeButton' data-target='newName'>更改</button>\
 											</div>\
 										</div>\
-										<input type='file' name='file' class='form-control' accept='.png,.jpg' onchange='javascript:void(0);'>\
+										<div class='input-group'>\
+											<label class='input-group-addon' for='newEmail'>邮箱</label>\
+											<input name='newEmail' type='text' placeholder='" + data.email + "' class='form-control' readOnly>\
+											<div class='input-group-btn'>\
+												<button type='button' class='btn btn-default changeButton' data-target='newEmail'>更改</button>\
+											</div>\
+										</div>\
+										<div class='input-group'>\
+											<label class='input-group-addon' for='newPwd'>密码</label>\
+											<input name='newPwd' type='text' placeholder='****************' class='form-control' readOnly>\
+											<div class='input-group-btn'>\
+												<button type='button' class='btn btn-default changeButton' data-target='newPwd'>更改</button>\
+											</div>\
+										</div>\
 									</div>\
-									<div class='input-group'>\
-										<label class='input-group-addon' for='bio'>个性签名</label>\
-										<textarea name='bio' class='form-control' rows='4'>" + data.bio + "</textarea>\
+									<div class='tab-pane-sub'>\
+										<form id='changeUserInfoForm' role='form' enctype='multipart/form-data' method='POST'>\
+											<h5 class='text-center'>扩展信息</h5>\
+											<div class='input-group'>\
+												<label class='input-group-addon' for='uname'>头像</label>\
+												<div class='input-group-btn' style='padding:0;'>\
+													<div style='width: 36px;height: 36px;'>\
+														<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
+													</div>\
+												</div>\
+												<input type='file' name='newImg' class='form-control' accept='.png,.jpg' onchange='javascript:void(0);'>\
+											</div>\
+											<div class='input-group'>\
+												<label class='input-group-addon' for='bio'>个性签名</label>\
+												<textarea name='newBio' class='form-control' rows='4'>" + data.bio + "</textarea>\
+											</div>\
+											<button type='submit' class='form-control btn btn-success'><span class='glyphicon glyphicon-refresh'></span>&nbsp;更新扩展信息</button>\
+										</form>\
 									</div>\
-									<button type='submit' class='form-control btn btn-success'><span class='glyphicon glyphicon-refresh'></span>&nbsp;更新用户信息</button>\
 								</div>\
+							</div>\
+							<div class='modal fade' role='dialog' data-backdrop='false'>\
+								<div class='modal-dialog' role='document'>\
+									<div id='changeUserBasicInfo' class='modal-content'>\
+									</div>\
+								</div>\
+							</div>\
 						</div>");
+		// 显示提示
+		var showAlert = function(item, type, text) {
+			if (item == null) {
+				item = $("#userinfoContent");
+			}
+			item.prepend("<div class='alert alert-"+ type +"' role='alert'>\
+					<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<span class='alertContent'>"+ text +"</span>\
+				</div>");
+		}
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
 			// 重置用户的登录信息
@@ -279,12 +315,175 @@ $(function(){
 			createLoginDialog();
 		});
 		// 更新用户信息
-		$("#changeUserInfo").validate({
+		$("#changeUserInfoForm").validate({
             submitHandler: function() {
-				// uploadManageForm($("#changeUserInfo"), []);
-				alert("更新用户信息！");
+				var userInfo = getUserLoginInfo();
+				if (userInfo.name == "" || userInfo.pwd == "") {
+					createLoginDialog();
+					return;
+				}
+				var $form = $("#changeUserInfoForm");
+				addInputsToForm($form, [
+					{"key":"isChange", "val":"true", "type":"text"},
+				]);
+				// 提交数据
+				$.ajax({
+					url : userInfoUrl+"?k=detail",
+					type : "post",
+					data : new FormData($form[0]),
+					processData : false,
+					contentType : false,
+					success : function(data){
+						if (data.isSuccess) {
+							createUserInfoDialog(data);
+							showAlert(null, "success", data.tips || "更改成功。");
+						} else {
+							showAlert(null, "danger", data.tips || "更改失败，请重试！");
+						}
+					},
+					error: function(e) {
+						console.log(e);
+						showAlert(null, "danger", "更改失败，请重试！");
+					}
+				});
             }
-        });
+		});
+		// 点击更改按钮回调函数
+		var onClickChangeBtn = function(dt) {
+			// 显示modal
+			$("#userinfoContent .modal").modal("show");
+			// 显示弹窗
+			var data = {name: dt, title: "", type: "text", placeholder: "", pwdLabel: "请输入密码进行确认", tips: ""};
+			var extInput = "";
+			if (dt == "newName"){
+				data.title = "更改用户名";
+				data.placeholder = "请输入新用户名";
+			}else if (dt == "mewEmail"){
+				data.title = "更改邮箱";
+				data.placeholder = "请输入新邮箱";
+			}else if (dt == "newPwd"){
+				data.title = "更改密码";
+				data.type = "password";
+				data.placeholder = "请输入新密码";
+				data.pwdLabel = "请输入旧密码进行确认";
+				extInput = "<input name='verifyPwd' type='password' placeholder='请再次输入新密码' class='form-control'>";
+			}
+			var content = "\
+				<div class='modal-header'>\
+					<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<h3 class='modal-title'>"+ data.title +"</h3>\
+				</div>\
+				<form id='changeUserBasicInfoForm' class='modal-body' role='form' enctype='multipart/form-data' method='POST'>\
+					<input id='" + data.name + "' name='" + data.name + "' type='" + data.type + "' placeholder='" + data.placeholder + "' class='form-control'>\
+					"+ extInput +"\
+					<input name='password' type='password' placeholder='" + data.pwdLabel + "' class='form-control'>\
+					<button type='submit' class='btn btn-warning form-control'>确定"+ data.title +"</button>\
+				</form>\
+				<div class='modal-footer'>\
+					<p>"+ data.tips +"</p>\
+				</div>";
+			$("#changeUserBasicInfo").html(content);
+			// 提交更新内容
+			$("#changeUserBasicInfoForm").validate({
+				rules: {
+					newName: {
+						required: true,
+						rangelength: [2, 10],
+						remote: {
+							url : registerUrl,
+							type : "post",
+							dataType: "json",
+							data : {
+								isVerify : true,
+								uname : function() {
+									return $("#changeUserBasicInfoForm input[name='newName']").val();
+								},
+							},
+						},
+					},
+					mewEmail: {
+						required: true,
+						email: true,
+						remote: {
+							url : registerUrl,
+							type : "post",
+							dataType: "json",
+							data : {
+								isVerify : true,
+								email : function() {
+									return $("#registerForm input[name='mewEmail']").val();
+								},
+							},
+						},
+					},
+					newPwd: {
+						required: true,
+						rangelength: [6, 16],
+					},
+					verifyPwd: {
+						required: true,
+						equalTo: "#newPwd"
+					},
+					password: {
+						required: true,
+					},
+				},
+				messages: {
+					newName: {
+						required: "请输入新用户名",
+						rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+						remote: "用户名已存在！请重新输入",
+					},
+					mewEmail: {
+						required: "请输入新邮箱",
+						email: "邮箱格式有误",
+						remote: "邮箱已被注册！请使用新邮箱",
+					},
+					newPwd: {
+						required: "请输入新密码",
+						rangelength: $.validator.format("请输入介于{0}和{1}长度的值"),
+					},
+					verifyPwd: {
+						required: "请再次输入新密码",
+						equalTo: "确认密码和密码不匹配"
+					},
+					password: {
+						required: "请输确认入密码",
+					},
+				},
+				submitHandler: function(form) {
+					var userInfo = getUserLoginInfo();
+					if (userInfo.name == "" || userInfo.pwd == "") {
+						createLoginDialog();
+					} else {
+						var pwd = $("#changeUserBasicInfoForm input[name='password']").val();
+						var sendData = {
+							isBase: true,
+							isChange: true,
+							uname : userInfo.name,
+							upwd : encodeStr(pwd),
+						};
+						sendData[data.name] = $("#changeUserBasicInfoForm input[name='"+ data.name +"']").val();
+						if (data.name == "newPwd") {
+							sendData[data.name] = encodeStr(sendData[data.name]);
+						}
+						$.post(userInfoUrl+"?k=detail", sendData, function(data, status){
+							if (status == "success" && data.isSuccess) {
+								createLoginDialog();
+								if (data.tips != "") {
+									showAlert($("#loginForm"), "success", (data.tips || "更改成功。") + "请重新登陆。");
+								}
+							} else {
+								showAlert($("#changeUserBasicInfo"), "danger", data.tips || "更改失败，请重试！");
+							}
+						});
+					}
+				}
+			});
+		}
+		$(".changeButton").on("click", function(){
+			onClickChangeBtn($(this).attr("data-target"));
+		})
 	}
 	// 点击用户事件
 	$("#user").on("click",function(){

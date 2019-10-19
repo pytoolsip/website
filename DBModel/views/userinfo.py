@@ -179,16 +179,48 @@ def resetUserPwd(request):
     return JsonResponse({"isSuccess" : True});
 
 def detail(request):
-    uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
+    _GG("Log").d("=========userinfo change detail=========", request.POST, request.FILES);
     # 获取登陆玩家
-    userAuth = getLoginUserAuth(uname, upwd);
+    uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
+    userAuth = getLoginUserAuth(uname, upwd, request.POST.get("isBase", False));
     if userAuth:
         user = userAuth.uid;
+        tips = "";
+        if "isChange" in request.POST:
+            # 更新用户基础信息
+            newName = request.POST.get("newName", "");
+            newEmail = request.POST.get("newEmail", "");
+            newPwd = request.POST.get("newPwd", "");
+            if newName:
+                user.name = newName;
+                user.save();
+                tips = "用户名更新成功。";
+            if newEmail:
+                user.email = newEmail;
+                user.save();
+                tips = "用户邮箱更新成功。";
+            if newPwd: # 更新密码及salt值
+                userAuth.salt = random_util.randomMulti(32);
+                userAuth.password = pwd_util.encodePassword(userAuth.salt, _GG("DecodeStr")(newPwd));
+                userAuth.save();
+                tips = "用户密码更新成功。";
+            # 更新用户扩展信息
+            newImg = request.FILES.get("newImg", None);
+            newBio = request.POST.get("newBio", "");
+            if newImg or newBio:
+                if newImg:
+                    user.img = newImg;
+                user.bio = newBio;
+                user.save();
+                tips = "用户信息更新成功。";
         return JsonResponse({
             "isSuccess" : True,
             "name" : user.name,
             "email" : user.email,
-            "img" : user.img or "/pytoolsip/static/img/dzjh-icon.png",
+            "img" : user.img and user.img.url or "/pytoolsip/static/img/dzjh-icon.png",
             "bio" : user.bio or "",
+            "tips" : tips,
         });
+    if "isChange" in request.POST:
+        return JsonResponse({"isSuccess" : False, "tips" : "用户信息更新失败，请重试！"});
     return JsonResponse({"isSuccess" : False, "tips" : "用户状态异常！"});

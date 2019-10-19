@@ -208,16 +208,32 @@ label.error {
 	color: #FFFFFF;
 }
 
-.userinfoContent .tab-content{
-	padding-top: 10px;
+.userinfoContent .tab-content .tab-pane-sub{
+	padding: 4px;
+	margin-top: 20px;
+	border: 1px #DCDCDC solid;
+	background-color: #F1F1F1;
 }
 
-.userinfoContent .tab-content form{
-	margin-top: 20px;
+.userinfoContent .tab-content .tab-pane-sub h5{
+	margin: 0px;
+	padding: 10px;
+	border-bottom: 1px #E1E1E1 solid;
 }
 
-.userinfoContent .tab-content form > div, .userinfoContent .tab-content form > button{
-	margin-top: 20px;
+.userinfoContent .tab-content .tab-pane-sub p>span{
+	font-size: 14px;
+}
+
+.userinfoContent .tab-content .tab-pane-sub .input-group, .userinfoContent .tab-content .tab-pane-sub form > button{
+	margin-top: 10px;
+}
+
+.modal-content{
+	padding-top:20px;
+}
+.modal-content .modal-body .form-control{
+	margin-top: 10px;
 }
 
 #showUserInfo p{
