@@ -29,6 +29,8 @@ finally:
 PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
 # 工具键值列表
 PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
+# 文章相关列表
+PtKeyList = ["article", "tool_article", "article_examination", "ol_article"];
 
 # 后台管理页请求
 @csrf_exempt
@@ -132,4 +134,12 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
         else:
             # 搜索工具信息数据
             tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), userAuth);
+    elif mkey == "article": # 发布文章
+
+    elif mkey == "tool_article": # 发布工具文章
+
+    elif mkey == "article_examination": # 审核文章
+
+    elif mkey == "ol_article": # 更新/下线已发布文章
+
     return result;

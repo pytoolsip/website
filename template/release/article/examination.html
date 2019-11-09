@@ -1,0 +1,75 @@
+<h2>文章审核</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>文章</th>
+            <th>发布时间</th>
+            <th>确认审核</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for olInfo in onlineInfoList %}
+        <tr>
+            <th><a href="{{ olInfo.url }}" target="_blank" title="">{{ olInfo.title }}</a></th>
+            <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <th>
+                {% if isManager %}
+                    <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
+                    <a class="btn btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
+                {% else %}
+                    <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
+                {% endif %}
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p id="noExamination" class="text-center hidden">目前暂无已发布的文章~</p>
+<script language="JavaScript">
+	$(function(){
+        var requestManageByExamType = function(examType, id, reason, callback) {
+            requestCallback({
+                "mk" : "{{mkey}}",
+                "examType" : examType,
+                "id": id,
+                "reason" : reason,
+            }, callback);
+        };
+        $(".examination").on("click",function(){
+            var examType = $(this).attr("name");
+            var tid = $(this).attr("data-target");
+            if (examType  == "release") {
+                requestManageByExamType(examType, tid, "", function(){});
+            } else {
+                // 创建弹窗
+                createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
+                                <h2>"+ $(this).text() +"原因</h2>\
+                                <input name='reason' class='form-control' type='text' placeholder='请填写"+ $(this).text() +"原因' required autofocus />\
+                                <button class='btn btn-lg btn-success form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;提交</button>\
+                            </form>");
+                // 登陆校验
+                $("#reasonForm").validate({
+                    rules: {
+                        reason: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        reason: {
+                            required: "请填写"+ $(this).text() +"原因",
+                        },
+                    },
+                    submitHandler: function() {
+                        requestManageByExamType(examType, tid, $("#reasonForm input[name='reason']").val(), function(){
+                            closeDialogPage(); // 请求后关闭弹窗
+                        }); // 请求后关闭弹窗
+                    }
+                });
+            }
+        });
+        // 判断是否显示无审核版本的提示
+        if ($(".table>tbody>tr").length == 0) {
+            $("#noExamination").removeClass("hidden");
+        }
+	});
+</script>

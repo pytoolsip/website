@@ -137,7 +137,6 @@ class Tool(models.Model):
     score = models.FloatField(blank=True, null=True)
     download = models.IntegerField(blank=True, null=True)
     time = models.DateTimeField()
-    detail = RichTextUploadingField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -180,7 +179,6 @@ class ToolExamination(models.Model):
     changelog = models.TextField()
     file_path = models.FileField(upload_to = tool_directory_path)
     time = models.DateTimeField()
-    detail = RichTextUploadingField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -225,10 +223,12 @@ def pic_directory_path(instance, filename):
 class Article(models.Model):
     id = models.IntegerField(primary_key=True)
     uid = models.IntegerField()
-    title = models.CharField(max_length=255, verbose_name="文章标题")
-    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="文章缩略图")
-    content = RichTextUploadingField(verbose_name="文章内容", help_text="*请注意文章内容不能违规，否则会导致您本次的发布审核不通过！")
+    title = models.CharField(max_length=255, verbose_name="标题")
+    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
+    content = RichTextUploadingField(verbose_name="内容", help_text="*请注意内容不能违规，否则会导致您本次的发布审核不通过！")
     time = models.DateTimeField()
+    atype = models.IntegerField()
+    status = models.IntegerField()
 
     class Meta:
         managed = False
