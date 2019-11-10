@@ -20,6 +20,7 @@ try:
     import depend;
     import tool;
     import installer;
+    import article;
 except Exception as e:
 	raise e;
 finally:
@@ -30,7 +31,7 @@ PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", 
 # 工具键值列表
 PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
 # 文章相关列表
-PtKeyList = ["article", "tool_article", "article_examination", "ol_article"];
+PtKeyList = ["article", "article_examination", "ol_article"];
 
 # 后台管理页请求
 @csrf_exempt
@@ -130,16 +131,14 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
         if tkey:
-            tool.uploadOl(request, userAuth, tkey, result, isSwitchTab)
+            tool.uploadOl(request, userAuth, tkey, result, isSwitchTab);
         else:
             # 搜索工具信息数据
             tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), userAuth);
     elif mkey == "article": # 发布文章
-
-    elif mkey == "tool_article": # 发布工具文章
-
+        article.uploadArticle(request, userAuth, result, isSwitchTab);
     elif mkey == "article_examination": # 审核文章
-
-    elif mkey == "ol_article": # 更新/下线已发布文章
-
+        article.examArticle(request, userAuth, result, isSwitchTab);
+    elif mkey == "ol_article": # 更新/下线已发布文章/工具详情
+        article.updateOlArticle(request, userAuth, result, isSwitchTab);
     return result;

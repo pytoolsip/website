@@ -14,7 +14,7 @@ from base import *
 class ArticleForm(ModelForm):
     class Meta:
         model = models.Article
-        fields = ["title", "thumbnail", "content"]
+        fields = ["title", "sub_title", "thumbnail", "content"]
 
 # 上传状态穷举值
 class ArticleType(Enum):
@@ -23,11 +23,11 @@ class ArticleType(Enum):
 
 # 上传文章
 def uploadArticle(request, userAuth, result, isSwitchTab):
-    pass;
-
-# 上传工具详情文章
-def uploadToolArticle(request, userAuth, result, isSwitchTab):
-    pass;
+    if not isSwitchTab:
+        # 处理上传文章逻辑【通过什么数据判断？】
+        pass;
+    result["articleType"] = ArticleType.Article.value;
+    result["form"] = ArticleForm();
 
 # 审核文章
 def examArticle(request, userAuth, result, isSwitchTab):
@@ -61,16 +61,47 @@ def examArticle(request, userAuth, result, isSwitchTab):
             except Exception as e:
                 _GG("Log").w(e);
                 result["requestFailedTips"] = f"未找到文章【{a.title}】，审核失败！";
-    # 返回线上版本
+    # 返回需审核的文章
     articleList = models.Article.objects.filter(status = Status.Examing.value).order_by('-time');
-    result["onlineInfoList"] [{
+    result["onlineInfoList"] = [{
             "id" : articleInfo.id,
             "title" : articleInfo.title,
             "time" : articleInfo.time,
-            "url" : articleInfo.file_path.url,
+            "url" : articleInfo.url,
         } for articleInfo in articleList];
     pass;
 
 # 更新已发布文章
 def updateOlArticle(request, userAuth, result, isSwitchTab):
+    if not isSwitchTab:
+        # 处理更新文章逻辑【通过什么数据判断？】
+        pass;
+        aid = request.POST.get("id", None);
+        if aid:
+            try:
+                a = models.Article.objects.get(id = request.POST["id"]);
+                result["isEdit"] = True;
+                result["articleType"] = a.atype;
+                result["form"] = ArticleForm(instance = a);
+                return;
+            except Exception as e:
+                _GG("Log").w(e);
+    # 返回需审核的文章
+    searchText = request.POST.get("searchText", "");
+    infoList = models.Article.objects.filter(title__icontains = searchText, uid = userAuth.uid).order_by('-time');
+    result["searchText"] = searchText;
+    result["isSearchNone"] = len(infoList) == 0;
+    if not searchText:
+        result["searchNoneTips"] = f"您未发布过文章~";
+    else:
+        result["searchNoneTips"] = f"您未发布过名称包含为【{searchText}】的文章，请重新搜索！";
+    result["onlineInfoList"] = [{
+            "id" : articleInfo.id,
+            "title" : articleInfo.title,
+            "subTitle" : articleInfo.sub_title,
+            "content" : articleInfo.content,
+            "time" : articleInfo.time,
+            "author" : articleInfo.uid.name,
+            "url" : articleInfo.url,
+        } for articleInfo in infoList];
     pass;

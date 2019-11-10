@@ -1,0 +1,85 @@
+
+<form id="releaseForm" class="form-group col-md-offset-1 col-md-10" role="form" enctype="multipart/form-data">
+    <h2 class="text-center" style="padding: 20px; color:forestgreen; border: 1px #BCBCBC solid; background-color: #F1F1F1;">
+        {% ifequal articleType 0 %}
+        发布文章
+        {% else %}
+        发布工具详情
+        {% endifequal %}
+    </h2>
+    <div id="releaseContent">
+        {{ form.media }}
+        {{ form.as_p }}
+        <div>
+            <p>*请注意内容不能违规，否则会导致您本次的发布审核不通过！</p>
+            <input class="btn btn-success" type="submit" value="点击发布" style="border: forestgreen 2px solid;" />
+        </div>
+    </div>
+</form>
+<script language="JavaScript">
+    $(function(){
+        // 显示评论结果信息
+        var showAlert = function(type, text) {
+            $("#releaseForm").prepend("<div class='alert alert-"+ type +"' role='alert'>\
+                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+                    <span class='alertContent'>"+ text +"</span>\
+                </div>");
+        }
+        var tips = "{{requestFailedTips}}";
+        if (tips != "") {
+            showAlert("danger", tips);
+        } else {
+            tips = "{{requestTips}}";
+            if (tips != "") {
+                showAlert("success", tips);
+            }
+        }
+        // 更新releaseContent
+        if ($("#releaseContent").length > 0) {
+            $("#releaseContent").children("p").each(function(idx, elem){
+                var $label = $(elem).find("label");
+                if ($label.length > 0) {
+                    $(elem).addClass("input-group").css("margin-top", "30px");
+                }
+                $label.addClass("input-group-addon");
+                $label.next().addClass("form-control");
+            })
+        }
+        // 提交发布表单
+        $("#releaseForm").validate({
+            rules: {
+                title: {
+                    required: true,
+                },
+                content: {
+                    required: true,
+                },
+            },
+            messages: {
+                title: "请输入文章标题",
+                content: "请输入文章内容",
+            },
+            submitHandler: function() {
+                console.log("========================");
+                var item = $("#releaseForm");
+                if (item.length > 0) {
+                    // 提交数据
+                    $.ajax({
+                        url : window.location.href,
+                        type : "post",
+                        data : new FormData(item[0]),
+                        processData : false,
+                        contentType : false,
+                        success : function(data){
+                            alert("提交表单成功");
+                        },
+                        error: function(e) {
+                            console.log(e);
+                            alert("提交表单失败！");
+                        }
+                    })
+                }
+            }
+        });
+    })
+</script>

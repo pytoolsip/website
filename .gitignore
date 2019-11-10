@@ -106,4 +106,4 @@ venv.bak/
 # myproject
 .project
 *.pem
-assets/media/release
+assets/media/*

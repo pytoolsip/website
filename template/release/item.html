@@ -38,13 +38,10 @@
 			{% include "release/article/examination.html" %}
 		{% endifequal %}
 		{% ifequal mkey "article" %}
-			{% include "release/article/article.html" %}
-		{% endifequal %}
-		{% ifequal mkey "tool_article" %}
-			{% include "release/article/tool.html" %}
+			{% include "release/article/article_form.html" %}
 		{% endifequal %}
 		{% ifequal mkey "ol_article" %}
-			{% include "release/article/online.html" %}
+			{% include "release/article/ol_article.html" %}
 		{% endifequal %}
 	</div>
 </div>

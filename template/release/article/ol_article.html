@@ -1,0 +1,81 @@
+{% if isEdit %}
+    {% include "release/article/article_form.html" %}
+{% else %}
+<form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;搜索您所发布的&nbsp;文章/工具详情&nbsp;-
+    </h3>
+    <div class="input-group">
+        <input id="searchText" name="searchText" type="text" placeholder="搜索文章名/工具名" class="form-control">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+    </div>
+</form>
+<div id="searchResult" class="col-sm-12 col-md-offset-1 col-md-10">
+    {% if isSearchNone %}
+        <p class="text-center">{{searchNoneTips}}</p>
+    {% endif %}
+    {% for articleInfo in onlineInfoList %}
+        <div class="col-md-4 tool-info-item">
+            <div>
+                <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
+                <a class="btn btn-default text-center" href="javascript:void(0);" title="删除"><span class="glyphicon glyphicon-user"></span></a>
+            </div>
+            <p class="tool-info-id">[{{ articleInfo.subTitle }}]</p>
+            <img src="{{articleInfo.thumbnail}}"/>
+            <p>{{ articleInfo.content }}</p>
+            {% ifequal articleType 1 %}
+            <p class="tool-info-detail"><a class="btn btn-info update-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">更新工具详情</a></p>
+            {% endifequal %}
+            <p class="tool-info-ex-info"><span>上传者：{{ articleInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i:s" }}</span></p>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+<script language="JavaScript">
+	$(function(){
+        // 上传表单
+        $("#uploadForm").validate({
+            rules: {
+                version: {
+                    checkVersion: 3,
+                },
+                file: {
+                    checkFileType: "zip",
+                },
+                changelog: {
+                    required: true,
+                },
+            },
+            messages: {
+                version: {
+                    required: "请输入版本号",
+                },
+                file: {
+                    required: "请选择更新包",
+                },
+                changelog: "请输入更新日志",
+            },
+            submitHandler: function() {
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        // 搜索表单
+        $("#searchForm").validate({
+            submitHandler: function() {
+                uploadManageForm($("#searchForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        // 搜索值
+        $("#searchText").val("{{ searchText }}");
+        // 点击更新文章按钮
+        $(".update-ol-article-btn").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "tkey" : $(this).attr("data-target")});
+		});
+	})
+</script>
