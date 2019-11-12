@@ -224,7 +224,7 @@ class Article(models.Model):
     id = models.IntegerField(primary_key=True)
     uid = models.ForeignKey(User, models.DO_NOTHING, db_column='uid')
     title = models.CharField(max_length=255, verbose_name="标题")
-    sub_title = models.CharField(max_length=255, verbose_name="子标题")
+    sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
     thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
     content = RichTextUploadingField(verbose_name="内容")
     time = models.DateTimeField()

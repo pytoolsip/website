@@ -18,17 +18,35 @@
     {% endif %}
     {% for articleInfo in onlineInfoList %}
         <div class="col-md-4 tool-info-item">
-            <div>
-                <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
-                <a class="btn btn-default text-center" href="javascript:void(0);" title="删除"><span class="glyphicon glyphicon-user"></span></a>
-            </div>
+            <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
+            {% if articleInfo.subTitle %}
             <p class="tool-info-id">[{{ articleInfo.subTitle }}]</p>
-            <img src="{{articleInfo.thumbnail}}"/>
+            {% endif %}
+            <img class="img-responsive center-block" src="{{articleInfo.thumbnail}}" style="width: 100%;"/>
             <p>{{ articleInfo.content }}</p>
-            {% ifequal articleType 1 %}
+            {% ifequal articleInfo.atype 0 %}
+            <p class="tool-info-detail"><a class="btn btn-danger delete-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">删除文章</a></p>
+            {% endifequal %}
+            {% ifequal articleInfo.atype 1 %}
             <p class="tool-info-detail"><a class="btn btn-info update-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">更新工具详情</a></p>
             {% endifequal %}
-            <p class="tool-info-ex-info"><span>上传者：{{ articleInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i:s" }}</span></p>
+            <p class="tool-info-ex-info">
+                &nbsp;
+                <span>
+                    [
+                    {% ifequal articleInfo.atype 0 %}
+                    文章
+                    {% endifequal %}
+                    {% ifequal articleInfo.atype 1 %}
+                    工具
+                    {% endifequal %}
+                    ]
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span>上传者：{{ articleInfo.author }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i" }}</span>
+            </p>
         </div>
     {% endfor %}
 </div>

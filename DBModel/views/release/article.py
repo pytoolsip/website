@@ -24,7 +24,12 @@ class ArticleType(Enum):
 # 上传文章
 def uploadArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        # 处理上传文章逻辑【通过什么数据判断？】
+        isRelease = base_util.getPostAsBool(request, "isRelease");
+        if isRelease and "title" in request.POST:
+            title, sub_title, thumbnail, content = request.POST["title"], request.POST.get("sub_title", None), request.FILES.get("thumbnail", None), request.POST.get("content", None);
+            # a = models.Article(uid = userAuth.uid, title = file_path, sub_title = sub_title, thumbnail = thumbnail, content = content, time = timezone.now(), atype = ArticleType.Article.value, status = Status.Examing.value);
+            # a.save();
+            result["requestTips"] = f"文章【{title}】上传成功。";
         pass;
     result["articleType"] = ArticleType.Article.value;
     result["form"] = ArticleForm();
@@ -50,7 +55,6 @@ def examArticle(request, userAuth, result, isSwitchTab):
                 else:
                     a.delete();
                     msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
-                a.delete(); # 移除审核中的工具信息
                 result["requestTips"] = f"文章【{a.title}】成功{msg}。";
                 # 发送邮件通知
                 userIdentity, opMsg = "用户", "完成";
@@ -67,7 +71,6 @@ def examArticle(request, userAuth, result, isSwitchTab):
             "id" : articleInfo.id,
             "title" : articleInfo.title,
             "time" : articleInfo.time,
-            "url" : articleInfo.url,
         } for articleInfo in articleList];
     pass;
 
@@ -88,7 +91,7 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
                 _GG("Log").w(e);
     # 返回需审核的文章
     searchText = request.POST.get("searchText", "");
-    infoList = models.Article.objects.filter(title__icontains = searchText, uid = userAuth.uid).order_by('-time');
+    infoList = models.Article.objects.filter(title__icontains = searchText, uid = userAuth.uid, status = Status.Released.value).order_by('-time');
     result["searchText"] = searchText;
     result["isSearchNone"] = len(infoList) == 0;
     if not searchText:
@@ -99,9 +102,10 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
             "id" : articleInfo.id,
             "title" : articleInfo.title,
             "subTitle" : articleInfo.sub_title,
+            "thumbnail" : articleInfo.thumbnail,
             "content" : articleInfo.content,
             "time" : articleInfo.time,
             "author" : articleInfo.uid.name,
-            "url" : articleInfo.url,
+            "atype" : articleInfo.atype,
         } for articleInfo in infoList];
     pass;

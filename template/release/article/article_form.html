@@ -18,22 +18,6 @@
 </form>
 <script language="JavaScript">
     $(function(){
-        // 显示评论结果信息
-        var showAlert = function(type, text) {
-            $("#releaseForm").prepend("<div class='alert alert-"+ type +"' role='alert'>\
-                    <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
-                    <span class='alertContent'>"+ text +"</span>\
-                </div>");
-        }
-        var tips = "{{requestFailedTips}}";
-        if (tips != "") {
-            showAlert("danger", tips);
-        } else {
-            tips = "{{requestTips}}";
-            if (tips != "") {
-                showAlert("success", tips);
-            }
-        }
         // 更新releaseContent
         if ($("#releaseContent").length > 0) {
             $("#releaseContent").children("p").each(function(idx, elem){
@@ -56,29 +40,14 @@
                 },
             },
             messages: {
-                title: "请输入文章标题",
-                content: "请输入文章内容",
+                title: "请输入标题",
+                content: "请输入内容",
             },
             submitHandler: function() {
-                console.log("========================");
-                var item = $("#releaseForm");
-                if (item.length > 0) {
-                    // 提交数据
-                    $.ajax({
-                        url : window.location.href,
-                        type : "post",
-                        data : new FormData(item[0]),
-                        processData : false,
-                        contentType : false,
-                        success : function(data){
-                            alert("提交表单成功");
-                        },
-                        error: function(e) {
-                            console.log(e);
-                            alert("提交表单失败！");
-                        }
-                    })
-                }
+                uploadManageForm($("#releaseForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                    {"key":"isRelease", "val":"true", "type":"text"},
+                ]);
             }
         });
     })

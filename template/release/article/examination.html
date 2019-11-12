@@ -10,7 +10,12 @@
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
-            <th><a href="{{ olInfo.url }}" target="_blank" title="">{{ olInfo.title }}</a></th>
+            <th><a class="article-detail" href="javascript:void(0);" data-target="{{ olInfo.id }}" title="{{ olInfo.title }}" style="text-decoration: underline;">
+                {{ olInfo.title }}
+                {% if articleInfo.subTitle %}
+                [{{ articleInfo.subTitle }}]
+                {% endif %}
+            </a></th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>
                 {% if isManager %}
