@@ -4,6 +4,30 @@ from django.dispatch.dispatcher import receiver
 from django.db import models
 import os
 
+# 图片文件路径
+def pic_directory_path(instance, filename):
+    return os.path.join("upload", "image", instance.uid, filename);
+class Article(models.Model):
+    id = models.IntegerField(primary_key=True)
+    uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
+    title = models.CharField(max_length=255, verbose_name="标题")
+    sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
+    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
+    content = RichTextUploadingField(verbose_name="内容")
+    time = models.DateTimeField()
+    atype = models.IntegerField()
+    status = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'article'
+
+# 删除文件
+@receiver(pre_delete, sender=Article)
+def article_delete(sender, instance, **kwargs):
+    instance.thumbnail.delete(False)
+
+
 class Collection(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
@@ -137,12 +161,17 @@ class Tool(models.Model):
     score = models.FloatField(blank=True, null=True)
     download = models.IntegerField(blank=True, null=True)
     time = models.DateTimeField()
+    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid')
 
     class Meta:
         managed = False
         db_table = 'tool'
         unique_together = (('id', 'tkey'),)
 
+# 删除文章
+@receiver(pre_delete, sender=Tool)
+def tool_delete(sender, instance, **kwargs):
+    instance.aid.delete(False)
 
 # 平台文件路径
 def tool_directory_path(instance, filename):
@@ -215,27 +244,3 @@ class UserAuthority(models.Model):
     class Meta:
         managed = False
         db_table = 'user_authority'
-
-
-# 图片文件路径
-def pic_directory_path(instance, filename):
-    return os.path.join("upload", "image", instance.uid, filename);
-class Article(models.Model):
-    id = models.IntegerField(primary_key=True)
-    uid = models.ForeignKey(User, models.DO_NOTHING, db_column='uid')
-    title = models.CharField(max_length=255, verbose_name="标题")
-    sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
-    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
-    content = RichTextUploadingField(verbose_name="内容")
-    time = models.DateTimeField()
-    atype = models.IntegerField()
-    status = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'article'
-
-# 删除文件
-@receiver(pre_delete, sender=Article)
-def article_delete(sender, instance, **kwargs):
-    instance.thumbnail.delete(False)

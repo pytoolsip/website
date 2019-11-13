@@ -16,11 +16,6 @@ class ArticleForm(ModelForm):
         model = models.Article
         fields = ["title", "sub_title", "thumbnail", "content"]
 
-# 上传状态穷举值
-class ArticleType(Enum):
-    Article = 0 # 文章
-    Tool    = 1 # 工具详情
-
 # 上传文章
 def uploadArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
@@ -77,18 +72,30 @@ def examArticle(request, userAuth, result, isSwitchTab):
 # 更新已发布文章
 def updateOlArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        aid, opType = request.POST.get("aid", None), request.POST.get("opType", None);
-        if aid and opType:
+        aid = request.POST.get("aid", None);
+        if aid:
             try:
-                a = models.Article.objects.get(id = request.POST["aid"]);
-                if opType == "update" and a.atype == ArticleType.Tool.value:
-                    result["isEdit"] = True;
-                    result["articleType"] = a.atype;
-                    result["form"] = ArticleForm(instance = a);
-                    return;
-                elif opType == "delete" and a.atype == ArticleType.Article.value:
-                    a.delete();
-                    result["requestTips"] = f"文章【{a.title}】成功删除。";
+                a = models.Article.objects.get(id = aid);
+                isRelease = base_util.getPostAsBool(request, "isRelease");
+                if isRelease and a.atype == ArticleType.Tool.value:
+                    thumbnail, content = request.FILES.get("thumbnail", None), request.POST.get("content", "");
+                    a.thumbnail = thumbnail;
+                    a.content = content;
+                    a.time = timezone.now();
+                    a.status = Status.Examing.value;
+                    a.save();
+                    result["requestTips"] = f"工具详情【{a.title}[{a.sub_title}]】更新成功，正在进行审核。";
+                opType = request.POST.get("opType", None);
+                if opType:
+                    if opType == "update" and a.atype == ArticleType.Tool.value:
+                        result["isEdit"] = True;
+                        result["articleType"] = a.atype;
+                        result["form"] = ArticleForm(instance = a);
+                        result["aid"] = aid;
+                        return;
+                    elif opType == "delete" and a.atype == ArticleType.Article.value:
+                        a.delete();
+                        result["requestTips"] = f"文章【{a.title}】成功删除。";
             except Exception as e:
                 _GG("Log").w(e);
     # 返回需审核的文章

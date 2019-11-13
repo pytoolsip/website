@@ -8,6 +8,11 @@ from _Global import _GG;
 from enum import Enum;
 
 # 上传状态穷举值
+class ArticleType(Enum):
+    Article = 0 # 文章
+    Tool    = 1 # 工具详情
+
+# 上传状态穷举值
 class Status(Enum):
     Examing = 0   # 审核中
     Released = 1  # 已发布

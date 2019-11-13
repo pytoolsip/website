@@ -165,8 +165,11 @@ def releaseTool(t):
         tool.time = t.time;
         tool.save();
     except Exception as e:
+        # 保存工具详情
+        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, time = t.time, atype = ArticleType.Tool.value, status = Status.Released.value);
+        a.save();
         # 保存Tool
-        tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time);
+        tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time, aid = a);
         tool.save();
     # 保存ToolDetail
     toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);

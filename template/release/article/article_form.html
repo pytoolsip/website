@@ -51,8 +51,14 @@
                 uploadManageForm($("#releaseForm"), [
                     {"key":"mk", "val":"{{mkey}}", "type":"text"},
                     {"key":"isRelease", "val":"true", "type":"text"},
+                    {"key":"aid", "val":"{{ aid }}", "type":"text"},
                 ]);
             }
         });
+        // 文章ID判断
+        if ("{{aid}}" != "") {
+            $("input[name='title']").attr("readonly", "readonly");
+            $("input[name='sub_title']").attr("readonly", "readonly");
+        }
     })
 </script>
