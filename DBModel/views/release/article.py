@@ -77,16 +77,18 @@ def examArticle(request, userAuth, result, isSwitchTab):
 # 更新已发布文章
 def updateOlArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        # 处理更新文章逻辑【通过什么数据判断？】
-        pass;
-        aid = request.POST.get("id", None);
-        if aid:
+        aid, opType = request.POST.get("aid", None), request.POST.get("opType", None);
+        if aid and opType:
             try:
-                a = models.Article.objects.get(id = request.POST["id"]);
-                result["isEdit"] = True;
-                result["articleType"] = a.atype;
-                result["form"] = ArticleForm(instance = a);
-                return;
+                a = models.Article.objects.get(id = request.POST["aid"]);
+                if opType == "update" and a.atype == ArticleType.Tool.value:
+                    result["isEdit"] = True;
+                    result["articleType"] = a.atype;
+                    result["form"] = ArticleForm(instance = a);
+                    return;
+                elif opType == "delete" and a.atype == ArticleType.Article.value:
+                    a.delete();
+                    result["requestTips"] = f"文章【{a.title}】成功删除。";
             except Exception as e:
                 _GG("Log").w(e);
     # 返回需审核的文章

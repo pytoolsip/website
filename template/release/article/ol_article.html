@@ -1,4 +1,7 @@
 {% if isEdit %}
+    <div style="padding: 0px 20px;">
+        <a id="goback" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span>返回上一级</a>
+    </div>
     {% include "release/article/article_form.html" %}
 {% else %}
 <form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">
@@ -53,34 +56,6 @@
 {% endif %}
 <script language="JavaScript">
 	$(function(){
-        // 上传表单
-        $("#uploadForm").validate({
-            rules: {
-                version: {
-                    checkVersion: 3,
-                },
-                file: {
-                    checkFileType: "zip",
-                },
-                changelog: {
-                    required: true,
-                },
-            },
-            messages: {
-                version: {
-                    required: "请输入版本号",
-                },
-                file: {
-                    required: "请选择更新包",
-                },
-                changelog: "请输入更新日志",
-            },
-            submitHandler: function() {
-                uploadManageForm($("#uploadForm"), [
-                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
-                ]);
-            }
-        });
         // 搜索表单
         $("#searchForm").validate({
             submitHandler: function() {
@@ -91,9 +66,33 @@
         });
         // 搜索值
         $("#searchText").val("{{ searchText }}");
+        // 点击删除文章按钮
+        $(".delete-ol-article-btn").on("click",function(){
+            var aid = $(this).attr("data-target");
+            // 创建弹窗
+            createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
+                            <h2>是否确认删除？</h2>\
+                            <blockquote style='color: red;'>注意：删除后无法还原，请谨慎操作！</blockquote>\
+                            <div class='clearfix'>\
+                                <button id='cancelOperation' class='btn btn-lg btn-default pull-left'>取消</button>\
+                                <button id='submitOperation' class='btn btn-lg btn-info pull-right'>确定</button>\
+                            </div>\
+                        </form>");
+            $("#cancelOperation").on("click",function(){
+                closeDialogPage(); // 关闭弹窗
+            });
+            $("#submitOperation").on("click",function(){
+                requestManage({"mk" : "{{mkey}}", "aid" : aid, "opType" : "delete"});
+                closeDialogPage(); // 关闭弹窗
+            });
+		});
         // 点击更新文章按钮
         $(".update-ol-article-btn").on("click",function(){
-			requestManage({"mk" : "{{mkey}}", "tkey" : $(this).attr("data-target")});
+			requestManage({"mk" : "{{mkey}}", "aid" : $(this).attr("data-target"), "opType" : "update"});
+		});
+        // 返回上一级
+        $("#goback").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "isSwitchTab" : "true"});
 		});
 	})
 </script>

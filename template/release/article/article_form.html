@@ -4,7 +4,11 @@
         {% ifequal articleType 0 %}
         发布文章
         {% else %}
-        发布工具详情
+            {% if isEdit %}
+            更新工具详情
+            {% else %}
+            发布工具详情
+            {% endif %}
         {% endifequal %}
     </h2>
     <div id="releaseContent">
