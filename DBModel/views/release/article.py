@@ -14,20 +14,35 @@ from base import *
 class ArticleForm(ModelForm):
     class Meta:
         model = models.Article
-        fields = ["title", "sub_title", "thumbnail", "content"]
+        fields = ["title", "sub_title", "thumbnail", "sketch"]
+
+    def __init__(self, *args, **kwargs):
+        super(ArticleForm, self).__init__(*args, **kwargs);
+        self.fields["sketch"].widget = HiddenInput();
+
+# 文章表单
+class ArticleContentForm(ModelForm):
+    class Meta:
+        model = models.ArticleContent
+        fields = ["content"]
 
 # 上传文章
 def uploadArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         isRelease = base_util.getPostAsBool(request, "isRelease");
         if isRelease and "title" in request.POST:
-            title, sub_title, thumbnail, content = request.POST["title"], request.POST.get("sub_title", None), request.FILES.get("thumbnail", None), request.POST.get("content", None);
-            # a = models.Article(uid = userAuth.uid, title = file_path, sub_title = sub_title, thumbnail = thumbnail, content = content, time = timezone.now(), atype = ArticleType.Article.value, status = Status.Examing.value);
-            # a.save();
-            result["requestTips"] = f"文章【{title}】上传成功。";
+            acf = ArticleContentForm(request.POST);
+            if acf.is_valid():
+                # ac = models.ArticleContent(content = acf.cleaned_data["content"]);
+                # ac.save();
+                title, sub_title, thumbnail, sketch = request.POST["title"], request.POST.get("sub_title", None), request.FILES.get("thumbnail", None), request.POST.get("sketch", "");
+                # a = models.Article(uid = userAuth.uid, title = file_path, sub_title = sub_title, thumbnail = thumbnail, sketch = sketch, cid = ac, time = timezone.now(), atype = ArticleType.Article.value, status = Status.Examing.value);
+                # a.save();
+                result["requestTips"] = f"文章【{title}】上传成功。";
         pass;
     result["articleType"] = ArticleType.Article.value;
     result["form"] = ArticleForm();
+    result["content_form"] = ArticleContentForm();
 
 # 审核文章
 def examArticle(request, userAuth, result, isSwitchTab):
@@ -78,19 +93,23 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
                 a = models.Article.objects.get(id = aid);
                 isRelease = base_util.getPostAsBool(request, "isRelease");
                 if isRelease and a.atype == ArticleType.Tool.value:
-                    thumbnail, content = request.FILES.get("thumbnail", None), request.POST.get("content", "");
-                    a.thumbnail = thumbnail;
-                    a.content = content;
-                    a.time = timezone.now();
-                    a.status = Status.Examing.value;
-                    a.save();
-                    result["requestTips"] = f"工具详情【{a.title}[{a.sub_title}]】更新成功，正在进行审核。";
+                    acf = ArticleContentForm(request.POST);
+                    if acf.is_valid():
+                        a.cid.content = acf.cleaned_data["content"];
+                        thumbnail, sketch = request.FILES.get("thumbnail", None), request.POST.get("sketch", "");
+                        a.thumbnail = thumbnail;
+                        a.sketch = sketch;
+                        a.time = timezone.now();
+                        a.status = Status.Examing.value;
+                        a.save();
+                        result["requestTips"] = f"工具详情【{a.title}[{a.sub_title}]】更新成功，正在进行审核。";
                 opType = request.POST.get("opType", None);
                 if opType:
                     if opType == "update" and a.atype == ArticleType.Tool.value:
                         result["isEdit"] = True;
                         result["articleType"] = a.atype;
                         result["form"] = ArticleForm(instance = a);
+                        result["content_form"] = ArticleContentForm(instance = a.cid);
                         result["aid"] = aid;
                         return;
                     elif opType == "delete" and a.atype == ArticleType.Article.value:
@@ -112,7 +131,7 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
             "title" : articleInfo.title,
             "subTitle" : articleInfo.sub_title,
             "thumbnail" : articleInfo.thumbnail,
-            "content" : articleInfo.content,
+            "sketch" : articleInfo.sketch,
             "time" : articleInfo.time,
             "author" : articleInfo.uid.name,
             "atype" : articleInfo.atype,

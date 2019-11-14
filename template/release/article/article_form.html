@@ -14,14 +14,44 @@
     <div id="releaseContent">
         {{ form.media }}
         {{ form.as_p }}
+        {{ content_form.media }}
+        {{ content_form.as_p }}
         <div>
             <p>*请注意内容不能违规，否则会导致您本次的发布审核不通过！</p>
-            <input class="btn btn-success" type="submit" value="点击发布" style="border: forestgreen 2px solid;" />
+            <button class="btn btn-success" type="submit" style="border: forestgreen 2px solid;"><span class="glyphicon glyphicon-send"></span>点击发布</button>
         </div>
     </div>
 </form>
 <script language="JavaScript">
     $(function(){
+        // 新增内容操作按钮
+        $("#id_content").before('<div class="clearfix">\
+            <button id="saveContent" type="button" class="btn-sm btn-default"><span class="glyphicon glyphicon-floppy-disk"></span>保存到本地</button>\
+            <a id="useLocalContent" class="btn" style="margin-left:10px;font-size:10px;"><span class="glyphicon glyphicon-map-marker"></span>使用本地数据</a>\
+            <a id="clearContent" class="btn pull-right"><span class="glyphicon glyphicon-trash"></span>清空内容</a>\
+        </div>');
+        var checkUseLocalContent = function() {
+            let articleContent = $.cookie("article_content");
+            if (articleContent != undefined && articleContent != "") {
+                $("#useLocalContent").attr("disabled", false);
+            }else{
+                $("#useLocalContent").attr("disabled", true);
+            }
+        };
+        checkUseLocalContent();
+        $("#saveContent").on("click", function() {
+            $.cookie("article_content", CKEDITOR.instances.id_content.getData(), {path: "/"});
+            checkUseLocalContent();
+        });
+        $("#useLocalContent").on("click", function() {
+            let articleContent = $.cookie("article_content");
+            if (articleContent != undefined && articleContent != "") {
+                CKEDITOR.instances.id_content.setData(articleContent);
+            }
+        });
+        $("#clearContent").on("click", function() {
+            CKEDITOR.instances.id_content.setData("");
+        });
         // 更新releaseContent
         if ($("#releaseContent").length > 0) {
             $("#releaseContent").children("p").each(function(idx, elem){
@@ -48,10 +78,17 @@
                 content: "请输入内容",
             },
             submitHandler: function() {
+                // 更新富文本元素
+                for (instance in CKEDITOR.instances) {
+                    CKEDITOR.instances[instance].updateElement();
+                }
+                // 获取纯文本内容
+                let text = CKEDITOR.instances.id_content.document.getBody().getText();
                 uploadManageForm($("#releaseForm"), [
                     {"key":"mk", "val":"{{mkey}}", "type":"text"},
                     {"key":"isRelease", "val":"true", "type":"text"},
                     {"key":"aid", "val":"{{ aid }}", "type":"text"},
+                    {"key":"sketch", "val":text.slice(0, 255), "type":"text"},
                 ]);
             }
         });

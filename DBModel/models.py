@@ -13,7 +13,8 @@ class Article(models.Model):
     title = models.CharField(max_length=255, verbose_name="标题")
     sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
     thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
-    content = RichTextUploadingField(verbose_name="内容")
+    sketch = models.CharField(max_length=255)
+    cid = models.ForeignKey('ArticleContent', models.DO_NOTHING, db_column='cid')
     time = models.DateTimeField()
     atype = models.IntegerField()
     status = models.IntegerField()
@@ -26,11 +27,21 @@ class Article(models.Model):
 @receiver(pre_delete, sender=Article)
 def article_delete(sender, instance, **kwargs):
     instance.thumbnail.delete(False)
+    instance.cid.delete(False)
+
+
+class ArticleContent(models.Model):
+    id = models.IntegerField(primary_key=True)
+    content = RichTextUploadingField(verbose_name="内容")
+
+    class Meta:
+        managed = False
+        db_table = 'article_content'
 
 
 class Collection(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
+    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid')
 
     class Meta:
         managed = False
@@ -39,10 +50,10 @@ class Collection(models.Model):
 
 class Comment(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    tkey = models.ForeignKey('Tool', models.DO_NOTHING, db_column='tkey', to_field='tkey')
     score = models.FloatField()
     content = models.TextField()
     time = models.DateTimeField()
+    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid')
 
     class Meta:
         managed = False
