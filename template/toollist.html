@@ -23,7 +23,14 @@
                 </div>
                 <div class="container-fluid navbar-header">
                     <a class="navbar-brand" href="{{ HOME_URL }}" title="首页">PyToolsIP</a>
-                    <a class="navbar-brand" href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#searchNavCollapse">
+                        <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div id="searchNavCollapse" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a></li>
+                    </ul>
                 </div>
             </nav>
         </header>

@@ -55,7 +55,10 @@
 						<span>上传者：{{ articleInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i:s" }}</span>
-					</p>
+                    </p>
+					<div style="background-color: #F1F1F1;">
+                        {{ articleInfo.content | safe }}
+                    </div>
 				</div>
 				<div class="col-md-4" style="padding-top: 40px;">
 					<a id="collectTool" class="btn btn-lg btn-primary hidden" href="javascript:void(0);" title="点击收藏">

@@ -37,7 +37,14 @@
 		{% endfor %}
 		{% for userInfo in userInfoList %}
 			<div class="col-md-4 tool-info-item">
-				<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3><span>&nbsp;[{{ userInfo.email }}]</span></div>
+				<h3 class="tool-info-tittle">
+					{% if userInfo.img %}
+					<img class="img-responsive" src="{{userInfo.img}}" style="width: 40px;border: 1px gray solid;border-radius: 50%;"/>
+					{% endif %}
+					{{ userInfo.name }}
+				</h3>
+				<p>[{{ userInfo.email }}]</p>
+				<blockquote class="tool-info-desc">{{ userInfo.bio }}</blockquote>
 				<a class="btn btn-info request-author-tools" href="javascript:void(0);" role="button" data-target="{{ userInfo.name }}">查看该用户上传的工具&nbsp;&raquo;</a>
 			</div>
 		{% endfor %}

@@ -60,6 +60,9 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span>最近上传时间：{{ baseInfo.time|date:"Y-m-d H:i:s" }}</span>
 					</p>
+					<div style="background-color: #F1F1F1;">
+						{{ baseInfo.content | safe }}
+					</div>
 				</div>
 				<div class="col-md-4" style="padding-top: 40px;">
 					<a id="collectTool" class="btn btn-lg btn-primary hidden" href="javascript:void(0);" title="点击收藏">
