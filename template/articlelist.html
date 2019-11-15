@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP-工具列表</title>
+		<title>PyToolsIP-文章列表</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-star-rating/css/star-rating.min.css" />
@@ -23,23 +23,44 @@
                 </div>
                 <div class="container-fluid navbar-header">
                     <a class="navbar-brand" href="{{ HOME_URL }}" title="首页">PyToolsIP</a>
-                    <a class="navbar-brand" href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a>
+                    <a class="navbar-brand" href="{{ HOME_URL }}/toollist" title="工具列表">工具列表</a>
                 </div>
             </nav>
         </header>
         <div class="container-fluid">
             <div class="row">
-                <div id="sidebar" class="col-sm-3 col-md-2 sidebar">
-                    <ul class="nav nav-sidebar">
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="all">所有工具</a></li>
-                    </ul>
-                    <ul class="nav nav-sidebar">
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="development">开发工具</a></li>
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="product">产品工具</a></li>
-                        <li><a class="_slideItem_" href="javascript:void(0);" data-target="entertainment">娱乐工具</a></li>
-                    </ul>
-                </div>
-                <div id="mainContent">
+                <div class="col-md-offset-1 col-md-10 content">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <h2 class="text-center" style="margin-bottom:30px;color: forestgreen;">文章列表</h2>
+                            <form id="searchForm" class="input-group" role="form" enctype="multipart/form-data">
+                                <input name="searchText" class="form-control" type="text" placeholder="搜索文章标题" value="{{ searchText }}">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-success">搜索</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="searchResult">
+                        {% if isSearchNone %}
+                            <p class="text-center">未搜索到[<b>标题</b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的文章&nbsp;~</p>
+                        {% endif %}
+                        {% for articleInfo in articleInfoList %}
+                            <div class="col-md-4">
+                                <div class="tool-info-item">
+                                    <div class="tool-info-tittle">
+                                        <h3>{{ articleInfo.title }}</h3>
+                                        {% if articleInfo.subTitle %}
+                                        <span>&nbsp;[{{ articleInfo.subTitle }}]</span>
+                                        {% endif %}
+                                    </div>
+                                    <blockquote class="tool-info-desc">{{ articleInfo.sketch }}</blockquote>
+                                    <p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/article?aid={{ articleInfo.id }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
+                                    <p class="tool-info-ex-info"><span>上传者：{{ articleInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i:s" }}</span></p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -60,17 +81,6 @@
         <script src={% static "js/release_validate.js" %}></script>
         <script language="JavaScript">
             $(function(){
-                var toolListUrl = "{{ HOME_URL }}/toollist?k=";
-                // 设置当前选中项
-                setActiveItem = function(tlkey) {
-                    var $activeItem = $("#sidebar li.active>._slideItem_");
-                    if ($activeItem.length == 0) {
-                        $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
-                    }else if (tlkey != $activeItem.attr("data-target")) {
-                        $activeItem.parent().toggleClass("active");
-                        $("#sidebar ._slideItem_[data-target="+tlkey+"]").parent().toggleClass("active");
-                    }
-                }
                 // 请求管理后台
                 requestToolList = function(data){
                     $.post(window.location.href, data, function(data, status){
@@ -80,38 +90,14 @@
                         }
                     });
                 }
-                // 切换tab
-                $("#sidebar ._slideItem_").on("click", function(){
-                    var $activeItem = $("#sidebar li.active>._slideItem_");
-                    if ($activeItem.length > 0) {
-                        if ($activeItem.attr("data-target") != $(this).attr("data-target")) {
-                            $activeItem.parent().toggleClass("active");
-                            $(this).parent().toggleClass("active");
-                            // 跳转页面
-                            window.location.href = toolListUrl+$(this).attr("data-target");
-                        }
+                // 点击搜索
+                $("#searchForm").validate({
+                    submitHandler: function() {
+                        requestToolList({
+                            "searchText" : $("#searchForm").find("input[name='searchText']").val(),
+                        });
                     }
                 });
-                // 检测并请求请求数据
-                (function(){
-                    var arr = window.location.href.split("?");
-                    if (arr.length > 1){
-                        var arr1 = arr[1].split("&");
-                        for (i in arr1) {
-                            var arr2 = arr1[i].split("=");
-                            if (arr2.length > 1 && arr2[0] == "k") {
-                                setActiveItem(arr2[1]);
-                                return;
-                            }
-                        }
-                    }
-                    setActiveItem("{{tlkey}}");
-                })();
-                // 请求数据
-                requestToolList({
-                    "searchSelect" : "{{ searchSelect }}",
-                    "searchText" : "{{ searchText }}",
-                })
             })
         </script>
     </body>

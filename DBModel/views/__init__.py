@@ -14,11 +14,12 @@ __all__ = ["home", "search", "detail", "userinfo", "release", "reqinfo", "toolli
 try:
     from home import home;
     from search import search;
-    from detail import detail;
+    from detail import detail, article;
     from userinfo import userinfo;
     from release import release;
     from reqinfo import reqinfo;
     from toollist import toollist;
+    from articlelist import articlelist;
 
 except Exception as e:
 	raise e;

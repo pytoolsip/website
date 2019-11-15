@@ -23,9 +23,6 @@ TlKeyMap = {
 def toollist(request):
     request.encoding = "utf-8";
     _GG("Log").d("toollist GET :", request.GET, "; POST :", request.POST, "; FILES :", request.FILES);
-    # 判断提交数据中是否包含tlkey
-    if "tl" in request.POST:
-        return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL});
     # 获取工具列表键值
     tlkey = request.GET.get("k", "all");
     if tlkey not in TlKeyMap:

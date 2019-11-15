@@ -31,6 +31,8 @@ urlpatterns = [
     url(r'^release$', views.release),
     url(r'^reqinfo$', views.reqinfo),
     url(r'^toollist$', views.toollist),
+    url(r'^articlelist$', views.articlelist),
+    url(r'^article$', views.article),
     url(r'^pytoolsip/media/(?P<path>.*)', serve, {"document_root":settings.MEDIA_ROOT}),
     path("ckeditor", include("ckeditor_uploader.urls")),
 ]
