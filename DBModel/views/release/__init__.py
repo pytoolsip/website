@@ -35,25 +35,20 @@ PtKeyList = ["article", "article_examination", "ol_article"];
 
 # 后台管理页请求
 @csrf_exempt
+@userinfo.checkLogined
 def release(request):
-    _GG("Log").d("release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
+    _GG("Log").d(request.method, "release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);
-    # 登陆平台
-    loginInfo = loginIP(request);
-    if loginInfo != None:
-        return loginInfo;
     # 判断是否已登陆
-    if "uname" not in request.POST or "upwd" not in request.POST:
+    if request.method == 'GET':
         return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL});
     # 获取登陆玩家
-    userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+    userAuth = request.userAuth;
     if not userAuth:
         # 返回登陆页面信息
         ret = {"HOME_URL": settings.HOME_URL};
-        if request.POST["uname"] and request.POST["upwd"]:
-            ret = {"requestFailedTips" : "登陆信息已过期！"};
         return render(request, "release/login.html", ret);
     # 是否切换Tab
     isSwitchTab = base_util.getPostAsBool(request, "isSwitchTab");
@@ -69,14 +64,6 @@ def release(request):
         isSwitchTab = True;
     # 返回管理项的内容
     return render(request, "release/item.html", getReleaseResult(request, userAuth, mkey, isSwitchTab));
-
-# 登陆平台
-def loginIP(request):
-    # 判断是否请求登陆
-    if base_util.getPostAsBool(request, "isLogin"):
-        loginInfo = userinfo.getLoginInfo(request.POST.get("uname", ""), upwd = request.POST.get("upwd", ""), isLogin = True);
-        return JsonResponse(loginInfo);
-    return None;
 
 # 校验逻辑
 def verify(request):

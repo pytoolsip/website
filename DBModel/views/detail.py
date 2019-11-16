@@ -15,6 +15,7 @@ from _Global import _GG;
 
 # 工具详情页
 @csrf_exempt
+@userinfo.checkLogined
 def detail(request):
     request.encoding = "utf-8";
     _GG("Log").d("detail get :", request.GET, "detail post :", request.POST);
@@ -22,7 +23,7 @@ def detail(request):
     if "submit" in request.POST:
         result = {"isLoginFailed" : False, "isSuccess" : False};
         try:
-            userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+            userAuth = request.userAuth;
             if userAuth:
                 tool = models.Tool.objects.get(tkey = tkey);
                 # 保存收藏
@@ -116,6 +117,7 @@ def getResultByTkey(tkey):
 
 # 文章页
 @csrf_exempt
+@userinfo.checkLogined
 def article(request):
     request.encoding = "utf-8";
     _GG("Log").d("detail get :", request.GET, "detail post :", request.POST);
@@ -127,7 +129,7 @@ def article(request):
     if "submit" in request.POST:
         result = {"isLoginFailed" : False, "isSuccess" : False};
         try:
-            userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+            userAuth = request.userAuth;
             if userAuth:
                 article = models.Article.objects.get(id = aid);
                 # 保存收藏

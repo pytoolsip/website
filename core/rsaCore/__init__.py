@@ -42,6 +42,12 @@ def _getPrivateKey_():
     with open(os.path.join(CURRENT_PATH, "rsa-private.pem"), "r") as f:
         _private_key = f.read();
     return _private_key;
+    
+# 编码字符串
+def encodeStr(s):
+    rsakey = RSA.importKey(getPublicKey());
+    cipher = Cipher_pkcs1_v1_5.new(rsakey);
+    return base64.b64encode(cipher.encrypt(s.encode())).decode();
 
 # 解码字符串
 def decodeStr(s):

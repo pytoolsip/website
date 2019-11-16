@@ -1,5 +1,6 @@
 import django.utils.timezone as timezone;
 from django.forms import CharField, ModelForm;
+from django.forms.widgets import HiddenInput;
 from DBModel import models;
 
 from base import *;

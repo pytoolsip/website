@@ -1,10 +1,13 @@
 <div class='container'>
 	<div class='row'>
+		<div id="alertList">
+		</div>
 		<div class='dialog-background col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4'>
 			<form id='loginForm' class='login-form dialog-content' role='form' enctype='multipart/form-data'>
 				<h2>登陆PTIP发布后台</h2>
 				<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />
 				<input name='password' class='form-control' type='password' placeholder='密码' required />
+				<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>
 				<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>
 				<div class='login-link clearfix'>
 					<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>
@@ -16,10 +19,22 @@
 </div>
 <script language="JavaScript">
 	$(function(){
+		// 显示弹出信息
+		var showAlert = function(type, text) {
+			$("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
+					<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<span class='alertContent'>"+ text +"</span>\
+				</div>");
+		}
 		var tips = "{{requestFailedTips}}";
 		if (tips != "") {
-			logoutManage(); // 登陆发布后台
-			alert(tips);
+			logoutManage(); // 登出发布后台
+			showAlert("danger", tips);
+		} else {
+			tips = "{{requestTips}}";
+			if (tips != "") {
+				showAlert("success", tips);
+			}
 		}
 		// 更新用户名
 		$("#userName").text("用户名");
@@ -50,7 +65,7 @@
 				},
 			},
 			submitHandler: function() {
-				loginIP(window.location.href, "loginForm", false, function(){
+				loginIP("loginForm", function(){
 					requestManage({});
 				});
 			}

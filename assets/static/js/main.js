@@ -47,31 +47,16 @@ $(function(){
 			<span class='alertContent'>"+ tips +"</span>\
 		</div>";
 	}
-    // 设置用户登录信息
-    setUserLoginInfo = function(name, pwd, expires){
-        $.cookie("ptip_username", name, {expires: expires, path: "/"});
-        $.cookie("ptip_userpwd", pwd, {expires: expires, path: "/"});
-    }
     // 获取用户登录信息
-    getUserLoginInfo = function(){
-        var $uname = $.cookie("ptip_username");
-        var $upwd = $.cookie("ptip_userpwd");
-        if ($uname == undefined || $uname == "null") {
-            $uname = "";
-        }
-        if ($upwd == undefined || $upwd == "null") {
-            $upwd = "";
-        }
-        return {
-            "name" : $uname,
-            "pwd" : $upwd,
-        };
+    var checkIsLogined = function(){
+		return $.cookie("is_logined") == "logined";
 	}
 	// 登陆平台
-    loginIP = function(url, formId, isRemember, callback){
+    loginIP = function(formId, callback){
 		var name = $("#"+formId+" input[name='name']").val();
 		var pwd = $("#"+formId+" input[name='password']").val();
-		$.post(url, {
+		var isRemember = $("#loginRemember>input[type='checkbox']").is(":checked");
+		$.post(loginUrl, {
 			isLogin : true,
 			uname : name,
 			upwd : encodeStr(pwd),
@@ -83,12 +68,30 @@ $(function(){
 					return;
 				}
 				console.log("登陆成功。");
-				// 缓存登陆数据
-				setUserLoginInfo(data.name, data.pwd, data.expires);
 				// 登陆成功回调
 				callback();
 			} else {
 				alert("登陆失败！")
+			}
+		});
+    }
+	// 登出平台
+    logoutIP = function(formId, callback){
+		$.post(loginUrl, {
+			isLogout : true,
+		}, function(data, status){
+			if (status == "success") {
+				if (!data.isSuccess) {
+					if (formId != null) {
+						$("#"+formId).prepend(getAlertTips("danger", data.tips));
+					}
+					return;
+				}
+				console.log("登出成功。");
+				// 登出成功回调
+				callback();
+			} else {
+				alert("登出失败！")
 			}
 		});
     }
@@ -202,7 +205,7 @@ $(function(){
 				},
 			},
 			submitHandler: function() {
-				loginIP(loginUrl, "loginForm", $("#loginRemember>input[type='checkbox']").is(":checked"), function(){
+				loginIP("loginForm", function(){
 					// 关闭弹窗
 					closeDialogPage();
 				});
@@ -307,8 +310,6 @@ $(function(){
 		}
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
-			// 重置用户的登录信息
-			setUserLoginInfo(null, null, 0);
 			// 关闭弹窗
 			closeDialogPage();
 			// 创建登陆弹窗
@@ -317,8 +318,7 @@ $(function(){
 		// 更新用户信息
 		$("#changeUserInfoForm").validate({
             submitHandler: function() {
-				var userInfo = getUserLoginInfo();
-				if (userInfo.name == "" || userInfo.pwd == "") {
+				if (!checkIsLogined()) {
 					createLoginDialog();
 					return;
 				}
@@ -358,7 +358,7 @@ $(function(){
 			if (dt == "newName"){
 				data.title = "更改用户名";
 				data.placeholder = "请输入新用户名";
-			}else if (dt == "mewEmail"){
+			}else if (dt == "newEmail"){
 				data.title = "更改邮箱";
 				data.placeholder = "请输入新邮箱";
 			}else if (dt == "newPwd"){
@@ -448,19 +448,17 @@ $(function(){
 						equalTo: "确认密码和密码不匹配"
 					},
 					password: {
-						required: "请输确认入密码",
+						required: "请输入确认密码",
 					},
 				},
 				submitHandler: function(form) {
-					var userInfo = getUserLoginInfo();
-					if (userInfo.name == "" || userInfo.pwd == "") {
+					if (!checkIsLogined()) {
 						createLoginDialog();
 					} else {
 						var pwd = $("#changeUserBasicInfoForm input[name='password']").val();
 						var sendData = {
 							isBase: true,
 							isChange: true,
-							uname : userInfo.name,
 							upwd : encodeStr(pwd),
 						};
 						sendData[data.name] = $("#changeUserBasicInfoForm input[name='"+ data.name +"']").val();
@@ -487,14 +485,10 @@ $(function(){
 	}
 	// 点击用户事件
 	$("#user").on("click",function(){
-		var userInfo = getUserLoginInfo();
-		if (userInfo.name == "" || userInfo.pwd == "") {
+		if (!checkIsLogined()) {
 			createLoginDialog();
 		} else {
-			$.post(userInfoUrl+"?k=detail", {
-				uname : userInfo.name,
-				upwd : encodeStr(userInfo.pwd),
-			}, function(data, status){
+			$.post(userInfoUrl+"?k=detail", {}, function(data, status){
 				if (status == "success" && data.isSuccess) {
 					createUserInfoDialog(data);
 				} else {
@@ -524,15 +518,10 @@ $(function(){
                 addInputToForm(item, ipt.key, ipt.val, ipt.type);
             }
         }
-        // 添加用户名和密码
-        var userInfo = getUserLoginInfo();
-        addInputToForm(item, "uname", userInfo.name, "text");
-        addInputToForm(item, "upwd", encodeStr(userInfo.pwd), "text");
     }
 	// 请求工具详情表单
 	requestToolDetailForm = function(form, exIpts, callback){
-		var userInfo = getUserLoginInfo();
-		if (userInfo.name == "" || userInfo.pwd == "") {
+		if (!checkIsLogined()) {
 			createLoginDialog();
 			return;
 		}
@@ -555,16 +544,12 @@ $(function(){
 	};
 	// 请求收藏工具
 	requestCollectTool = function(data, callback){
-		var userInfo = getUserLoginInfo();
-		if (userInfo.name == "" || userInfo.pwd == "") {
+		if (!checkIsLogined()) {
 			createLoginDialog();
 			return;
 		}
-		data.uname = userInfo.name;
-		data.upwd = encodeStr(userInfo.pwd);
 		$.post(window.location.href, data, function(resp, status){
 			if (status == "success" && resp.isLoginFailed) {
-				setUserLoginInfo(null, null, 0);
 				createLoginDialog();
 			} else {
 				callback(resp, status);

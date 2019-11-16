@@ -18,7 +18,7 @@ if os.path.join(CURRENT_PATH, "core") not in sys.path:
 # 加载全局变量
 import _Global as _G;
 from logCore.Logger import Logger;
-from rsaCore import decodeStr, getPublicKey;
+from rsaCore import encodeStr, decodeStr, getPublicKey;
 
 # 初始化全局变量
 def _initGlobal_G_():
@@ -54,7 +54,8 @@ def _loadLogger_():
 
 # 加载rsa密钥解码方法
 def _loadRsaDecode_():
-	# 加载rsa密钥解码方法
+	# 加载rsa密钥编解码方法
+	_G.setGlobalVarTo_Global("EncodeStr", encodeStr);
 	_G.setGlobalVarTo_Global("DecodeStr", decodeStr);
 	# 更新main.js的公钥
 	publicKey = getPublicKey();

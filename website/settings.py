@@ -167,7 +167,7 @@ CKEDITOR_UPLOAD_PATH = "upload"
 CKEDITOR_IMAGE_BACKEND = "pillow"
 CKEDITOR_CONFIGS = {
     "default" : {
-        "skin": "moono-lisa",
+        "skin": "moono",
         "language" : "zh-cn",
         "toolbar" : "Custom",
         "toolbar_Custom" : [
@@ -182,7 +182,6 @@ CKEDITOR_CONFIGS = {
         ],
         "extraPlugins": ",".join(["codesnippet"]),
         "tabSpaces": 4,
-        "uiColor": "#AADC6E",
         "width" : "100%",
     },
 }
