@@ -310,10 +310,12 @@ $(function(){
 		}
 		// 绑定注销按钮的点击事件
 		$("#logoutButton").on("click",function(){
-			// 关闭弹窗
-			closeDialogPage();
-			// 创建登陆弹窗
-			createLoginDialog();
+			logoutIP(null, function(){
+				// 关闭弹窗
+				closeDialogPage();
+				// 创建登陆弹窗
+				createLoginDialog();
+			});
 		});
 		// 更新用户信息
 		$("#changeUserInfoForm").validate({
