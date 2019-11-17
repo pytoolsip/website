@@ -95,12 +95,16 @@ def checkLogined(func):
     # 获取登陆的用户信息
     def wrapper(request, *args, **kwargs):
         _GG("Log").d("checkLogined cookie:", request.COOKIES);
+        request.userAuth = None;
+        request.user = None;
+        # 根据token信息获取用户信息
         token = _GG("DecodeStr")(request.COOKIES.get("pytoolsip_token", ""));
-        uname, upwd = token.split("|token|");
-        request.userAuth = getLoginUserAuth(uname, upwd); # 包含用户权限的用户信息
-        request.user = None; # 包含不包含用户权限的用户信息
-        if request.userAuth:
-            request.user = request.userAuth.uid;
+        uinfo = token.split("|token|");
+        if len(uinfo) == 2:
+            uname, upwd = uinfo;
+            request.userAuth = getLoginUserAuth(uname, upwd); # 包含用户权限的用户信息
+            if request.userAuth:
+                request.user = request.userAuth.uid;
         return func(request, *args, **kwargs);
     return wrapper;
 

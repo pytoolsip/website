@@ -21,6 +21,9 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.views.decorators.cache import never_cache
+from ckeditor_uploader import views as ckeditorView
+
 from website import settings
 from DBModel import views
 
@@ -34,7 +37,6 @@ urlpatterns = [
     url(r'^articlelist$', views.articlelist),
     url(r'^article$', views.article),
     url(r'^pytoolsip/media/(?P<path>.*)', serve, {"document_root":settings.MEDIA_ROOT}),
-    path("ckeditor", include("ckeditor_uploader.urls")),
+    url(r'^ckeditor/upload/', views.checkLogined(ckeditorView.upload), name='ckeditor_upload'),
+    url(r'^ckeditor/browse/', never_cache(views.checkLogined(ckeditorView.browse)), name='ckeditor_browse'),
 ]
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

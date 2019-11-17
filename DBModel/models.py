@@ -2,13 +2,14 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db import models
+from django.conf import settings
+import hashlib;
 import os
 
 # 图片文件路径
 def pic_directory_path(instance, filename):
-    return os.path.join("upload", "image", instance.uid, filename);
+    return os.path.join(settings.CKEDITOR_UPLOAD_PATH, instance.uid.get_username(), "thumbnail", filename);
 class Article(models.Model):
-    id = models.IntegerField(primary_key=True)
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     title = models.CharField(max_length=255, verbose_name="标题")
     sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
@@ -17,7 +18,6 @@ class Article(models.Model):
     cid = models.ForeignKey('ArticleContent', models.DO_NOTHING, db_column='cid')
     time = models.DateTimeField()
     atype = models.IntegerField()
-    status = models.IntegerField()
 
     class Meta:
         managed = False
@@ -26,17 +26,35 @@ class Article(models.Model):
 # 删除文件
 @receiver(pre_delete, sender=Article)
 def article_delete(sender, instance, **kwargs):
-    instance.thumbnail.delete(False)
     instance.cid.delete(False)
 
 
 class ArticleContent(models.Model):
-    id = models.IntegerField(primary_key=True)
     content = RichTextUploadingField(verbose_name="内容")
 
     class Meta:
         managed = False
         db_table = 'article_content'
+
+
+class ArticleExamination(models.Model):
+    uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
+    title = models.CharField(max_length=255, verbose_name="标题")
+    sub_title = models.CharField(max_length=255, blank=True, null=True, verbose_name="子标题")
+    thumbnail = models.ImageField(upload_to=pic_directory_path, blank=True, null=True, verbose_name="缩略图")
+    sketch = models.CharField(max_length=255)
+    content = RichTextUploadingField(verbose_name="内容")
+    time = models.DateTimeField()
+    atype = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'article_examination'
+
+# 删除文件
+@receiver(pre_delete, sender=ArticleExamination)
+def article_exam_delete(sender, instance, **kwargs):
+    instance.thumbnail.delete(False)
 
 
 class Collection(models.Model):
@@ -65,7 +83,6 @@ def depend_lib_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     return os.path.join("release", "depend", f"{instance.name}{ext}");
 class Depend(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     path = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = depend_lib_path)
@@ -119,7 +136,6 @@ def installer_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
     return os.path.join("release", "installer", f"pytoolsip_installer_{instance.version}{ext}");
 class Installer(models.Model):
-    id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
     changelog = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = installer_directory_path)
@@ -142,7 +158,6 @@ def ptip_directory_path(instance, filename):
     vList = instance.version.split(".");
     return os.path.join("release", "ptip", "script", ".".join(vList[:2]), f"ptip_{instance.version}{ext}");
 class Ptip(models.Model):
-    id = models.IntegerField(primary_key=True)
     version = models.CharField(max_length=255)
     file_path = models.FileField(upload_to = ptip_directory_path)
     changelog = models.TextField()
@@ -208,7 +223,6 @@ def toolDetail_delete(sender, instance, **kwargs):
 
 
 class ToolExamination(models.Model):
-    id = models.IntegerField(primary_key=True)
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
     tkey = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
@@ -233,12 +247,18 @@ def toolExamination_delete(sender, instance, **kwargs):
 # 头像文件路径
 def img_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];
-    return os.path.join("userinfo", "image", instance.name, f"head_portrait{ext}");
+    return os.path.join(settings.CKEDITOR_UPLOAD_PATH, instance.uid.get_username(), "userinfo", f"head_portrait{ext}");
 class User(models.Model):
+    is_superuser = False; # 超级用户的标记
+
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     img = models.ImageField(upload_to=img_directory_path, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+
+    # 用户名
+    def get_username(self):
+        return hashlib.md5(self.name.encode("utf-8")).hexdigest();
 
     class Meta:
         managed = False
@@ -246,7 +266,6 @@ class User(models.Model):
 
 
 class UserAuthority(models.Model):
-    id = models.IntegerField(primary_key=True)
     uid = models.ForeignKey(User, models.DO_NOTHING, db_column='uid')
     password = models.CharField(max_length=255)
     authority = models.IntegerField()

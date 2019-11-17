@@ -15,7 +15,7 @@ try:
     from home import home;
     from search import search;
     from detail import detail, article;
-    from userinfo import userinfo;
+    from userinfo import userinfo, checkLogined;
     from release import release;
     from reqinfo import reqinfo;
     from toollist import toollist;

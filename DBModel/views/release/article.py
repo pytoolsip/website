@@ -14,73 +14,98 @@ from base import *
 # 文章表单
 class ArticleForm(ModelForm):
     class Meta:
-        model = models.Article
-        fields = ["title", "sub_title", "thumbnail", "sketch"]
+        model = models.ArticleExamination
+        fields = ["title", "sub_title", "thumbnail", "content", "sketch"]
 
     def __init__(self, *args, **kwargs):
         super(ArticleForm, self).__init__(*args, **kwargs);
         self.fields["sketch"].widget = HiddenInput();
 
-# 文章表单
-class ArticleContentForm(ModelForm):
-    class Meta:
-        model = models.ArticleContent
-        fields = ["content"]
-
 # 上传文章
 def uploadArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         isRelease = base_util.getPostAsBool(request, "isRelease");
-        if isRelease and "title" in request.POST:
-            acf = ArticleContentForm(request.POST);
-            if acf.is_valid():
-                # ac = models.ArticleContent(content = acf.cleaned_data["content"]);
-                # ac.save();
-                title, sub_title, thumbnail, sketch = request.POST["title"], request.POST.get("sub_title", None), request.FILES.get("thumbnail", None), request.POST.get("sketch", "");
-                # a = models.Article(uid = userAuth.uid, title = file_path, sub_title = sub_title, thumbnail = thumbnail, sketch = sketch, cid = ac, time = timezone.now(), atype = ArticleType.Article.value, status = Status.Examing.value);
-                # a.save();
-                result["requestTips"] = f"文章【{title}】上传成功。";
+        if isRelease:
+            af = ArticleForm(request.POST);
+            if af.is_valid():
+                ae = models.ArticleExamination(**{
+                    "uid" : userAuth.uid,
+                    "title" : af.cleaned_data["title"],
+                    "sub_title" : af.cleaned_data.get("sub_title", None),
+                    "thumbnail" : af.cleaned_data.get("thumbnail", None),
+                    "sketch" : af.cleaned_data["sketch"],
+                    "content" : af.cleaned_data["content"],
+                    "time" : timezone.now(),
+                    "atype" : ArticleType.Article.value,
+                });
+                ae.save();
+                result["requestTips"] = f"文章【{ae.title}】上传成功，正在等待审核。";
         pass;
     result["articleType"] = ArticleType.Article.value;
     result["form"] = ArticleForm();
-    result["content_form"] = ArticleContentForm();
 
 # 审核文章
 def examArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
-        examType, aid = request.POST.get("examType", None), request.POST.get("id", None);
+        examType, aid = request.POST.get("examType", None), int(request.POST.get("id", None));
         if examType and aid:
+            ac, a = None, None;
             try:
-                a, msg, reasonMsg = models.Article.objects.get(id = aid), "", "";
-                if a.status != Status.Examing.value:
-                    result["requestFailedTips"] = f"文章【{t.title}】已进行过审核，此次审核失败！";
-                    return;
+                ae, msg, reasonMsg = models.ArticleExamination.objects.get(id = aid), "", "";
                 # 判断用户权限
-                if userAuth.authority == 0 and a.uid.id != userAuth.uid.id:
-                    result["requestFailedTips"] = f"您没有权限审核文章【{a.title}】！";
+                if userAuth.authority == 0 and ae.uid.id != userAuth.uid.id:
+                    result["requestFailedTips"] = f"您没有权限审核文章【{ae.title}】！";
                     return;
                 if examType == "release":
-                    a.status = Status.Released.value;
+                    # 新增文章/工具详情
+                    ac = models.ArticleContent(content = ae.content);
+                    ac.save();
+                    a = models.Article(**{
+                        "uid" : ae.uid,
+                        "title" : ae.title,
+                        "sub_title" : ae.sub_title,
+                        "thumbnail" : ae.thumbnail,
+                        "sketch" : ae.sketch,
+                        "cid" : ac,
+                        "time" : ae.time,
+                        "atype" : ae.atype,
+                    });
                     a.save();
+                    # 更新工具详情的数据
+                    if ae.atype == ArticleType.Tool.value:
+                        tl = models.Tool.objects.filter(name = a.title, category = a.sub_title);
+                        if len(tl) == 0:
+                            _GG("Log").d(f"所工具详情【{a.title}[{a.sub_title}]】没有对应的工具，发布失败！");
+                            a.delete();
+                        for t in tl:
+                            t.aid.delete();
+                            t.aid = a; # 更新工具详情
                     msg = "发布";
                 else:
-                    a.delete();
                     msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
-                result["requestTips"] = f"文章【{a.title}】成功{msg}。";
+                ae.delete();
+                result["requestTips"] = f"文章【{ae.title}】成功{msg}。";
                 # 发送邮件通知
                 userIdentity, opMsg = "用户", "完成";
                 if userAuth.authority == 1:
                     userIdentity, opMsg = "管理员", "被管理员";
-                sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**文章【{a.title}】。");
-                sendToEmails(f"您在（{a.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的文章【{a.title}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [a.uid.email]);
+                sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**文章【{ae.title}】。");
+                sendToEmails(f"您在（{ae.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的文章【{ae.title}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [ae.uid.email]);
             except Exception as e:
+                # 上传失败时，删除已保存的数据
+                if ac:
+                    ac.delete();
+                if a:
+                    a.delete();
                 _GG("Log").w(e);
-                result["requestFailedTips"] = f"未找到文章【{a.title}】，审核失败！";
+                result["requestFailedTips"] = f"未找到文章【{aid}】，审核失败！";
     # 返回需审核的文章
-    articleList = models.Article.objects.filter(status = Status.Examing.value).order_by('-time');
+    articleList = models.ArticleExamination.objects.all().order_by('-time');
     result["onlineInfoList"] = [{
             "id" : articleInfo.id,
             "title" : articleInfo.title,
+            "subTitle" : articleInfo.sub_title or "",
+            "sketch" : articleInfo.sketch,
             "time" : articleInfo.time,
         } for articleInfo in articleList];
     pass;
@@ -94,23 +119,32 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
                 a = models.Article.objects.get(id = aid);
                 isRelease = base_util.getPostAsBool(request, "isRelease");
                 if isRelease and a.atype == ArticleType.Tool.value:
-                    acf = ArticleContentForm(request.POST);
-                    if acf.is_valid():
-                        a.cid.content = acf.cleaned_data["content"];
-                        thumbnail, sketch = request.FILES.get("thumbnail", None), request.POST.get("sketch", "");
-                        a.thumbnail = thumbnail;
-                        a.sketch = sketch;
-                        a.time = timezone.now();
-                        a.status = Status.Examing.value;
-                        a.save();
-                        result["requestTips"] = f"工具详情【{a.title}[{a.sub_title}]】更新成功，正在进行审核。";
+                    af = ArticleForm(request.POST);
+                    if af.is_valid():
+                        ae = models.ArticleExamination(**{
+                            "uid" : userAuth.uid,
+                            "title" : a.title,
+                            "sub_title" : a.sub_title,
+                            "thumbnail" : af.cleaned_data.get("thumbnail", None),
+                            "sketch" : af.cleaned_data["sketch"],
+                            "content" : af.cleaned_data["content"],
+                            "time" : timezone.now(),
+                            "atype" : a.atype,
+                        });
+                        ae.save();
+                        result["requestTips"] = f"工具详情【{a.title}[{a.sub_title}]】更新成功，正在等待审核。";
                 opType = request.POST.get("opType", None);
                 if opType:
                     if opType == "update" and a.atype == ArticleType.Tool.value:
                         result["isEdit"] = True;
                         result["articleType"] = a.atype;
-                        result["form"] = ArticleForm(instance = a);
-                        result["content_form"] = ArticleContentForm(instance = a.cid);
+                        result["form"] = ArticleForm(instance = models.ArticleExamination(**{
+                            "uid" : a.uid,
+                            "title" : a.title,
+                            "sub_title" : a.sub_title,
+                            "thumbnail" : a.thumbnail,
+                            "content" : a.cid.content,
+                        }));
                         result["aid"] = aid;
                         return;
                     elif opType == "delete" and a.atype == ArticleType.Article.value:
@@ -118,9 +152,9 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
                         result["requestTips"] = f"文章【{a.title}】成功删除。";
             except Exception as e:
                 _GG("Log").w(e);
-    # 返回需审核的文章
+    # 返回已发布的文章
     searchText = request.POST.get("searchText", "");
-    infoList = models.Article.objects.filter(title__icontains = searchText, uid = userAuth.uid, status = Status.Released.value).order_by('-time');
+    infoList = models.Article.objects.filter(title__icontains = searchText, uid = userAuth.uid).order_by('-time');
     result["searchText"] = searchText;
     result["isSearchNone"] = len(infoList) == 0;
     if not searchText:

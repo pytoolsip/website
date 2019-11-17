@@ -51,9 +51,12 @@ def encodeStr(s):
 
 # 解码字符串
 def decodeStr(s):
-    rsakey = RSA.importKey(_getPrivateKey_());
-    cipher = Cipher_pkcs1_v1_5.new(rsakey);
-    return cipher.decrypt(base64.b64decode(s), b"").decode();
+    try:
+        rsakey = RSA.importKey(_getPrivateKey_());
+        cipher = Cipher_pkcs1_v1_5.new(rsakey);
+        return cipher.decrypt(base64.b64decode(s), b"").decode();
+    except Exception:
+        return "";
 
 # 运行此脚本生成密钥
 if __name__ == '__main__':

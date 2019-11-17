@@ -166,7 +166,9 @@ def releaseTool(t):
         tool.save();
     except Exception as e:
         # 保存工具详情
-        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, time = t.time, atype = ArticleType.Tool.value, status = Status.Released.value);
+        ac =  models.ArticleContent(content = "");
+        ac.save();
+        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, sketch = "", cid = ac, time = t.time, atype = ArticleType.Tool.value);
         a.save();
         # 保存Tool
         tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time, aid = a);
@@ -204,6 +206,10 @@ def examOlTool(request, userAuth, result, isSwitchTab):
                 if request.POST["examType"] == "delete":
                     t.delete();
                     if len(models.ToolDetail.objects.filter(tkey = t.tkey)) == 0:
+                        # 删除正在审核的对应工具详情
+                        for a in models.ArticleExamination.objects.filter(title = t.tkey.name, sub_title = t.tkey.category):
+                            a.delete();
+                        # 删除工具
                         t.tkey.delete();
                     result["requestTips"] = f"工具【{t.tkey.tkey}，{t.version}】下架成功。";
                     # 发送邮件通知
