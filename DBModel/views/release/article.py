@@ -49,7 +49,6 @@ def examArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         examType, aid = request.POST.get("examType", None), int(request.POST.get("id", None));
         if examType and aid:
-            ac, a = None, None;
             try:
                 ae, msg, reasonMsg = models.ArticleExamination.objects.get(id = aid), "", "";
                 # 判断用户权限
@@ -57,29 +56,35 @@ def examArticle(request, userAuth, result, isSwitchTab):
                     result["requestFailedTips"] = f"您没有权限审核文章【{ae.title}】！";
                     return;
                 if examType == "release":
-                    # 新增文章/工具详情
-                    ac = models.ArticleContent(content = ae.content);
-                    ac.save();
-                    a = models.Article(**{
-                        "uid" : ae.uid,
-                        "title" : ae.title,
-                        "sub_title" : ae.sub_title,
-                        "thumbnail" : ae.thumbnail,
-                        "sketch" : ae.sketch,
-                        "cid" : ac,
-                        "time" : ae.time,
-                        "atype" : ae.atype,
-                    });
-                    a.save();
-                    # 更新工具详情的数据
                     if ae.atype == ArticleType.Tool.value:
-                        tl = models.Tool.objects.filter(name = a.title, category = a.sub_title);
+                        # 更新工具详情的数据
+                        tl = models.Tool.objects.filter(name = ae.title, category = ae.sub_title);
                         if len(tl) == 0:
-                            _GG("Log").d(f"所工具详情【{a.title}[{a.sub_title}]】没有对应的工具，发布失败！");
-                            a.delete();
+                            _GG("Log").d(f"所工具详情【{ae.title}[{ae.sub_title}]】没有对应的工具，发布失败！");
+                            ae.delete();
                         for t in tl:
-                            t.aid.delete();
-                            t.aid = a; # 更新工具详情
+                            # 保存工具详情
+                            t.aid.thumbnail = ae.thumbnail;
+                            t.aid.time = ae.time;
+                            t.aid.save();
+                            # 保存工具详情内容
+                            t.aid.cid.content = ae.content;
+                            t.aid.cid.save();
+                    else:
+                        # 新增文章
+                        ac = models.ArticleContent(content = ae.content);
+                        ac.save();
+                        a = models.Article(**{
+                            "uid" : ae.uid,
+                            "title" : ae.title,
+                            "sub_title" : ae.sub_title,
+                            "thumbnail" : ae.thumbnail,
+                            "sketch" : ae.sketch,
+                            "cid" : ac,
+                            "time" : ae.time,
+                            "atype" : ae.atype,
+                        });
+                        a.save();
                     msg = "发布";
                 else:
                     msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
@@ -92,11 +97,6 @@ def examArticle(request, userAuth, result, isSwitchTab):
                 sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**文章【{ae.title}】。");
                 sendToEmails(f"您在（{ae.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的文章【{ae.title}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [ae.uid.email]);
             except Exception as e:
-                # 上传失败时，删除已保存的数据
-                if ac:
-                    ac.delete();
-                if a:
-                    a.delete();
                 _GG("Log").w(e);
                 result["requestFailedTips"] = f"未找到文章【{aid}】，审核失败！";
     # 返回需审核的文章

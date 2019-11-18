@@ -164,11 +164,14 @@ def releaseTool(t):
         tool.description = t.description;
         tool.time = t.time;
         tool.save();
+        # 更新工具详情
+        tool.aid.sketch = t.description;
+        tool.aid.save();
     except Exception as e:
         # 保存工具详情
         ac =  models.ArticleContent(content = "");
         ac.save();
-        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, sketch = "", cid = ac, time = t.time, atype = ArticleType.Tool.value);
+        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, sketch = t.description, cid = ac, time = t.time, atype = ArticleType.Tool.value);
         a.save();
         # 保存Tool
         tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time, aid = a);
