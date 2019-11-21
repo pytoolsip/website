@@ -177,15 +177,51 @@ $(function(){
 		// 创建弹窗
 		createDialogPage("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>登陆PyToolsIP</h2>\
-						<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
-						<input name='password' class='form-control' type='password' placeholder='密码' required />\
-						<label id='loginRemember'><input type='checkbox' checked>&nbsp;记住用户</label>\
-						<button class='btn btn-lg btn-success btn-block' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
+						<ul id='loginNavTabs' class='nav nav-tabs nav-justified' role='tablist'>\
+							<li role='presentation' class='active'><a href='#pwdLogin' role='tab' data-toggle='tab'>账号登陆</a></li>\
+							<li role='presentation'><a href='#qrCodeLogin' role='tab' data-toggle='tab'>二维码登陆</a></li>\
+						</ul>\
+						<div class='tab-content'>\
+							<div id='pwdLogin' class='tab-pane fade in active login-form' style='margin-top: 30px;'>\
+								<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />\
+								<input name='password' class='form-control' type='password' placeholder='密码' required />\
+								<label id='loginRemember'><input type='checkbox'>&nbsp;记住用户</label>\
+								<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>\
+							</div>\
+							<div id='qrCodeLogin' class='tab-pane fade login-form' style='margin: 30px 0px;'>\
+								<div class='qrCodeContent'>\
+									<div class='qrCodeContentItem hidden' data-target='valid' style='margin: 40px 0px;'>\
+										<img id='qrCodeLoginImg' class='center-block' src=' alt='正在刷新二维码' width='80%' />\
+										<p class='text-center' style='margin-top: 20px;color: #ABABAB;font-size: 10px;'>*&nbsp;请打开【APP】，在【我的】页中点击扫描二维码。</p>\
+									</div>\
+									<div class='qrCodeContentItem hidden' data-target='invalid' style='margin: 100px 0px;'>\
+										<p class='text-center' style='margin: 20px 0px;color: #686868;'><span class='glyphicon glyphicon-warning-sign'></span>二维码已过期！</p>\
+										<button id='qrCodeUpdateBtn' class='btn btn-md btn-default center-block' type='button'><span class='glyphicon glyphicon-refresh'></span>&nbsp;点击刷新</button>\
+									</div>\
+									<div class='qrCodeContentItem' data-target='loading' style='margin: 120px 0px;'>\
+										<p class='text-center' style='color: #686868;font-size: 14px;'><span class='glyphicon glyphicon-repeat'></span>正在加载二维码...</p>\
+									</div>\
+								</div>\
+							</div>\
+						</div>\
 						<div class='login-link clearfix'>\
 							<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>\
 							<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
 						</div>\
 					</form>");
+		// 新建登陆Socket
+		var loginWs = newLoginSocket(function(key, msg){
+			switch (key) {
+				case "valid":
+					updateQrCodeContent("valid");
+					$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + msg);
+					break;
+				case "invalid":
+					$("#qrCodeLoginImg").attr("src", "");
+					updateQrCodeContent("invalid");
+					break;
+			}
+		});
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {
@@ -208,6 +244,9 @@ $(function(){
 				loginIP("loginForm", function(){
 					// 关闭弹窗
 					closeDialogPage();
+					if (loginWs != null) {
+						loginWs.close(); // 关闭socket
+					}
 				});
 			}
 		});
@@ -219,6 +258,44 @@ $(function(){
 		$("#resetDialog").on("click",function(){
 			createResetDialog();
 		});
+		// 更新二维码的内容
+		var updateQrCodeContent = function(key) {
+			$("#qrCodeLogin .qrCodeContentItem").each(function(){
+				if ($(this).attr("data-target") == key) {
+					if ($(this).hasClass("hidden")) {
+						$(this).removeClass("hidden");
+					}
+				} else {
+					if (!$(this).hasClass("hidden")) {
+						$(this).addClass("hidden");
+					}
+				}
+			});
+		}
+		// 切换loginNavTabs
+		$("#loginNavTabs li").on("click", function(){
+			if ($(this).hasClass("active")) {
+				return;
+			}
+			if ($(this).find("a").attr("href") == "#qrCodeLogin") {
+				if (loginWs != null) {
+					loginWs.request();
+					updateQrCodeContent("loading");
+				}
+			}
+		});
+		// 点击刷新二维码按钮
+		$("#qrCodeUpdateBtn").on("click", function(){
+			loginWs.request();
+			updateQrCodeContent("loading");
+		});
+		// 判断当前是否正在二维码的标签页
+		if ($("#loginNavTabs a").attr("href") == "#qrCodeLogin") {
+			if (loginWs != null) {
+				loginWs.request();
+				updateQrCodeContent("loading");
+			}
+		}
 	}
 	// 创建用户信息弹窗
 	createUserInfoDialog = function(data){
