@@ -282,9 +282,11 @@ $(function(){
 				return;
 			}
 			if ($(this).find("a").attr("href") == "#qrCodeLogin") {
-				if (loginWs != null) {
-					loginWs.reqQrcode();
-					updateQrCodeContent("loading");
+				if ($("#qrCodeLoginImg").attr("src") == "") {
+					if (loginWs != null) {
+						loginWs.reqQrcode();
+						updateQrCodeContent("loading");
+					}
 				}
 			}
 		});
