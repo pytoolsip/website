@@ -3,13 +3,11 @@ from django.forms import CharField, ModelForm;
 from django.forms.widgets import HiddenInput;
 from DBModel import models;
 
-from base import *;
+from release.base import *;
 
 from utils import base_util;
 
 from _Global import _GG;
-
-from base import *
 
 # 文章表单
 class ArticleForm(ModelForm):

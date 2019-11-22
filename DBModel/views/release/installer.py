@@ -5,7 +5,7 @@ from utils import base_util;
 
 from _Global import _GG;
 
-from base import *
+from release.base import *
 
 # 上传安装程序文件
 def uploadInstaller(request, userAuth, result, isSwitchTab):

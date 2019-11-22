@@ -1,7 +1,7 @@
 import django.utils.timezone as timezone;
 from DBModel import models;
 from utils import base_util;
-from base import *;
+from release.base import *;
 
 import json;
 

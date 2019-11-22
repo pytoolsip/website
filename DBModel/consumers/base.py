@@ -31,6 +31,7 @@ class BaseConsumer(WebsocketConsumer):
         pass;
 
     def receive(self, text_data):
+        _GG("Log").d("ws receive:", text_data);
         data = json.loads(text_data);
         # 校验数据
         if "req" not in data:
@@ -63,6 +64,7 @@ class BaseConsumer(WebsocketConsumer):
         pass;
 
     def notify(self, resp, msg, status = "success"):
+        _GG("Log").d("ws notify:", resp, msg, status);
         self.send(text_data=json.dumps({
             "resp" : resp,
             "msg" : msg,

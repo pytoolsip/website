@@ -5,7 +5,7 @@ from utils import base_util;
 
 from _Global import _GG;
 
-from base import *
+from release.base import *
 
 # 上传新工具
 def uploadNew(request, userAuth, result, isSwitchTab):

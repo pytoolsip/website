@@ -174,8 +174,10 @@ $(function(){
 	}
 	// 创建登录弹窗
 	createLoginDialog = function(){
+		// 新建登陆Socket
+		var loginWs = createLoginSocket();
 		// 创建弹窗
-		createDialogPage("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
+		createDialog("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>登陆PyToolsIP</h2>\
 						<ul id='loginNavTabs' class='nav nav-tabs nav-justified' role='tablist'>\
 							<li role='presentation' class='active'><a href='#pwdLogin' role='tab' data-toggle='tab'>账号登陆</a></li>\
@@ -191,7 +193,7 @@ $(function(){
 							<div id='qrCodeLogin' class='tab-pane fade login-form' style='margin: 30px 0px;'>\
 								<div class='qrCodeContent'>\
 									<div class='qrCodeContentItem hidden' data-target='valid' style='margin: 40px 0px;'>\
-										<img id='qrCodeLoginImg' class='center-block' src=' alt='正在刷新二维码' width='80%' />\
+										<img id='qrCodeLoginImg' class='center-block' src='' alt='正在刷新二维码' width='80%' />\
 										<p class='text-center' style='margin-top: 20px;color: #ABABAB;font-size: 10px;'>*&nbsp;请打开【APP】，在【我的】页中点击扫描二维码。</p>\
 									</div>\
 									<div class='qrCodeContentItem hidden' data-target='invalid' style='margin: 100px 0px;'>\
@@ -208,16 +210,22 @@ $(function(){
 							<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>\
 							<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
 						</div>\
-					</form>");
-		// 新建登陆Socket
-		var loginWs = createLoginSocket(function(qrcode, expires){
-			updateQrCodeContent("valid");
-			$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
-			window.setTimeout(function() {
-				$("#qrCodeLoginImg").attr("src", "");
-				updateQrCodeContent("invalid");
-			}, expires*1000);
-		});
+					</form>", function() {
+						if (loginWs != null) {
+							loginWs.close(); // 关闭socket
+						}
+					});
+		// 处理二维码函数
+		if (loginWs != null) {
+			loginWs.respQrcode = function(qrcode, expires){
+				updateQrCodeContent("valid");
+				$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
+				window.setTimeout(function() {
+					$("#qrCodeLoginImg").attr("src", "");
+					updateQrCodeContent("invalid");
+				}, expires*1000);
+			};
+		}
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {

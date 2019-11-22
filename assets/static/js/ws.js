@@ -6,7 +6,7 @@ var BaseWS = function(name, url, ctx = {}) {
     this._ctx = ctx; // 上下文内容
     this._listeners = {}; // 消息监听表
     this._listenerIndex = 0; // 消息监听下标
-    self.init();
+    this.init();
 };
 BaseWS.prototype.newListenerIndex = function() {
     this._listenerIndex ++;
@@ -98,14 +98,14 @@ BaseWS.prototype.unregister = function(name, fid) {
 };
 $(function(){
 	// 首页链接
-	// var HOME_URL = "http://jimdreamheart.club/pytoolsip";
-	var HOME_URL = "http://localhost:8000";
+	// var HOME_URL = "jimdreamheart.club/pytoolsip";
+	var HOME_URL = "localhost:8000";
 	// 用户信息链接
 	var wsUrl = HOME_URL+"/ws";
 	// 登陆链接
     var loginUrl = wsUrl+"login";
     // 创建登陆WebSocket
-    createLoginSocket = function(qrcodeCallback) {
+    createLoginSocket = function() {
         if (!window.WebSocket) {
             return null;
         }
@@ -120,9 +120,16 @@ $(function(){
         });
         ws.register("RespQrcode", function(status, data){
             if (status == "success") {
-                qrcodeCallback(data["qrcode"], data["expires"])
+                if (ws.hasOwnProperty("respQrcode")) {
+                    ws.respQrcode(data["qrcode"], data["expires"]);
+                }
             }
         });
+        // 请求登陆ID
+        ws.onOpen = function() {
+            ws.request("ReqLoginID", {}, "");
+        }
+        // 请求二维码
         ws.reqQrcode = function(){
             ws.request("ReqQrcode", {}, "RespQrcode");
         }

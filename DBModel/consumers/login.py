@@ -7,7 +7,7 @@ import hashlib;
 import time;
 
 from _Global import _GG;
-from base import *;
+from DBModel.consumers.base import BaseConsumer;
 
 global _LOGIN_ID_DICT;
 _LOGIN_ID_DICT = {}; # 登录ID相关表
@@ -22,7 +22,7 @@ class LoginConsumer(BaseConsumer):
         pass;
     
     def initListener(self):
-        for name in ["ReqQrcode"]:
+        for name in ["ReqLoginID", "ReqQrcode"]:
             self.register(name, getattr(self, name));
         pass;
 
@@ -44,13 +44,6 @@ class LoginConsumer(BaseConsumer):
         _LOGIN_ID_DICT[self.__loginID].append(self);
         pass;
 
-    def onCheckCtx(self, ctx):
-        if self.__loginID not in _LOGIN_ID_DICT:
-            return False;
-        if self.__loginID != ctx.get("login_id", ""):
-            return False;
-        return True;
-
     def onClose(self, closeCode):
         self.__delLoginID__();
         pass;
@@ -59,10 +52,10 @@ class LoginConsumer(BaseConsumer):
         # 获取新loginID
         lid = ctx.get("login_id", "");
         if not lid:
-            lid = uuid.uuid1();
-        global _LOGIN_ID_DICT;
-        while lid not in _LOGIN_ID_DICT:
-            lid = uuid.uuid1();
+            lid = str(uuid.uuid1());
+            global _LOGIN_ID_DICT;
+            while lid in _LOGIN_ID_DICT:
+                lid = str(uuid.uuid1());
         # 更新loginID
         self.__updateLoginID__(lid);
         # 更新ctx

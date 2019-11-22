@@ -7,7 +7,7 @@ from utils import base_util;
 
 from _Global import _GG;
 
-from base import *
+from release.base import *
 
 # 上传程序文件
 def uploadExe(request, userAuth, result, isSwitchTab):
