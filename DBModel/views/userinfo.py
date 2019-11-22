@@ -32,7 +32,9 @@ def login(request):
     result = {"isSuccess" : False};
     resp = JsonResponse(result);
     if isLogin:
-        token, expires = getLoginToken(request, result);
+        uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
+        isRemember = base_util.getPostAsBool(request, "isRemember")
+        token, expires = getLoginToken(result, uname, _GG("DecodeStr")(upwd), isRemember);
         resp = JsonResponse(result);
         if result["isSuccess"]:
             resp.set_cookie("pytoolsip_token", _GG("EncodeStr")(token), expires);
@@ -46,12 +48,10 @@ def login(request):
     
 
 # 获取登录Token
-def getLoginToken(request, result):
-    uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
-    isRemember = base_util.getPostAsBool(request, "isRemember")
+def getLoginToken(result, uname, upwd, isRemember = False, isLogin = True):
     token, expires = "", 0;
     # 获取登陆玩家
-    userAuth = getLoginUserAuth(uname, _GG("DecodeStr")(upwd), True);
+    userAuth = getLoginUserAuth(uname, upwd, isLogin);
     if userAuth:
         user = userAuth.uid;
         result["isSuccess"] = True;

@@ -1,63 +1,131 @@
-$(function(){
-    var loginUrl = "";
-    // 登陆Socket的构造函数
-    var LoginSocket = function(qrcodeCallback) {
-        this.ws = new WebSocket("ws://" + loginUrl);
-        this.qrcodeCallback = qrcodeCallback;
-        this.init();
+
+// 基础WebSocket
+var BaseWS = function(name, url, ctx = {}) {
+    this._baseName = name;
+    this._ws = new WebSocket("ws://" + url);
+    this._ctx = ctx; // 上下文内容
+    this._listeners = {}; // 消息监听表
+    this._listenerIndex = 0; // 消息监听下标
+    self.init();
+};
+BaseWS.prototype.newListenerIndex = function() {
+    this._listenerIndex ++;
+    return this._listenerIndex;
+};
+BaseWS.prototype.getBaseName = function(suffix = "") {
+    return this._baseName + suffix;
+};
+BaseWS.prototype.init = function() {
+    var self = this;
+    // 初始化webSocket
+    self._ws.onopen = function(e) {
+        if (self.hasOwnProperty("onOpen")) {
+            self.onOpen(self);
+        }
     };
-    // 初始化登陆Socket
-    LoginSocket.prototype.init = function() {
-        var self = this;
-        self.ws.onopen = function(e) {
-            self.ws.send(JSON.stringify({
-                "key" : "id",
-                "msg": $.cookie("login_id"),
-            }));
+    self._ws.onclose = function(e) {
+        if (self.hasOwnProperty("onClose")) {
+            self.onClose(self);
         }
-        self.ws.onclose = function(e) {
-            self.qrcodeCallback("invalid", msg);
-            console.log("socket closed !");
-        }
-        self.ws.onmessage = function(e) {
-            var data = JSON.parse(e.data);
-            if (data.hasOwnProperty("key") && data.hasOwnProperty("msg")) {
-                var msg = data["msg"];
-                switch (data["key"]) {
-                    case "id":
-                        $.cookie("login_id", msg);
-                        break;
-                    case "qrcode":
-                        self.qrcodeCallback("valid", msg);
-                        break;
-                    case "invalid_qrcode":
-                        self.qrcodeCallback("invalid", msg);
-                        break;
+    };
+    self._ws.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        if (data.hasOwnProperty("resp") && data.hasOwnProperty("status") && data.hasOwnProperty("msg")) {
+            var respName = data["resp"];
+            if (self._listeners.hasOwnProperty(respName)) {
+                for (fid in self._listeners[respName]) {
+                    self._listeners[respName][fid](data["status"], data["msg"]);
                 }
             }
         }
     };
-    LoginSocket.prototype.isOpen = function() {
-        return this.ws.readyState == this.ws.OPEN;
-    };
-    LoginSocket.prototype.request = function() {
-        if (this.isOpen()) {
-            this.ws.send(JSON.stringify({
-                "key" : "qrcode",
-            }));
+    // 注册基本事件
+    self.register("WS_onUpdateCtx", function(status, data){
+        for (let key in data) {
+            self._ctx[key] = data[key];
         }
-    };
-    LoginSocket.prototype.close = function() {
-        if (this.isOpen()) {
-            this.ws.close();
-        }
-    };
-    // 新建登陆Socket的全局函数
-    newLoginSocket = function(callback) {
-        if (window.WebSocket) {
-            return new LoginSocket(callback);
-        } else {
+    });
+    self.register("WS_onError", function(status, data){
+        console.error(data);
+    });
+};
+BaseWS.prototype.isopen = function() {
+    return this._ws.readyState == this._ws.OPEN;
+};
+BaseWS.prototype.close = function() {
+    if (this.isopen()) {
+        this._ws.close();
+        return
+    }
+};
+BaseWS.prototype.request = function(reqFuncName, msg, respFuncName) {
+    var self = this;
+    if (!self.isopen()) {
+        console.log("request failed!");
+        return
+    }
+    // 发送消息
+    self._ws.send(JSON.stringify({
+        "req": reqFuncName,
+        "ctx": self._ctx,
+        "msg": msg,
+        "resp": respFuncName,
+    }));
+};
+BaseWS.prototype.register = function(name, func) {
+    var self = this;
+    if (!self._listeners.hasOwnProperty(name)) {
+        self._listeners[name] = {};
+    }
+    self._listeners[name][self.newListenerIndex()] = func;
+};
+BaseWS.prototype.unregister = function(name, fid) {
+    var self = this;
+    if (!self._listeners.hasOwnProperty(name)) {
+        return false;
+    }
+    // 移除对应名称的监听表
+    if (fid < 0) {
+        delete self._listeners[name];
+        return true;
+    }
+    // 移除指定函数
+    if (self._listeners[name].hasOwnProperty(fid)) {
+        delete self._listeners[name][fid];
+        return true;
+    }
+    return false;
+};
+$(function(){
+	// 首页链接
+	// var HOME_URL = "http://jimdreamheart.club/pytoolsip";
+	var HOME_URL = "http://localhost:8000";
+	// 用户信息链接
+	var wsUrl = HOME_URL+"/ws";
+	// 登陆链接
+    var loginUrl = wsUrl+"login";
+    // 创建登陆WebSocket
+    createLoginSocket = function(qrcodeCallback) {
+        if (!window.WebSocket) {
             return null;
         }
+        var ws = new BaseWS("pytoolsip_web_", loginUrl, {
+            "pytoolsip_web_login_id" : $.cookie("pytoolsip_web_login_id"),
+        });
+        ws.register("WS_onUpdateCtx", function(status, data){
+            var lidKey = ws.getBaseName("login_id");
+            if (lidKey in data) {
+                $.cookie(lidKey, data[lidKey]);
+            }
+        });
+        ws.register("RespQrcode", function(status, data){
+            if (status == "success") {
+                qrcodeCallback(data["qrcode"], data["expires"])
+            }
+        });
+        ws.reqQrcode = function(){
+            ws.request("ReqQrcode", {}, "RespQrcode");
+        }
+        return ws;
     };
 })

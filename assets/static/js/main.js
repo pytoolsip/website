@@ -210,17 +210,13 @@ $(function(){
 						</div>\
 					</form>");
 		// 新建登陆Socket
-		var loginWs = newLoginSocket(function(key, msg){
-			switch (key) {
-				case "valid":
-					updateQrCodeContent("valid");
-					$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + msg);
-					break;
-				case "invalid":
-					$("#qrCodeLoginImg").attr("src", "");
-					updateQrCodeContent("invalid");
-					break;
-			}
+		var loginWs = createLoginSocket(function(qrcode, expires){
+			updateQrCodeContent("valid");
+			$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
+			window.setTimeout(function() {
+				$("#qrCodeLoginImg").attr("src", "");
+				updateQrCodeContent("invalid");
+			}, expires*1000);
 		});
 		// 登陆校验
 		$("#loginForm").validate({
@@ -279,20 +275,22 @@ $(function(){
 			}
 			if ($(this).find("a").attr("href") == "#qrCodeLogin") {
 				if (loginWs != null) {
-					loginWs.request();
+					loginWs.reqQrcode();
 					updateQrCodeContent("loading");
 				}
 			}
 		});
 		// 点击刷新二维码按钮
 		$("#qrCodeUpdateBtn").on("click", function(){
-			loginWs.request();
-			updateQrCodeContent("loading");
+			if (loginWs != null) {
+				loginWs.reqQrcode();
+				updateQrCodeContent("loading");
+			}
 		});
 		// 判断当前是否正在二维码的标签页
 		if ($("#loginNavTabs a").attr("href") == "#qrCodeLogin") {
 			if (loginWs != null) {
-				loginWs.request();
+				loginWs.reqQrcode();
 				updateQrCodeContent("loading");
 			}
 		}

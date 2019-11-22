@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "DBModel",
     "ckeditor",
     "ckeditor_uploader",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -186,6 +187,9 @@ CKEDITOR_CONFIGS = {
         "width" : "100%",
     },
 }
+
+# websocket
+ASGI_APPLICATION = "website.routing.application"
 
 # home url
 HOME_URL = "http://jimdreamheart.club/pytoolsip"
