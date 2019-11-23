@@ -175,7 +175,10 @@ $(function(){
 	// 创建登录弹窗
 	var createLoginDialog = function(){
 		// 新建登陆Socket
-		var loginWs = createLoginSocket();
+		var loginWs = createLoginSocket(function(ws) {
+			$("#qrCodeLoginImg").attr("src", "");
+			updateQrCodeContent("invalid");
+		});
 		// 创建弹窗
 		createDialog("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>登陆PyToolsIP</h2>\
@@ -211,9 +214,7 @@ $(function(){
 							<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>\
 						</div>\
 					</form>", function() {
-						if (loginWs != null) {
-							loginWs.close(); // 关闭socket
-						}
+						loginWs.close(); // 关闭socket
 					});
 		// 登陆校验
 		$("#loginForm").validate({
@@ -235,11 +236,10 @@ $(function(){
 			},
 			submitHandler: function() {
 				loginIP("loginForm", function(){
+					// 关闭socket
+					loginWs.close();
 					// 关闭弹窗
 					closeDialogPage();
-					if (loginWs != null) {
-						loginWs.close(); // 关闭socket
-					}
 				});
 			}
 		});
@@ -263,28 +263,22 @@ $(function(){
 			});
 		};
 		// 处理二维码函数
-		if (loginWs != null) {
-			loginWs.respQrcode = function(qrcode, expires){
-				updateQrCodeContent("valid");
-				$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
-				window.setTimeout(function() {
-					$("#qrCodeLoginImg").attr("src", "");
-					updateQrCodeContent("invalid");
-				}, expires*1000);
-			};
-		}
+		loginWs.respQrcode = function(qrcode, expires){
+			updateQrCodeContent("valid");
+			$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
+			window.setTimeout(function() {
+				$("#qrCodeLoginImg").attr("src", "");
+				updateQrCodeContent("invalid");
+			}, expires*1000);
+		};
 		// 绑定注册超链接的点击事件
 		$("#registerDialog").on("click",function(){
-			if (loginWs != null) {
-				loginWs.close(); // 关闭socket
-			}
+			loginWs.close(); // 关闭socket
 			createRegisterDialog();
 		});
 		// 绑定更新密码超链接的点击事件
 		$("#resetDialog").on("click",function(){
-			if (loginWs != null) {
-				loginWs.close(); // 关闭socket
-			}
+			loginWs.close(); // 关闭socket
 			createResetDialog();
 		});
 		// 切换loginNavTabs
@@ -294,26 +288,20 @@ $(function(){
 			}
 			if ($(this).find("a").attr("href") == "#qrCodeLogin") {
 				if ($("#qrCodeLoginImg").attr("src") == "") {
-					if (loginWs != null) {
-						loginWs.reqQrcode();
-						updateQrCodeContent("loading");
-					}
+					loginWs.reqQrcode();
+					updateQrCodeContent("loading");
 				}
 			}
 		});
 		// 点击刷新二维码按钮
 		$("#qrCodeUpdateBtn").on("click", function(){
-			if (loginWs != null) {
-				loginWs.reqQrcode();
-				updateQrCodeContent("loading");
-			}
+			loginWs.reqQrcode();
+			updateQrCodeContent("loading");
 		});
 		// 判断当前是否正在二维码的标签页
 		if ($("#loginNavTabs a").attr("href") == "#qrCodeLogin") {
-			if (loginWs != null) {
-				loginWs.reqQrcode();
-				updateQrCodeContent("loading");
-			}
+			loginWs.reqQrcode();
+			updateQrCodeContent("loading");
 		}
 	};
 	// 创建用户信息弹窗

@@ -2,11 +2,11 @@
 // 基础WebSocket
 var BaseWS = function(name, url, ctx = {}) {
     this._baseName = name;
-    this._ws = new WebSocket("ws://" + url);
+    this._ws = null;
     this._ctx = ctx; // 上下文内容
     this._listeners = {}; // 消息监听表
     this._listenerIndex = 0; // 消息监听下标
-    this.init();
+    this.init(url);
 };
 BaseWS.prototype.newListenerIndex = function() {
     this._listenerIndex ++;
@@ -15,9 +15,13 @@ BaseWS.prototype.newListenerIndex = function() {
 BaseWS.prototype.getBaseName = function(suffix = "") {
     return this._baseName + suffix;
 };
-BaseWS.prototype.init = function() {
-    var self = this;
+BaseWS.prototype.init = function(url) {
+    if (!window.WebSocket) {
+        return;
+    }
     // 初始化webSocket
+    var self = this;
+    self._ws = new WebSocket("ws://" + url);
     self._ws.onopen = function(e) {
         if (self.hasOwnProperty("onOpen")) {
             self.onOpen(self);
@@ -49,7 +53,13 @@ BaseWS.prototype.init = function() {
         console.error(data);
     });
 };
+BaseWS.prototype.isvalid = function() {
+    return this._ws != null;
+};
 BaseWS.prototype.isopen = function() {
+    if (!this.isvalid()) {
+        return false;
+    }
     return this._ws.readyState == this._ws.OPEN;
 };
 BaseWS.prototype.close = function() {
@@ -105,7 +115,7 @@ $(function(){
 	// 登陆链接
     var loginUrl = wsUrl+"login";
     // 创建登陆WebSocket
-    createLoginSocket = function() {
+    createLoginSocket = function(closeCallback) {
         if (!window.WebSocket) {
             return null;
         }
@@ -128,6 +138,10 @@ $(function(){
         // 请求登陆ID
         ws.onOpen = function() {
             ws.request("ReqLoginID", {}, "");
+        }
+        // 关闭socket
+        ws.onClose = function() {
+            closeCallback(ws);
         }
         // 请求二维码
         ws.reqQrcode = function(){
