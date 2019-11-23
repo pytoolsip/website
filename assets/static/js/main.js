@@ -173,7 +173,7 @@ $(function(){
 		});
 	}
 	// 创建登录弹窗
-	createLoginDialog = function(){
+	var createLoginDialog = function(){
 		// 新建登陆Socket
 		var loginWs = createLoginSocket();
 		// 创建弹窗
@@ -215,17 +215,6 @@ $(function(){
 							loginWs.close(); // 关闭socket
 						}
 					});
-		// 处理二维码函数
-		if (loginWs != null) {
-			loginWs.respQrcode = function(qrcode, expires){
-				updateQrCodeContent("valid");
-				$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
-				window.setTimeout(function() {
-					$("#qrCodeLoginImg").attr("src", "");
-					updateQrCodeContent("invalid");
-				}, expires*1000);
-			};
-		}
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {
@@ -254,14 +243,11 @@ $(function(){
 				});
 			}
 		});
-		// 绑定注册超链接的点击事件
-		$("#registerDialog").on("click",function(){
-			createRegisterDialog();
-		});
-		// 绑定更新密码超链接的点击事件
-		$("#resetDialog").on("click",function(){
-			createResetDialog();
-		});
+		// 初始化登陆事件
+		initLoginEvent(loginWs);
+	}
+	// 初始化登陆页面元素的相关时间
+	initLoginEvent = function(loginWs){
 		// 更新二维码的内容
 		var updateQrCodeContent = function(key) {
 			$("#qrCodeLogin .qrCodeContentItem").each(function(){
@@ -275,7 +261,32 @@ $(function(){
 					}
 				}
 			});
+		};
+		// 处理二维码函数
+		if (loginWs != null) {
+			loginWs.respQrcode = function(qrcode, expires){
+				updateQrCodeContent("valid");
+				$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + qrcode);
+				window.setTimeout(function() {
+					$("#qrCodeLoginImg").attr("src", "");
+					updateQrCodeContent("invalid");
+				}, expires*1000);
+			};
 		}
+		// 绑定注册超链接的点击事件
+		$("#registerDialog").on("click",function(){
+			if (loginWs != null) {
+				loginWs.close(); // 关闭socket
+			}
+			createRegisterDialog();
+		});
+		// 绑定更新密码超链接的点击事件
+		$("#resetDialog").on("click",function(){
+			if (loginWs != null) {
+				loginWs.close(); // 关闭socket
+			}
+			createResetDialog();
+		});
 		// 切换loginNavTabs
 		$("#loginNavTabs li").on("click", function(){
 			if ($(this).hasClass("active")) {
@@ -304,9 +315,9 @@ $(function(){
 				updateQrCodeContent("loading");
 			}
 		}
-	}
+	};
 	// 创建用户信息弹窗
-	createUserInfoDialog = function(data){
+	var createUserInfoDialog = function(data){
 		// 创建弹窗
 		createDialogPage("<div id='userinfoContent' class='userinfoContent'>\
 							<h2 class='text-center'>用户信息</h2>\
@@ -606,8 +617,8 @@ $(function(){
             }
         }
     }
-	// 请求工具详情表单
-	requestToolDetailForm = function(form, exIpts, callback){
+	// 请求文章/工具详情表单
+	requestArticleDetailForm = function(form, exIpts, callback){
 		if (!checkIsLogined()) {
 			createLoginDialog();
 			return;
@@ -629,8 +640,8 @@ $(function(){
             }
         })
 	};
-	// 请求收藏工具
-	requestCollectTool = function(data, callback){
+	// 请求收藏文章/工具详情
+	requestCollectArticle = function(data, callback){
 		if (!checkIsLogined()) {
 			createLoginDialog();
 			return;
@@ -682,7 +693,7 @@ $(function(){
 		}
 	}
 	// 创建注册弹窗
-	createRegisterDialog = function(){
+	var createRegisterDialog = function(){
 		// 创建弹窗
 		createDialogPage("<form id='registerForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>PyToolsIP用户注册</h2>\
@@ -796,7 +807,7 @@ $(function(){
 		});
 	}
 	// 创建更新密码弹窗
-	createResetDialog = function(){
+	var createResetDialog = function(){
 		// 创建弹窗
 		createDialogPage("<form id='resetPwdForm' class='login-form' role='form' enctype='multipart/form-data'>\
 						<h2>PyToolsIP更新密码</h2>\

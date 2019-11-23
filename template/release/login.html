@@ -71,18 +71,7 @@
 			$("#sidebar").addClass("hidden");
 		}
 		// 新建登陆Socket
-		var loginWs = newLoginSocket(function(key, msg){
-			switch (key) {
-				case "valid":
-					updateQrCodeContent("valid");
-					$("#qrCodeLoginImg").attr("src", "data:image/png;base64," + msg);
-					break;
-				case "invalid":
-					$("#qrCodeLoginImg").attr("src", "");
-					updateQrCodeContent("invalid");
-					break;
-			}
-		});
+		var loginWs = createLoginSocket();
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {
@@ -110,46 +99,7 @@
 				});
 			}
 		});
-		// 绑定注册超链接的点击事件
-		$("#registerDialog").on("click",function(){
-			createRegisterDialog();
-		});
-		// 绑定更新密码超链接的点击事件
-		$("#resetDialog").on("click",function(){
-			createResetDialog();
-		});
-		// 更新二维码的内容
-		var updateQrCodeContent = function(key) {
-			$("#qrCodeLogin .qrCodeContentItem").each(function(){
-				if ($(this).attr("data-target") == key) {
-					if ($(this).hasClass("hidden")) {
-						$(this).removeClass("hidden");
-					}
-				} else {
-					if (!$(this).hasClass("hidden")) {
-						$(this).addClass("hidden");
-					}
-				}
-			});
-		}
-		// 切换loginNavTabs
-		$("#loginNavTabs li").on("click", function(){
-			if ($(this).hasClass("active")) {
-				return;
-			}
-			if ($(this).find("a").attr("href") == "#qrCodeLogin") {
-				if (loginWs != null) {
-					loginWs.request();
-					updateQrCodeContent("loading");
-				}
-			}
-		});
-		// 点击刷新二维码按钮
-		$("#qrCodeUpdateBtn").on("click", function(){
-			if (loginWs != null) {
-				loginWs.request();
-				updateQrCodeContent("loading");
-			}
-		});
+		// 初始化登陆事件
+		initLoginEvent(loginWs);
 	})
 </script>

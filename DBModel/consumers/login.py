@@ -50,7 +50,7 @@ class LoginConsumer(BaseConsumer):
     
     def ReqLoginID(self, ctx, msg):
         # 获取新loginID
-        lid = ctx.get("login_id", "");
+        lid = ctx.get(self.getBaseName("login_id"), "");
         if not lid:
             lid = str(uuid.uuid1());
             global _LOGIN_ID_DICT;

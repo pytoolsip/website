@@ -201,7 +201,7 @@
 					submitHandler: function(form) {
 						var content = $("#commentToolForm textarea[name='content']").val();
 						var score = $("#commentToolForm input[name='score']").val();
-						requestToolDetailForm($("#commentToolForm"), [
+						requestArticleDetailForm($("#commentToolForm"), [
 							{"key":"submit", "val":"comment", "type":"text"}
 						], function(data){
 							if (data.isSuccess) {
@@ -225,7 +225,7 @@
 				showCollectTool("{{isCollect}}" == "True");
 				// 点击/取消收藏按钮回调
 				var reqCollectTool = function(isCollect, text){
-					requestCollectTool({
+					requestCollectArticle({
 						"submit" : "collect",
 						"isCollect" : isCollect,
 					}, function(data, status){
