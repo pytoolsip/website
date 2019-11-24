@@ -3,10 +3,11 @@
 var BaseWS = function(name, url, ctx = {}) {
     this._baseName = name;
     this._ws = null;
+    this._url = url;
     this._ctx = ctx; // 上下文内容
     this._listeners = {}; // 消息监听表
     this._listenerIndex = 0; // 消息监听下标
-    this.init(url);
+    this.init();
 };
 BaseWS.prototype.newListenerIndex = function() {
     this._listenerIndex ++;
@@ -15,13 +16,27 @@ BaseWS.prototype.newListenerIndex = function() {
 BaseWS.prototype.getBaseName = function(suffix = "") {
     return this._baseName + suffix;
 };
-BaseWS.prototype.init = function(url) {
+BaseWS.prototype.init = function() {
     if (!window.WebSocket) {
         return;
     }
     // 初始化webSocket
     var self = this;
-    self._ws = new WebSocket("ws://" + url);
+    self.initWS();
+    // 注册基本事件
+    self.register("WS_onUpdateCtx", function(status, data){
+        for (let key in data) {
+            self._ctx[key] = data[key];
+        }
+    });
+    self.register("WS_onError", function(status, data){
+        console.error(data);
+    });
+};
+BaseWS.prototype.initWS = function() {
+    // 初始化webSocket
+    var self = this;
+    self._ws = new WebSocket(self._url);
     self._ws.onopen = function(e) {
         if (self.hasOwnProperty("onOpen")) {
             self.onOpen(self);
@@ -43,18 +58,15 @@ BaseWS.prototype.init = function(url) {
             }
         }
     };
-    // 注册基本事件
-    self.register("WS_onUpdateCtx", function(status, data){
-        for (let key in data) {
-            self._ctx[key] = data[key];
-        }
-    });
-    self.register("WS_onError", function(status, data){
-        console.error(data);
-    });
 };
 BaseWS.prototype.isvalid = function() {
     return this._ws != null;
+};
+BaseWS.prototype.isclose = function() {
+    if (!this.isvalid()) {
+        return false;
+    }
+    return this._ws.readyState == this._ws.CLOSING || this._ws.readyState == this._ws.CLOSED;
 };
 BaseWS.prototype.isopen = function() {
     if (!this.isvalid()) {
@@ -67,6 +79,11 @@ BaseWS.prototype.close = function() {
         this._ws.close();
         return
     }
+};
+BaseWS.prototype.active = function() {
+	if (this.isclose()) {
+		this.initWS();
+	}
 };
 BaseWS.prototype.request = function(reqFuncName, msg, respFuncName) {
     var self = this;
@@ -109,16 +126,13 @@ BaseWS.prototype.unregister = function(name, fid) {
 $(function(){
 	// 首页链接
 	// var HOME_URL = "jimdreamheart.club/pytoolsip";
-	var HOME_URL = "localhost:8000";
+	var HOME_URL = "ws://localhost:8000";
 	// 用户信息链接
 	var wsUrl = HOME_URL+"/ws";
 	// 登陆链接
     var loginUrl = wsUrl+"login";
     // 创建登陆WebSocket
     createLoginSocket = function(closeCallback) {
-        if (!window.WebSocket) {
-            return null;
-        }
         var ws = new BaseWS("pytoolsip_web_", loginUrl, {
             "pytoolsip_web_login_id" : $.cookie("pytoolsip_web_login_id"),
         });
