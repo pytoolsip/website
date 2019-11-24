@@ -3,7 +3,7 @@ from django.core.cache import cache;
 from DBModel import models;
 from utils import pwd_util;
 
-from DBModel.views import userinfo;
+from DBModel.views.userinfo import getLoginUserAuth, getLoginToken;
 
 from _Global import _GG;
 from base import *;
@@ -23,21 +23,21 @@ class AppConsumer(BaseConsumer):
         pass;
 
     def onCheckCtx(self, ctx):
-        ctx.userAuth = None;
-        ctx.user = None;
+        ctx["userAuth"] = None;
+        ctx["user"] = None;
         # 根据token信息获取用户信息
         token = _GG("DecodeStr")(ctx.get("pytoolsip_app_token", ""));
         uinfo = token.split("|token|");
         if len(uinfo) == 2:
             uname, upwd = uinfo;
-            ctx.userAuth = userinfo.getLoginUserAuth(uname, upwd); # 包含用户权限的用户信息
-            if ctx.userAuth:
-                ctx.user = ctx.userAuth.uid;
+            ctx["userAuth"] = getLoginUserAuth(uname, upwd); # 包含用户权限的用户信息
+            if ctx["userAuth"]:
+                ctx["user"] = ctx["userAuth"].uid;
         return True;
 
     def LoginWeb(self, ctx, msg):
         result = {"isSuccess" : False};
-        userAuth = ctx.userAuth;
+        userAuth = ctx["userAuth"];
         if not userAuth:
             result["tips"] = "用户数据异常！";
             return;
@@ -50,7 +50,7 @@ class AppConsumer(BaseConsumer):
             result["tips"] = "登陆页面已关闭！";
             return;
         # 生成网页token
-        token, expires = userinfo.getLoginToken(result, userAuth.uid.name, userAuth.password);
+        token, expires = getLoginToken(result, userAuth.uid.name, userAuth.password);
         if result["isSuccess"]: # 如果登录成功，则发送给对应ID的所有登录socket
             for ws in _LOGIN_ID_DICT[loginID]:
                 ws.onLogin(token, expires);
@@ -60,7 +60,7 @@ class AppConsumer(BaseConsumer):
         result = {"isSuccess" : False, "pytoolsip_app_token" : ""};
         # 获取登陆玩家
         uname, upwd = msg.get("uname", ""), msg.get("upwd", "");
-        userAuth = userinfo.getLoginUserAuth(uname, _GG("DecodeStr")(upwd), True);
+        userAuth = getLoginUserAuth(uname, _GG("DecodeStr")(upwd), True);
         if userAuth:
             user = userAuth.uid;
             result["isSuccess"] = True;
@@ -80,6 +80,6 @@ class AppConsumer(BaseConsumer):
         return result;
     
     def Follow(self, ctx, msg):
-        if not ctx.user:
+        if not ctx["userAuth"]:
             return {"isSuccess" : False};
         return {"isSuccess" : True};
