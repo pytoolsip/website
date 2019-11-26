@@ -9,9 +9,6 @@ import time;
 from _Global import _GG;
 from DBModel.consumers.base import BaseConsumer;
 
-global _LOGIN_ID_DICT;
-_LOGIN_ID_DICT = {}; # 登录ID相关表
-
 # Login WebSocket Consumer
 class LoginConsumer(BaseConsumer):
     """docstring for LoginConsumer"""
@@ -27,21 +24,13 @@ class LoginConsumer(BaseConsumer):
         pass;
 
     def __delLoginID__(self):
-        global _LOGIN_ID_DICT;
-        if self.__loginID in _LOGIN_ID_DICT:
-            if self in _LOGIN_ID_DICT[self.__loginID]:
-                _LOGIN_ID_DICT[self.__loginID].remove(self);
-            if len(_LOGIN_ID_DICT[self.__loginID]) == 0:
-                _LOGIN_ID_DICT.pop(self.__loginID);
+        _GG("ConsumerMgr").removeLoginConsumer(self.__loginID, self);
         pass;
 
     def __updateLoginID__(self, lid):
         self.__delLoginID__();
         self.__loginID = lid;
-        global _LOGIN_ID_DICT;
-        if self.__loginID not in _LOGIN_ID_DICT:
-            _LOGIN_ID_DICT[self.__loginID] = [];
-        _LOGIN_ID_DICT[self.__loginID].append(self);
+        _GG("ConsumerMgr").addLoginConsumer(self.__loginID, self);
         pass;
 
     def onClose(self, closeCode):
@@ -53,8 +42,7 @@ class LoginConsumer(BaseConsumer):
         lid = ctx.get(self.getBaseName("login_id"), "");
         if not lid:
             lid = str(uuid.uuid1());
-            global _LOGIN_ID_DICT;
-            while lid in _LOGIN_ID_DICT:
+            while len(_GG("ConsumerMgr").getLoginConsumers(lid)) > 0:
                 lid = str(uuid.uuid1());
         # 更新loginID
         self.__updateLoginID__(lid);

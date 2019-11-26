@@ -152,6 +152,31 @@ def installer_delete(sender, instance, **kwargs):
     instance.file_path.delete(False)
 
 
+class Notice(models.Model):
+    uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
+    opuid = models.IntegerField()
+    optype = models.IntegerField()
+    content = models.CharField(max_length=255)
+    time = models.DateTimeField()
+    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid')
+
+    class Meta:
+        managed = False
+        db_table = 'notice'
+
+
+class NoticeIp(models.Model):
+    uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
+    opuid = models.IntegerField()
+    optype = models.IntegerField()
+    content = models.CharField(max_length=255)
+    time = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'notice_ip'
+
+
 # 平台脚本文件路径
 def ptip_directory_path(instance, filename):
     ext = os.path.splitext(filename)[1];

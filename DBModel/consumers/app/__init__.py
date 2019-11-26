@@ -7,7 +7,6 @@ from DBModel.views.userinfo import getLoginUserAuth, getLoginToken;
 
 from _Global import _GG;
 from base import *;
-from login import _LOGIN_ID_DICT;
 
 # App WebSocket Consumer
 class AppConsumer(BaseConsumer):
@@ -20,6 +19,14 @@ class AppConsumer(BaseConsumer):
     def initListener(self):
         for name in ["LoginWeb", "Login"]:
             self.register(name, getattr(self, name));
+        pass;
+
+    def onConnect(self):
+        _GG("ConsumerMgr").addAppConsumer(id(self), self);
+        pass;
+
+    def onClose(self, closeCode):
+        _GG("ConsumerMgr").removeAppConsumer(id(self));
         pass;
 
     def onCheckCtx(self, ctx):
@@ -46,13 +53,14 @@ class AppConsumer(BaseConsumer):
             result["tips"] = "登陆二维码已过期！";
             return;
         loginID = cache.get(loginMd5);
-        if loginID not in _LOGIN_ID_DICT:
+        consumers = _GG("ConsumerMgr").getLoginConsumers(loginID);
+        if len(consumers) == 0:
             result["tips"] = "登陆页面已关闭！";
             return;
         # 生成网页token
         token, expires = getLoginToken(result, userAuth.uid.name, userAuth.password);
         if result["isSuccess"]: # 如果登录成功，则发送给对应ID的所有登录socket
-            for ws in _LOGIN_ID_DICT[loginID]:
+            for ws in consumers:
                 ws.onLogin(token, expires);
         return result;
     
@@ -83,3 +91,6 @@ class AppConsumer(BaseConsumer):
         if not ctx["userAuth"]:
             return {"isSuccess" : False};
         return {"isSuccess" : True};
+    
+    def notice(self, data):
+        self.notify("OnNotice", data);

@@ -19,6 +19,7 @@ if os.path.join(CURRENT_PATH, "core") not in sys.path:
 import _Global as _G;
 from logCore.Logger import Logger;
 from rsaCore import encodeStr, decodeStr, getPublicKey;
+from ConsumerMgr import ConsumerMgr;
 
 # 初始化全局变量
 def _initGlobal_G_():
@@ -38,6 +39,7 @@ def loadGlobalInfo():
 def _loadGlobal_():
 	_loadLogger_(); # 加载日志类变量
 	_loadRsaDecode_(); # 加载rsa密钥解码方法
+	_consumerClass_(); # 加载rsa密钥解码方法
 
 # 加载全局日志类
 def _loadLogger_():
@@ -78,3 +80,5 @@ def _loadRsaDecode_():
 	with open(mainJSFile, "w", encoding = "utf-8") as f:
 		f.write(content);
 
+def _consumerClass_():
+	_G.setGlobalVarTo_Global("ConsumerMgr", ConsumerMgr());
