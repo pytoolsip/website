@@ -158,23 +158,23 @@ class Notice(models.Model):
     optype = models.IntegerField()
     content = models.CharField(max_length=255)
     time = models.DateTimeField()
-    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid')
+    aid = models.ForeignKey(Article, models.DO_NOTHING, db_column='aid', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'notice'
 
 
-class NoticeIp(models.Model):
+class NoticeLatest(models.Model):
     uid = models.ForeignKey('User', models.DO_NOTHING, db_column='uid')
-    opuid = models.IntegerField()
-    optype = models.IntegerField()
-    content = models.CharField(max_length=255)
+    tgid = models.IntegerField()
+    latest_nid = models.ForeignKey(Notice, models.DO_NOTHING, db_column='latest_nid', blank=True, null=True)
+    visit_time = models.DateTimeField(blank=True, null=True)
     time = models.DateTimeField()
 
     class Meta:
         managed = False
-        db_table = 'notice_ip'
+        db_table = 'notice_latest'
 
 
 # 平台脚本文件路径

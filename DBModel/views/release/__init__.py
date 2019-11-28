@@ -28,10 +28,8 @@ finally:
 
 # 平台键值列表
 PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
-# 工具键值列表
-PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
-# 文章相关列表
-PtKeyList = ["article", "article_examination", "ol_article"];
+# 工具/文章键值列表
+PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article"];
 
 # 后台管理页请求
 @csrf_exempt
