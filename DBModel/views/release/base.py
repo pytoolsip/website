@@ -53,15 +53,19 @@ def sendNotice(user, opUser, opType, msg, article = None):
                     "name" : opUser.name,
                     "img" : opUser.img and opUser.img.url or "/pytoolsip/static/img/dzjh-icon.png",
                 },
-                "article": {},
-                "tool": {},
                 "content": msg,
             };
             if article:
                 if article.atype == ArticleType.Tool.value:
                     result["noticeType"] = "tool";
+                    result["tool"] = {
+                        
+                    };
                 else:
                     result["noticeType"] = "article";
+                    result["article"] = {
+
+                    };
             consumer.notice();
     pass;
 

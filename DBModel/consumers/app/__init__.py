@@ -5,6 +5,8 @@ from utils import pwd_util;
 
 from DBModel.views.userinfo import getLoginUserAuth, getLoginToken;
 
+from app import home;
+
 from _Global import _GG;
 from base import *;
 
@@ -91,6 +93,12 @@ class AppConsumer(BaseConsumer):
         if not ctx["userAuth"]:
             return {"isSuccess" : False};
         return {"isSuccess" : True};
+    
+    def ReqAllArticles(self, ctx, msg):
+        return home.reqAllArticles(ctx, msg);
+    
+    def ReqAllUsers(self, ctx, msg):
+        return home.reqAllUsers(ctx, msg);
     
     def notice(self, data):
         self.notify("OnNotice", data);

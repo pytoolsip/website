@@ -18,6 +18,7 @@ class Article(models.Model):
     cid = models.ForeignKey('ArticleContent', models.DO_NOTHING, db_column='cid')
     time = models.DateTimeField()
     atype = models.IntegerField()
+    reading_volume = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
