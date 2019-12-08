@@ -4,6 +4,11 @@ from django.http import JsonResponse
 
 from DBModel import models
 
+# 加载全局变量
+import _load as Loader;
+Loader.loadGlobalInfo();
+
+
 import os,sys;
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));

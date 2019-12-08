@@ -39,7 +39,7 @@ def loadGlobalInfo():
 def _loadGlobal_():
 	_loadLogger_(); # 加载日志类变量
 	_loadRsaDecode_(); # 加载rsa密钥解码方法
-	_consumerClass_(); # 加载rsa密钥解码方法
+	_consumerClass_(); # 加载websocket类
 
 # 加载全局日志类
 def _loadLogger_():

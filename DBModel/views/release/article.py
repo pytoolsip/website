@@ -24,7 +24,7 @@ def uploadArticle(request, userAuth, result, isSwitchTab):
     if not isSwitchTab:
         isRelease = base_util.getPostAsBool(request, "isRelease");
         if isRelease:
-            af = ArticleForm(request.POST);
+            af = ArticleForm(request.POST, request.FILES);
             if af.is_valid():
                 ae = models.ArticleExamination(**{
                     "uid" : userAuth.uid,
@@ -117,7 +117,7 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
                 a = models.Article.objects.get(id = aid);
                 isRelease = base_util.getPostAsBool(request, "isRelease");
                 if isRelease and a.atype == ArticleType.Tool.value:
-                    af = ArticleForm(request.POST);
+                    af = ArticleForm(request.POST, request.FILES);
                     if af.is_valid():
                         ae = models.ArticleExamination(**{
                             "uid" : userAuth.uid,
