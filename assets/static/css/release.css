@@ -4,6 +4,13 @@ a{
 a:hover{
     color: #428BCA;
 }
+.sidebarToggle {
+    position: fixed;
+    top: 54px;
+    z-index: 1000;
+    display: block;
+    color: #ABABAB;
+}
 .sidebar {
     position: fixed;
     top: 51px;

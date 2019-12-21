@@ -1,6 +1,7 @@
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+<div id="allList" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
 	<div id="alertList">
 	</div>
+    <a id="sidebarToggleButton" class="sidebarToggle" href="javascript:void(0);"><span class="glyphicon glyphicon-menu-hamburger"></span>菜单栏</a>
 	<div id="contentList">
 		{% ifequal mkey "ptip_examination" %}
 			{% include "release/ptip_examination.html" %}
@@ -91,5 +92,17 @@
 				$(".manager-options").addClass("hidden");
 			}
 		}
-	})
+		// 切换左侧菜单栏的线上
+		$("#sidebarToggleButton").on("click", function(){
+			if ($("#sidebar").hasClass("hidden")) {
+				$("#sidebar").removeClass("hidden");
+				$("#allList").attr("class", "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2");
+				$("#contentList").attr("class", "");
+			} else {
+				$("#sidebar").addClass("hidden");
+				$("#allList").attr("class", "col-md-12");
+				$("#contentList").attr("class", "col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1");
+			}
+		});
+	});
 </script>

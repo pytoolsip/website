@@ -2,7 +2,7 @@ from django.db.models import Q;
 
 from DBModel import models;
 
-from views.release.base import *;
+from DBModel.views.release.base import *;
 
 from _Global import _GG;
 
