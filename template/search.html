@@ -26,7 +26,7 @@
 				<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
 			{% endif %}
 			{% for toolInfo in toolInfoList %}
-				<div class="col-md-4">
+				<div class="col-md-6 col-lg-4">
 					<div class="tool-info-item">
 						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
 						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
@@ -38,7 +38,7 @@
 				</div>
 			{% endfor %}
 			{% for userInfo in userInfoList %}
-				<div class="col-md-4 tool-info-item">
+				<div class="col-md-6 col-lg-4 tool-info-item">
 					<h3 class="tool-info-tittle">
 						{% if userInfo.img %}
 						<img class="img-responsive" src="{{userInfo.img}}" style="width: 40px;border: 1px gray solid;border-radius: 50%;"/>
