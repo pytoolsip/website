@@ -52,10 +52,10 @@ class ArticleExamination(models.Model):
         managed = False
         db_table = 'article_examination'
 
-# 删除文件
-@receiver(pre_delete, sender=ArticleExamination)
-def article_exam_delete(sender, instance, **kwargs):
-    instance.thumbnail.delete(False)
+# # 删除文件
+# @receiver(pre_delete, sender=ArticleExamination)
+# def article_exam_delete(sender, instance, **kwargs):
+#     instance.thumbnail.delete(False)
 
 
 class Collection(models.Model):

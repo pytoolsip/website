@@ -132,7 +132,7 @@ $(function(){
 	// 登陆链接
     var loginUrl = wsUrl+"login";
     // 创建登陆WebSocket
-    createLoginSocket = function(closeCallback) {
+    createLoginSocket = function(closeCallback = null) {
         var ws = new BaseWS("pytoolsip_web_", loginUrl, {
             "pytoolsip_web_login_id" : $.cookie("pytoolsip_web_login_id"),
         });
@@ -155,7 +155,9 @@ $(function(){
         }
         // 关闭socket
         ws.onClose = function() {
-            closeCallback(ws);
+            if (typeof closeCallback == "function") {
+                closeCallback(ws);
+            }
         }
         // 请求二维码
         ws.reqQrcode = function(){

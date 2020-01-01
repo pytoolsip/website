@@ -24,8 +24,7 @@ $(function(){
 		$('body,html').animate({scrollTop:0},280);
 	});
 	// 首页链接
-	// var HOME_URL = "http://jimdreamheart.club/pytoolsip";
-	var HOME_URL = "http://localhost:8000";
+	var HOME_URL = "http://localhost:8008";
 	// 用户信息链接
 	var userInfoUrl = HOME_URL+"/userinfo";
 	// 登陆链接

@@ -59,6 +59,7 @@ def examArticle(request, userAuth, result, isSwitchTab):
                         tl = models.Tool.objects.filter(name = ae.title, category = ae.sub_title);
                         if len(tl) == 0:
                             _GG("Log").d(f"所工具详情【{ae.title}[{ae.sub_title}]】没有对应的工具，发布失败！");
+                            ae.thumbnail.delete();
                             ae.delete();
                         for t in tl:
                             # 保存工具详情

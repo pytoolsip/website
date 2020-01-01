@@ -21,6 +21,8 @@ from logCore.Logger import Logger;
 from rsaCore import encodeStr, decodeStr, getPublicKey;
 from ConsumerMgr import ConsumerMgr;
 
+from website.settings import HOME_URL;
+
 # 初始化全局变量
 def _initGlobal_G_():
 	_G.initGlobal_GTo_Global();
@@ -71,6 +73,10 @@ def _loadRsaDecode_():
 	with open(mainJSFile, "r", encoding = "utf-8") as f:
 		isPking = False;
 		for line in f.readlines():
+			# 更新HOME_URL
+			if re.search("var HOME_URL.*=.*\".*\"", line):
+				line = re.sub("\".*\";?", f"\"{HOME_URL}\";", line);
+			# 更新PUBLIC_KEY
 			if re.search("var PUBLIC_KEY.*\".*\"", line):
 				line = re.sub("\".*\";?", f"\"{publicKey}\";", line);
 			elif re.search("var PUBLIC_KEY.*\".*", line):
