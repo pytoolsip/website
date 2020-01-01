@@ -18,7 +18,7 @@ def articlelist(request):
     _GG("Log").d("articlelist GET :", request.GET, "; POST :", request.POST, "; FILES :", request.FILES);
     # 搜索内容
     searchText = request.POST.get("searchText", "");
-    result = {"HOME_URL": settings.HOME_URL, "searchText" : searchText, "isSearchNone" : False, "articleInfoList" : []};
+    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL, "searchText" : searchText, "isSearchNone" : False, "articleInfoList" : []};
     # 根据searchText搜索文章信息列表
     result["articleInfoList"].extend(serachToolListByTitle(searchText));
     # 判断是否搜索出了结果

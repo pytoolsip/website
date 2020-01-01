@@ -15,6 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+config = {};
+configFilePath = os.path.join(BASE_DIR, "config.json");
+if os.path.exists(configFilePath):
+    with open(configFilePath, "r") as f:
+        config = json.loads(f.read());
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -25,7 +30,7 @@ SECRET_KEY = '=q)!)fo0*0)ykad)lxhl3aw3qyv7!chv!#k(h)xsigp2(f_5w5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", []);
 
 
 # Application definition
@@ -77,14 +82,16 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+mysqlCfg = config.get("mysql", {});
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pytoolsip',
-        'USER': 'root',
-        'PASSWORD': 'pwdis123456',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'NAME': mysqlCfg.get('NAME', 'pytoolsip'),
+        'USER': mysqlCfg.get('USER', 'root'),
+        'PASSWORD': mysqlCfg.get('PASSWORD', 'pwdis123456'),
+        'HOST': mysqlCfg.get('HOST', 'localhost'),
+        'PORT': mysqlCfg.get('PORT', '3306'),
         'OPTIONS':{
             'init_command' : 'SET foreign_key_checks = 0;',
         },
@@ -144,10 +151,12 @@ MEDIA_ROOT = (
 )
 
 # Redis Cache
+redisCfg = config.get("redis", {});
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://localhost:6379",
+        "LOCATION": redisCfg.get("LOCATION", "redis://localhost:6379"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -155,10 +164,12 @@ CACHES = {
 }
 
 # Email
-EMAIL_HOST = "smtp.163.com"
-EMAIL_PORT = 994
-EMAIL_HOST_USER = "jimdreamheart@163.com"
-EMAIL_HOST_PASSWORD = "94caf63fecc75550"
+emailCfg = config.get("email", {});
+
+EMAIL_HOST = emailCfg.get("HOST", "smtp.163.com")
+EMAIL_PORT = emailCfg.get("PORT", 994)
+EMAIL_HOST_USER = emailCfg.get("USER", "jdreamheart@163.com")
+EMAIL_HOST_PASSWORD = emailCfg.get("PASSWORD", "xxxxx")
 EMAIL_USE_SSL = True
 
 # ckeditor
@@ -190,5 +201,5 @@ CKEDITOR_CONFIGS = {
 ASGI_APPLICATION = "website.routing.application"
 
 # home url
-HOME_URL = "http://jimdreamheart.club/pytoolsip"
-HOME_URL = "http://localhost:8000"
+HOME_URL = config.get("HOME_URL", "http://localhost:8008")
+RESOURCE_URL = config.get("RESOURCE_URL", "http://jimdreamheart.club/resource")

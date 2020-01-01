@@ -1,4 +1,5 @@
 from django.core.cache import cache;
+import os;
 import qrcode;
 import io;
 import base64;
@@ -53,17 +54,19 @@ class LoginConsumer(BaseConsumer):
     def ReqQrcode(self, ctx, msg):
         loginMd5 = hashlib.md5("|".join([self.__loginID, str(time.time())]).encode("utf-8")).hexdigest();
         expires = 2*60; # 默认2分钟
-        cache.set(loginMd5, self.__loginID, expires); # 缓存登陆md5信息
-        # 生成二维码
-        qr = qrcode.QRCode(version=10);
-        qr.add_data(loginMd5);
-        qr.make(fit=True);
-        img = qr.make_image();
-        # 生成base64码
-        imgBuffer = io.BytesIO();
-        img.save(imgBuffer, "png");
-        imgB64 = base64.b64encode(imgBuffer.getvalue());
-        imgBuffer.close();
+        # cache.set(loginMd5, self.__loginID, expires); # 缓存登陆md5信息
+        # # 生成二维码
+        # qr = qrcode.QRCode(version=10);
+        # qr.add_data(loginMd5);
+        # qr.make(fit=True);
+        # img = qr.make_image();
+        # # 生成base64码
+        # imgBuffer = io.BytesIO();
+        # img.save(imgBuffer, "png");
+        # imgB64 = base64.b64encode(imgBuffer.getvalue());
+        # imgBuffer.close();
+        with open(os.path.join(_GG("ProjectPath"), "assets/static/img/pytoolsip_login_tips.png"), 'rb') as f:
+            imgB64 = base64.b64encode(f.read());
         # 返回数据
         return {
             "qrcode" : imgB64.decode(),

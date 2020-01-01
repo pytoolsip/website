@@ -75,7 +75,7 @@ def doComment(postData, userAuth, article):
 
 # 根据tkey获取工具信息结果
 def getResultByTkey(tkey):
-    result = {"HOME_URL": settings.HOME_URL};
+    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
     toolInfos = models.ToolDetail.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
         # 获取工具基础信息
@@ -149,7 +149,7 @@ def article(request):
 
 # 根据tkey获取工具信息结果
 def getResultByAid(aid):
-    result = {"HOME_URL": settings.HOME_URL};
+    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
     articleInfos = models.Article.objects.filter(id = aid, atype = ArticleType.Article.value).order_by('-time');
     if len(articleInfos) > 0:
         # 获取工具基础信息

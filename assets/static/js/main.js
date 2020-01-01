@@ -177,7 +177,6 @@ $(function(){
 		// 新建登陆Socket
 		var loginWs = createLoginSocket(function(ws) {
 			$("#qrCodeLoginImg").attr("src", "");
-			updateQrCodeContent("invalid");
 		});
 		// 创建弹窗
 		createDialog("<form id='loginForm' class='login-form' role='form' enctype='multipart/form-data'>\

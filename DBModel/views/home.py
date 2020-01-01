@@ -14,6 +14,7 @@ def home(request):
     isHasNewestInstaller, newestInstaller = getInstallerData()
     return render(request, "home.html", {
         "HOME_URL": settings.HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
         "ptipInfoList" : getPtipData(),
         "isHasNewestInstaller" : isHasNewestInstaller,
         "newestInstaller" : newestInstaller,

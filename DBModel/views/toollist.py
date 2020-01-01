@@ -34,14 +34,14 @@ def toollist(request):
             return search(request);
         # 搜索其他模块
         searchText = request.POST["searchText"];
-        result = {"HOME_URL": settings.HOME_URL, "tlkey" : tlkey, "searchText" : searchText, "isSearchNone" : False, "toolInfoList" : []};
+        result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL, "tlkey" : tlkey, "searchText" : searchText, "isSearchNone" : False, "toolInfoList" : []};
         # 根据searchText搜索工具信息列表
         result["toolInfoList"].extend(serachToolListByName(tlkey, searchText));
         # 判断是否搜索出了结果
         if searchText:
             result["isSearchNone"] = len(result["toolInfoList"]) == 0;
         return render(request, "toollist_item.html", result);
-    return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL, "tlkey" : tlkey});
+    return render(request, "toollist.html", {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL, "tlkey" : tlkey});
 
 # 根据toolName搜索工具信息列表
 def serachToolListByName(tlkey, name):

@@ -37,9 +37,14 @@ def loadGlobalInfo():
 
 # 加载全局变量
 def _loadGlobal_():
+	_loadPath_(); # 加载全局路径
 	_loadLogger_(); # 加载日志类变量
 	_loadRsaDecode_(); # 加载rsa密钥解码方法
 	_consumerClass_(); # 加载websocket类
+
+# 加载全局路径
+def _loadPath_():
+	_G.setGlobalVarTo_Global("ProjectPath", CURRENT_PATH); # 设置工程路径的全局变量
 
 # 加载全局日志类
 def _loadLogger_():

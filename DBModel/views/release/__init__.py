@@ -41,12 +41,12 @@ def release(request):
         return verify(request);
     # 判断是否已登陆
     if request.method == 'GET':
-        return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL});
+        return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL});
     # 获取登陆玩家
     userAuth = request.userAuth;
     if not userAuth:
         # 返回登陆页面信息
-        ret = {"HOME_URL": settings.HOME_URL};
+        ret = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
         return render(request, "release/login.html", ret);
     # 是否切换Tab
     isSwitchTab = base_util.getPostAsBool(request, "isSwitchTab");
@@ -87,6 +87,7 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     # 返回页面内容
     result = {
         "HOME_URL": settings.HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
         "mkey" : mkey,
         "userInfo" : { # 用户信息
             "name":userAuth.uid.name,
