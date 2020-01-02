@@ -101,14 +101,14 @@ $(function(){
 		}
 	}
 	// 创建弹窗函数[带有关闭回调参数]
-	createDialog = function(content, closeCallback){
+	createDialog = function(content, closeCallback, sizeClass="col-md-12"){
 		// 关闭原有弹窗
 		closeDialogPage();
 		// 弹窗内容
 		var dialogPage = "<div id='dialogPage'>\
 			<div class='container'>\
 				<div class='row'>\
-					<div class='dialog-background col-md-4 col-md-offset-4'>\
+					<div class='dialog-background "+ sizeClass +"'>\
 						<a id='closeDialogPage' href='javascript:void(0);' title='关闭弹窗'><span class='glyphicon glyphicon-remove'></span>关闭</a>\
 						<div class='dialog-content'>" + content + "</div>\
 					</div>\
@@ -148,8 +148,8 @@ $(function(){
 		});
 	}
 	// 创建弹窗函数
-	createDialogPage = function(content){
-		createDialog(content, function(){}); // 关闭弹窗时无回调
+	createDialogPage = function(content, sizeClass="col-md-4 col-md-offset-4"){
+		createDialog(content, function(){}, sizeClass); // 关闭弹窗时无回调
 	}
 	// 创建定时弹窗
 	createIntervalDialog = function(content, seconds, closeCallback){
@@ -885,6 +885,51 @@ $(function(){
 		   sendVerifyCode("#resetPwdForm");
 	   });
 	}
+
+	// 显示关于弹窗
+	$("#aboutDzjH").on("click", function(){
+		// 创建弹窗
+		createDialogPage("<div>\
+		<style>\
+			a, a:link {\
+				color: #868686;\
+			}\
+			a:visited{\
+				color: #989898;\
+			}\
+			a:hover{\
+				color: #686868;\
+			}\
+			.content-text p {\
+				text-align:left;\
+				padding: 0px;\
+				margin: 0px;\
+				text-indent:2em;\
+				line-height:30px;\
+			}\
+			.content-ex-text {\
+				text-align:center;\
+				color: #989898;\
+				padding-top: 30px;\
+				border-top: 1px #DCDCDC solid;\
+			}\
+		</style>\
+		<h2 style='color:black;padding-bottom:20px;'>关于<strong style='color:#0b487e'>梦心DH</strong></h2>\
+		<div class='content-text' style='padding: 20px 10px'>\
+			<p>本网站是基于<strong>个人兴趣</strong>而制作的，主要目的是为了将自己平时一些想法或见闻，以程序或其他方式进行实现，最终集合到该网站。</p>\
+			<p>这个网站的设计及其内容，可能杂揉了我的许多个人主观思想。当你发现存在奇怪或者不合理的地方时，请通过<strong>邮件联系</strong>，并一起探讨合适设计方式或结果。</p>\
+			<p>而我仅作为一名开发者，对于思考问题的方式，有时难免会走进自己都没意识到的误区之中。再加上我自身的开发经验和实力，都还太低、太弱，因此设计出来的作品也许并不总让人满意。所以，如果可以的话，希望能得到你们的指导，与我一起完善这个网站及相关内容。</p>\
+			<p>谢谢。</p>\
+		</div>\
+		<div class='content-ex-text'>\
+			<span>联系方式：15602291936</span>\
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\
+			<span>邮箱：15602291936@163.com</span>\
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\
+			<span>GitHub：<a href='https://github.com/JDreamHeart' title='JDreamHeart'>https://github.com/JDreamHeart</a></span>\
+		</div>\
+		</div>", "col-md-8 col-md-offset-2");
+	});
 	
 //	// 定时弹窗
 //	if ($('.jumbotron').length > 0) {
