@@ -4,3 +4,6 @@ pycryptodome
 django-ckeditor
 channels
 qrcode
+Pillow
+pymysql
+mysqlclient
