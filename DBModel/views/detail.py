@@ -75,11 +75,19 @@ def doComment(postData, userAuth, article):
 
 # 根据tkey获取工具信息结果
 def getResultByTkey(tkey):
-    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
+    result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "",
+    };
     toolInfos = models.ToolDetail.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
         # 获取工具基础信息
         baseInfo = toolInfos[0].tkey;
+        result["HEAD_TITLE"] = f"{baseInfo.name}[{baseInfo.category}]";
         result["hasTool"] = True;
         result["baseInfo"] = {
             "name" : baseInfo.name,
@@ -149,11 +157,19 @@ def article(request):
 
 # 根据tkey获取工具信息结果
 def getResultByAid(aid):
-    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
+    result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "",
+    };
     articleInfos = models.Article.objects.filter(id = aid, atype = ArticleType.Article.value).order_by('-time');
     if len(articleInfos) > 0:
         # 获取工具基础信息
         articleInfo = articleInfos[0];
+        result["HEAD_TITLE"] = f"{articleInfo.title}[{articleInfo.sub_title}]";
         result["hasArticle"] = True;
         result["articleInfo"] = {
             "title" : articleInfo.title,

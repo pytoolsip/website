@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
 		<meta name="author" content="JimDreamHeart">
-		<title>文章-{{articleInfo.title}}</title>
+		<title>{{ HEAD_TITLE }}</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-star-rating/css/star-rating.min.css" />
@@ -17,12 +17,12 @@
 		<header id = "header">
 			<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 				<div class="ptip-navbar">
-					<a class="navbar-brand" href="http://jimdreamheart.club" title="DzjH">DzjH</a>
+					<a class="navbar-brand" href="{{ MAIN_HOME_URL }}" title="{{ MAIN_HOME_TITLE }}">{{ MAIN_HOME_TITLE }}</a>
 					<a class="navbar-brand pull-right" href="{{ HOME_URL }}/release" target="_blank" title="发布后台">发布后台</a>
 				</div>
 				<div class="container">
 					<div class="container-fluid navbar-header">
-						<a class="navbar-brand" href="{{ HOME_URL }}" title="首页">PyToolsIP</a>
+						<a class="navbar-brand" href="{{ HOME_URL }}" title="{{ HOME_TITLE }}">{{ HOME_TITLE }}</a>
 						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#searchNavCollapse">
 							<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 						</button>

@@ -201,5 +201,9 @@ CKEDITOR_CONFIGS = {
 ASGI_APPLICATION = "website.routing.application"
 
 # home url
+MAIN_HOME_TITLE = config.get("MAIN_HOME_TITLE", "JDreamHeart")
+MAIN_HOME_URL = config.get("MAIN_HOME_URL", "http://jimdreamheart.club")
+WIKI_URL = config.get("WIKI_URL", "http://jimdreamheart.club/pytoolsip/wiki")
+HOME_TITLE = config.get("HOME_TITLE", "PyToolsIP")
 HOME_URL = config.get("HOME_URL", "http://localhost:8008")
 RESOURCE_URL = config.get("RESOURCE_URL", "http://jimdreamheart.club/resource")

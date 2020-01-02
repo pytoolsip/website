@@ -39,14 +39,23 @@ def release(request):
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);
+    # 返回消息
+    ret = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "PyToolsIP-发布平台",
+    };
     # 判断是否已登陆
     if request.method == 'GET':
-        return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL});
+        return render(request, "release/index.html", ret);
     # 获取登陆玩家
     userAuth = request.userAuth;
     if not userAuth:
         # 返回登陆页面信息
-        ret = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL};
+        ret["HEAD_TITLE"] = "PyToolsIP-登陆发布平台";
         return render(request, "release/login.html", ret);
     # 是否切换Tab
     isSwitchTab = base_util.getPostAsBool(request, "isSwitchTab");
@@ -86,8 +95,12 @@ def verify(request):
 def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     # 返回页面内容
     result = {
-        "HOME_URL": settings.HOME_URL,
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
         "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "PyToolsIP-发布平台",
         "mkey" : mkey,
         "userInfo" : { # 用户信息
             "name":userAuth.uid.name,

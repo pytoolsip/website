@@ -11,7 +11,20 @@ from DBModel import models
 def search(request):
     select = request.POST.get("searchSelect", "name");
     text = request.POST.get("searchText", "");
-    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL, "isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
+    result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "搜索工具",
+        "isSearchNone" : False,
+        "searchSelect" : select,
+        "searchText" : text,
+        "searchObject" : "工具",
+        "toolInfoList" : [],
+        "userInfoList" : [],
+    };
     # 校验提交的数据
     if "searchSelect" not in request.POST:
         return render(request, "toollist.html", result);

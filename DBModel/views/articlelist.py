@@ -18,16 +18,26 @@ def articlelist(request):
     _GG("Log").d("articlelist GET :", request.GET, "; POST :", request.POST, "; FILES :", request.FILES);
     # 搜索内容
     searchText = request.POST.get("searchText", "");
-    result = {"HOME_URL": settings.HOME_URL, "RESOURCE_URL" : settings.RESOURCE_URL, "searchText" : searchText, "isSearchNone" : False, "articleInfoList" : []};
+    result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "文章列表",
+        "searchText" : searchText,
+        "isSearchNone" : False,
+        "articleInfoList" : [],
+    };
     # 根据searchText搜索文章信息列表
-    result["articleInfoList"].extend(serachToolListByTitle(searchText));
+    result["articleInfoList"].extend(serachArticleListByTitle(searchText));
     # 判断是否搜索出了结果
     if searchText:
         result["isSearchNone"] = len(result["articleInfoList"]) == 0;
     return render(request, "articlelist.html", result);
 
-# 根据toolName搜索工具信息列表
-def serachToolListByTitle(title):
+# 根据title搜索文章信息列表
+def serachArticleListByTitle(title):
     articleInfoList = models.Article.objects.filter(title__icontains = title, atype = ArticleType.Article.value);
     return [{
         "id" : articleInfo.id,

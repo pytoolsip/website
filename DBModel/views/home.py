@@ -13,8 +13,13 @@ from release.base import *;
 def home(request):
     isHasNewestInstaller, newestInstaller = getInstallerData()
     return render(request, "home.html", {
-        "HOME_URL": settings.HOME_URL,
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
         "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": settings.HOME_TITLE,
+        "WIKI_URL": settings.WIKI_URL,
         "ptipInfoList" : getPtipData(),
         "isHasNewestInstaller" : isHasNewestInstaller,
         "newestInstaller" : newestInstaller,
