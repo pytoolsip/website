@@ -23,6 +23,7 @@ def home(request):
         "ptipInfoList" : getPtipData(),
         "isHasNewestInstaller" : isHasNewestInstaller,
         "newestInstaller" : newestInstaller,
+        "recommendList" : getRecommendList(),
     });
 
 # 获取安装程序数据
@@ -47,3 +48,7 @@ def getPtipData():
             "changelog" : ptipInfo.changelog,
             "uploadTime" : ptipInfo.time,
     } for ptipInfo in ptipList];
+
+# 获取今日推荐
+def getRecommendList():
+    return [];
