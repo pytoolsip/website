@@ -19,6 +19,11 @@
 			.content-collection {
 				padding-top: 60px;
 			}
+			.content-content {
+				margin-top: 10px;
+				padding-top: 20px;
+				border-top: 2px #E1E1E1 solid;
+			}
 			.content-article {
 				margin: 20px 0px;
 				padding: 10px;
@@ -75,7 +80,7 @@
 			{% if hasTool %}
 			<div class="row">
 				<div class="col-md-8">
-					<div class="tool-info-tittle">
+					<div class="content-title">
 						<h2>{{ baseInfo.name }}</h2>
 						<p>[{{ baseInfo.category }}]</p>
 					</div>
@@ -103,7 +108,7 @@
 						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;<span class="collect-text">取消收藏</span>&nbsp;&nbsp;
 					</a>
 				</div>
-				<div class="col-md-12">
+				<div class="col-md-12 content-content">
 					<article class="content-article">
 						{{ baseInfo.content | safe }}
 					</article>

@@ -121,18 +121,6 @@ def getResultByTkey(tkey):
             "score" : commentInfo.score,
             "content" : commentInfo.content,
         } for commentInfo in commentInfos];
-        result["commentInfoList"].append({
-            "user" : "commentInfo.uid.name",
-            "time" : timezone.now(),
-            "score" : 3.1,
-            "content" : "commentInfo.content",
-        });
-        result["commentInfoList"].append({
-            "user" : "用户名称",
-            "time" : timezone.now(),
-            "score" : 3.1,
-            "content" : "commentInfo.content",
-        });
     return result;
 
 # 文章页

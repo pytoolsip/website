@@ -13,11 +13,20 @@
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-star-rating/css/star-rating.min.css" />
 		<link rel="stylesheet" href= {% static "css/style.css" %} />
 		<style>
+			.content-img {
+				height: 100px;
+				margin-bottom: 10px;
+			}
 			.content-ex-tittle {
 				color: #A0A0A0;
 			}
 			.content-collection {
 				padding-top: 40px;
+			}
+			.content-content {
+				margin-top: 10px;
+				padding-top: 20px;
+				border-top: 2px #E1E1E1 solid;
 			}
 			.content-article {
 				margin: 20px 0px;
@@ -75,12 +84,15 @@
 			{% if hasArticle %}
 			<div class="row">
 				<div class="col-md-8">
-					<div class="tool-info-tittle">
+					<div class="content-title">
                         <h2>{{ articleInfo.title }}</h2>
                         {% if articleInfo.subTitle %}
                         <p>[{{ articleInfo.subTitle }}]</p>
                         {% endif %}
                     </div>
+					<div class="col-md-12">
+						<img class="content-img img-responsive thumbnail" src="{{ articleInfo.thumbnail }}"/>
+					</div>
 					<p class="content-ex-tittle">
 						<span>上传者：{{ articleInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -95,7 +107,7 @@
 						&nbsp;<span class="glyphicon glyphicon-star-empty"></span>&nbsp;<span class="collect-text">取消收藏</span>&nbsp;&nbsp;
 					</a>
 				</div>
-				<div class="col-md-12">
+				<div class="col-md-12 content-content">
 					<article class="content-article">
                         {{ articleInfo.content | safe }}
 					</article>
