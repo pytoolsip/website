@@ -98,7 +98,7 @@ def getResultByTkey(tkey):
             "score" : baseInfo.score or 0.0,
             "author" :  baseInfo.uid.name,
             "time" :  baseInfo.time,
-            "thumbnail" : baseInfo.aid.thumbnail,
+            "thumbnail" : baseInfo.aid.thumbnail and baseInfo.aid.thumbnail.url or "",
             "content" : baseInfo.aid.cid.content,
         };
         # 是否收藏了工具
@@ -121,6 +121,18 @@ def getResultByTkey(tkey):
             "score" : commentInfo.score,
             "content" : commentInfo.content,
         } for commentInfo in commentInfos];
+        result["commentInfoList"].append({
+            "user" : "commentInfo.uid.name",
+            "time" : timezone.now(),
+            "score" : 3.1,
+            "content" : "commentInfo.content",
+        });
+        result["commentInfoList"].append({
+            "user" : "用户名称",
+            "time" : timezone.now(),
+            "score" : 3.1,
+            "content" : "commentInfo.content",
+        });
     return result;
 
 # 文章页
@@ -174,7 +186,7 @@ def getResultByAid(aid):
         result["articleInfo"] = {
             "title" : articleInfo.title,
             "subTitle" : articleInfo.sub_title,
-            "thumbnail" : articleInfo.thumbnail,
+            "thumbnail" : articleInfo.thumbnail and articleInfo.thumbnail.url or "",
             "time" :  articleInfo.time,
             "author" :  articleInfo.uid.name,
             "content" : articleInfo.cid.content,

@@ -12,6 +12,36 @@
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-star-rating/css/star-rating.min.css" />
 		<link rel="stylesheet" href= {% static "css/style.css" %} />
+		<style>
+			.content-ex-tittle {
+				color: #A0A0A0;
+			}
+			.content-collection {
+				padding-top: 60px;
+			}
+			.content-article {
+				margin: 20px 0px;
+				padding: 10px;
+				background-color: #F1F1F1;
+				border: 1px #E6E6E6 solid;
+			}
+			.content-comment {
+				padding-top: 40px;
+				margin-top: 40px;
+				border-top: 2px #CDCDCD solid;
+			}
+			.content-comment-list {
+				margin-top: 40px;
+				border-top: 2px #CDCDCD solid;
+			}
+			.content-comment-item {
+				margin-top: 20px;
+				padding: 20px 0px;
+				background-color: #F1F1F1;
+				border: 2px #CDCDCD solid;
+				border-radius: 4px;
+			}
+		</style>
 	</head>
 	<body>
 		<header id = "header">
@@ -45,13 +75,17 @@
 			{% if hasTool %}
 			<div class="row">
 				<div class="col-md-8">
-					<div class="tool-info-tittle"><h2>{{ baseInfo.name }}</h2><span>&nbsp;[{{ baseInfo.category }}]</span></div>
+					<div class="tool-info-tittle">
+						<h2>{{ baseInfo.name }}</h2>
+						<p>[{{ baseInfo.category }}]</p>
+					</div>
 					<h4>
 						ID:&nbsp;&nbsp;
 						<span id="IDText" style="color: green;">{{ baseInfo.tkey }}</span>
 						<button id="copyID" class="btn btn-xs btn-default" data-clipboard-target="#IDText">复制</button>
 					</h4>
-					<p style="color: #A0A0A0;">
+					<blockquote>{{ baseInfo.description }}</blockquote>
+					<p class="content-ex-tittle">
 						<span>上传者：{{ baseInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span>评分：{{ baseInfo.score }}</span>
@@ -60,11 +94,8 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span>最近上传时间：{{ baseInfo.time|date:"Y-m-d H:i:s" }}</span>
 					</p>
-					<div style="background-color: #F1F1F1;">
-						{{ baseInfo.content | safe }}
-					</div>
 				</div>
-				<div class="col-md-4" style="padding-top: 40px;">
+				<div class="col-md-4 text-center content-collection">
 					<a id="collectTool" class="btn btn-lg btn-primary hidden" href="javascript:void(0);" title="点击收藏">
 						&nbsp;<span class="glyphicon glyphicon-star"></span>&nbsp;<span class="collect-text">点击收藏</span>&nbsp;&nbsp;
 					</a>
@@ -73,9 +104,9 @@
 					</a>
 				</div>
 				<div class="col-md-12">
-					<blockquote style="margin-top: 30px;margin-bottom: 40px;">
-						<p>{{ baseInfo.description }}</p>
-					</blockquote>
+					<article class="content-article">
+						{{ baseInfo.content | safe }}
+					</article>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
@@ -100,22 +131,22 @@
 							</tbody>
 						</table>
 					</div>
-					<div style="border-top: 1px #BCBCBC solid;padding-top: 40px;margin-top: 40px;">
+					<div class="content-comment">
 						<form id="commentToolForm" role="form" enctype="multipart/form-data" method="POST">
 							<textarea name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
 							<input name="score" type="number" class="rating" />
 							<input class="btn btn-primary" type="submit" value="提交评论" />
 						</form>
-						<ul class="row" style="margin-top: 60px;border-bottom: 1px #BCBCBC dashed;">
+						<ul class="row content-comment-list">
 							{% for commentInfo in commentInfoList %}
-							<li class="col-md-12" style="border-top: 1px #BCBCBC dashed;padding-top: 20px;padding-bottom: 20px;">
+							<li class="col-md-12 content-comment-item">
 								<div class="col-md-3 text-center">
-									<p>{{ commentInfo.user }}</p>
+									<h4><strong>{{ commentInfo.user }}</strong></h4>
+									<p>评分：<span style="color: darkgoldenrod;">{{ commentInfo.score }}</span></p>
 									<p style="color: #A0A0A0;">{{ commentInfo.time|date:"Y-m-d H:i:s" }}</p>
 								</div>
 								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">{{ commentInfo.score }}</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">{{ commentInfo.content }}</span></p>
+									<article style="color: #868686;">{{ commentInfo.content }}</article>
 								</div>
 							</li>
 							{% endfor %}

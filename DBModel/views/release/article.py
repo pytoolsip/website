@@ -164,7 +164,7 @@ def updateOlArticle(request, userAuth, result, isSwitchTab):
             "id" : articleInfo.id,
             "title" : articleInfo.title,
             "subTitle" : articleInfo.sub_title,
-            "thumbnail" : articleInfo.thumbnail,
+            "thumbnail" : articleInfo.thumbnail and articleInfo.thumbnail.url or "",
             "sketch" : articleInfo.sketch,
             "time" : articleInfo.time,
             "author" : articleInfo.uid.name,
