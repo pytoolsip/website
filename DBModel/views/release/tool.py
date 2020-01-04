@@ -122,6 +122,8 @@ def searchTool(result, searchType, searchText, userAuth):
         "score" : toolInfo.score or 0.0,
         "author" :  toolInfo.uid.name,
         "uploadTime" :  toolInfo.time,
+        "mkey" : "ol_article",
+        "aid" : toolInfo.aid.id,
     } for toolInfo in toolInfoList];
 
 # 审核工具
