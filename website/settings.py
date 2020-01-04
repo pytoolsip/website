@@ -194,6 +194,7 @@ CKEDITOR_CONFIGS = {
         "extraPlugins": ",".join(["codesnippet"]),
         "tabSpaces": 4,
         "width" : "100%",
+        "image_previewText" : " ",
     },
 }
 

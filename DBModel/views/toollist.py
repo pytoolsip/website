@@ -54,18 +54,18 @@ def toollist(request):
             result["isSearchNone"] = len(result["toolInfoList"]) == 0;
         return render(request, "toollist_item.html", result);
     return render(request, "toollist.html", {
-            "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
-            "MAIN_HOME_URL":settings.MAIN_HOME_URL,
-            "RESOURCE_URL" : settings.RESOURCE_URL,
-            "HOME_TITLE": settings.HOME_TITLE,
-            "HOME_URL": settings.HOME_URL,
-            "HEAD_TITLE": f"工具列表",
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": f"工具列表",
         "tlkey" : tlkey,
     });
 
 # 根据toolName搜索工具信息列表
 def serachToolListByName(tlkey, name):
-    toolInfoList = models.Tool.objects.filter(name__icontains = name, category__regex = "^%s/"%TlKeyMap[tlkey]);
+    toolInfoList = models.Tool.objects.filter(name__icontains = name, category__regex = "^%s/"%TlKeyMap[tlkey]).order_by('-time');
     return [{
         "name" : toolInfo.name,
         "category" : toolInfo.category,

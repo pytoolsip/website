@@ -58,6 +58,7 @@
 				height:100%;
 				width:100%;
 				position: relative;
+				border: 1px #BCBCBC solid;
 				border-radius: 6px;
 				box-shadow: 0px 20px 40px -10px rgba(36,36,36,0.5);
 			}
@@ -72,7 +73,6 @@
 				transition: all 0.4s ease-out;
 				padding: 10px;
 				background-color: #FFFFFF;
-				border: 1px #BCBCBC solid;
 				border-radius: 6px;
 			}
 			.tile .text{
@@ -80,10 +80,18 @@
 				position:absolute;
 				padding:30px;
 			}
-			.tile h2{
+			.tile .extext {
+				position: absolute;
+				bottom: 10px;
+				right: 0px;
+				padding: 0px 30px;
+				color: #686868;
+			}
+			.tile h3{
 				margin:0;
 				font-weight:bolder;
-				text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+				color: #282828;
+				text-shadow: 2px 2px 0px lightcyan;
 				opacity: 0.6;
 				overflow: hidden;
 				display: -webkit-box;
@@ -91,9 +99,8 @@
 				-webkit-line-clamp: 3;
 				-webkit-box-orient: vertical;
 			}
-			.tile h3{
-				margin:20px 0 0 0;
-				font-style:italic;
+			.tile h5{
+				margin:10px 0 0 0;
 				transform: translateX(200px);
 				overflow: hidden;
 				display: -webkit-box;
@@ -105,12 +112,15 @@
 				margin:20px 0 0 0;
 				line-height: 25px;
 				transform: translateX(-200px);
-				transition-delay: 0.2s;
 				overflow: hidden;
 				display: -webkit-box;
 				text-overflow: ellipsis;
-				-webkit-line-clamp: 4;
+				-webkit-line-clamp: 5;
 				-webkit-box-orient: vertical;
+			}
+			.tile .extext p {
+				transform: translateX(200px);
+				-webkit-line-clamp: 1;
 			}
 			.animate-text{
 				opacity:0;
@@ -123,9 +133,14 @@
 			.tile:hover img{
 				opacity: 0.2;
 			}
-			.tile:hover h2{
+			.tile:hover h3{
+				color: black;
+				text-shadow: none;
 				opacity: 1;
 			}
+			/* .tile:hover h4, .tile:hover p{
+				display: -webkit-box;
+			} */
 			.tile:hover .animate-text{
 				transform:translateX(0);
 				opacity:1;
@@ -191,13 +206,18 @@
 					<ul>
 						{% for info in recommendList %}
 						<li class="col-md-4">
-							<a class="btn-block tile" href="info.url"> 
+							<a class="btn-block tile" target="_blank" href="{{ info.url }}">
+								{% if info.thumbnail %}
 								<img src="{{ info.thumbnail }}"/>
+								{% endif %}
 								<div class="text">
-									<h2>{{ info.title }}</h2>
-									<h3 class="animate-text">{{ info.subTitle }}</h3>
+									<h3>{{ info.title }}</h3>
+									<h5 class="animate-text">[{{ info.subTitle }}]</h5>
 									<p class="animate-text">{{ info.description }}</p>
 							  	</div>
+								<div class="extext">
+									<p class="animate-text">——&nbsp;{{ info.author }}</p>
+								</div>
 							</a>
 						</li>
 						{% endfor %}

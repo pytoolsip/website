@@ -58,7 +58,7 @@ def search(request):
 
 # 根据tkey获取工具信息
 def getToolInfoByTKey(tkey):
-    toolInfos = models.Tool.objects.filter(tkey = tkey);
+    toolInfos = models.Tool.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
         toolInfo = toolInfos[0];
         return True, {
@@ -77,7 +77,7 @@ def getToolInfoByTKey(tkey):
 def getToolInfoListByUserName(name):
     userInfos = models.User.objects.filter(name = name);
     if len(userInfos) > 0:
-        toolInfoList = models.Tool.objects.filter(uid = userInfos[0]);
+        toolInfoList = models.Tool.objects.filter(uid = userInfos[0]).order_by('-time');
         return True, [{
             "name" : toolInfo.name,
             "category" : toolInfo.category,
@@ -92,7 +92,7 @@ def getToolInfoListByUserName(name):
 
 # 根据userName搜索玩家信息列表
 def serachUserInfoListByName(name):
-    userInfoList = models.User.objects.filter(name__icontains = name);
+    userInfoList = models.User.objects.filter(name__icontains = name).order_by('-time');
     if len(userInfoList) > 0:
         return True, [{
             "name" : userInfo.name,
@@ -104,7 +104,7 @@ def serachUserInfoListByName(name):
 
 # 根据toolName搜索工具信息列表
 def serachToolInfoListByName(name):
-    toolInfoList = models.Tool.objects.filter(name__icontains = name);
+    toolInfoList = models.Tool.objects.filter(name__icontains = name).order_by('-time');
     if len(toolInfoList) > 0:
         return True, [{
             "name" : toolInfo.name,

@@ -100,13 +100,13 @@ def getOnlineInfoList(baseInfo):
 def searchTool(result, searchType, searchText, userAuth):
     searchNoneTips = "";
     if searchType == "name":
-        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您未发布过名称包含为【{searchText}】工具，请重新搜索！";
     elif searchType == "tkey":
-        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您未曾发布过ID为【{searchText}】工具，请重新搜索！";
     else:
-        toolInfoList = models.Tool.objects.filter(uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您还未曾发布过工具到线上，请先上传新工具！";
     # 设置返回数据
     result["searchType"] = searchType;

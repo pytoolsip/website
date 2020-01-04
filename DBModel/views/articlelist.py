@@ -38,7 +38,7 @@ def articlelist(request):
 
 # 根据title搜索文章信息列表
 def serachArticleListByTitle(title):
-    articleInfoList = models.Article.objects.filter(title__icontains = title, atype = ArticleType.Article.value);
+    articleInfoList = models.Article.objects.filter(title__icontains = title, atype = ArticleType.Article.value).order_by('-time');
     return [{
         "id" : articleInfo.id,
         "title" : articleInfo.title,
