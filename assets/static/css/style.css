@@ -107,8 +107,20 @@ footer a{
 .tool-info-id>span{
 	color: green;
 }
+.tool-info-description {
+	height: 200px;
+}
+.tool-info-description > img {
+	height: 120px;
+}
 .tool-info-desc{
-	font-size: 14px
+	height: 68px;
+	font-size: 14px;
+	overflow: hidden;
+	display: -webkit-box;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
 }
 .tool-info-detail>a{
 	display: block;

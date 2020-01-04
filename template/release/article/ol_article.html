@@ -15,43 +15,49 @@
         </div>
     </div>
 </form>
-<div id="searchResult" class="col-sm-12 col-md-offset-1 col-md-10">
+<div id="searchResult" class="col-sm-12 col-md-offset-1 col-md-10" style="margin-bottom: 20px;">
     {% if isSearchNone %}
         <p class="text-center">{{searchNoneTips}}</p>
     {% endif %}
+    <ul>
     {% for articleInfo in onlineInfoList %}
-        <div class="col-md-4 tool-info-item">
-            <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
-            {% if articleInfo.subTitle %}
-            <p class="tool-info-id">[{{ articleInfo.subTitle }}]</p>
-            {% endif %}
-            <img class="img-responsive center-block" src="{{articleInfo.thumbnail}}" style="width: 100%;"/>
-            <p>{{ articleInfo.sketch }}</p>
-            {% ifequal articleInfo.atype 0 %}
-            <p class="tool-info-detail"><a class="btn btn-danger delete-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">删除文章</a></p>
-            {% endifequal %}
-            {% ifequal articleInfo.atype 1 %}
-            <p class="tool-info-detail"><a class="btn btn-info update-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">更新工具详情</a></p>
-            {% endifequal %}
-            <p class="tool-info-ex-info">
-                &nbsp;
-                <span>
-                    [
-                    {% ifequal articleInfo.atype 0 %}
-                    文章
-                    {% endifequal %}
-                    {% ifequal articleInfo.atype 1 %}
-                    工具
-                    {% endifequal %}
-                    ]
-                </span>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <span>上传者：{{ articleInfo.author }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i" }}</span>
-            </p>
-        </div>
+        <li class="col-md-4" style="padding: 10px;">
+            <div class="tool-info-item">
+                <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
+                {% if articleInfo.subTitle %}
+                <p class="tool-info-id">[{{ articleInfo.subTitle }}]</p>
+                {% endif %}
+                <div class="tool-info-description">
+                    <img class="img-responsive center-block" src="{{articleInfo.thumbnail}}" />
+                    <blockquote class="tool-info-desc mixed-height">{{ articleInfo.sketch }}对方肯定就会发生的客服那里第三范式的多久发货速度啦客户发开始对方肯定就会发生的客服那里第三范式的多久发货速度啦客户发开始</blockquote>
+                </div>
+                {% ifequal articleInfo.atype 0 %}
+                <p class="tool-info-detail"><a class="btn btn-danger delete-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">删除文章</a></p>
+                {% endifequal %}
+                {% ifequal articleInfo.atype 1 %}
+                <p class="tool-info-detail"><a class="btn btn-info update-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">更新工具详情</a></p>
+                {% endifequal %}
+                <p class="tool-info-ex-info">
+                    &nbsp;
+                    <span>
+                        [
+                        {% ifequal articleInfo.atype 0 %}
+                        文章
+                        {% endifequal %}
+                        {% ifequal articleInfo.atype 1 %}
+                        工具
+                        {% endifequal %}
+                        ]
+                    </span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>上传者：{{ articleInfo.author }}</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i" }}</span>
+                </p>
+            </div>
+        </li>
     {% endfor %}
+    </ul>
 </div>
 {% endif %}
 <script language="JavaScript">

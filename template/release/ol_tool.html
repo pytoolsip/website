@@ -91,8 +91,10 @@
     {% if isSearchNone %}
         <p class="text-center">{{searchNoneTips}}</p>
     {% endif %}
+    <ul>
     {% for toolInfo in toolInfoList %}
-        <div class="col-md-4 tool-info-item">
+    <li class="col-md-4" style="padding: 10px;">
+        <div class="tool-info-item">
             <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
             <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
             <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
@@ -101,7 +103,9 @@
             <p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
             <p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
         </div>
+    </li>
     {% endfor %}
+    </ul>
 </div>
 {% endif %}
 <script language="JavaScript">
