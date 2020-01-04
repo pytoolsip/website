@@ -97,7 +97,7 @@ def serachUserInfoListByName(name):
         return True, [{
             "name" : userInfo.name,
             "email" : userInfo.email,
-            "img" : userInfo.img,
+            "img" : userInfo.img.url,
             "bio" : userInfo.bio,
         } for userInfo in userInfoList];
     return False, [];

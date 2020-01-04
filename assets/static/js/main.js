@@ -320,9 +320,10 @@ $(function(){
 									</div>\
 									<div class='tab-pane-sub'>\
 										<h5 class='text-center'>扩展信息</h5>\
-										<div style='width: 60px;height: 60px;'>\
-											<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像'/>\
-										</div>\
+										<p>\
+											头像：\
+											<img class='img-thumbnail img-responsive' src='" + data.img + "' alt='用户头像' style='width: 60px;height: 60px; border-radius: 6px;'/>\
+										</p>\
 										<p>个性签名：<span>" + data.bio + "</span></p>\
 									</div>\
 									<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\

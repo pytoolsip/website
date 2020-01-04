@@ -252,3 +252,35 @@ label.error {
 #showUserInfo p{
 	margin-top: 10px;
 }
+
+/* user info */
+.user-info-tittle {
+	display: block;
+	margin-top: 20px;
+}
+.user-info-img {
+	display: inline-block;
+	width: 40px;
+	border: 2px #E1E1E1 solid;
+	border-radius: 50%;
+}
+.user-info-name {
+	display: inline-block;
+	font-size: 22px;
+	width: calc(100% - 50px);
+	position: relative;
+}
+.user-info-name>strong {
+	position: absolute;
+	top: -18px;
+	left: 4px;
+	overflow: hidden;
+	display: -webkit-box;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
+.user-info-email {
+	padding: 10px;
+	color: #686868;
+}

@@ -28,7 +28,10 @@
 			{% for toolInfo in toolInfoList %}
 				<div class="col-md-6 col-lg-4">
 					<div class="tool-info-item">
-						<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+						<div class="tool-info-tittle">
+							<h3>{{ toolInfo.name }}</h3>
+							<p>[{{ toolInfo.category }}]</p>
+						</div>
 						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
 						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
 						<p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
@@ -39,13 +42,13 @@
 			{% endfor %}
 			{% for userInfo in userInfoList %}
 				<div class="col-md-6 col-lg-4 tool-info-item">
-					<h3 class="tool-info-tittle">
+					<div class="user-info-tittle">
 						{% if userInfo.img %}
-						<img class="img-responsive" src="{{userInfo.img}}" style="width: 40px;border: 1px gray solid;border-radius: 50%;"/>
+						<img class="user-info-img img-responsive" src="{{userInfo.img}}" />
 						{% endif %}
-						{{ userInfo.name }}
-					</h3>
-					<p>[{{ userInfo.email }}]</p>
+						<div class="user-info-name"><strong>{{ userInfo.name }}</strong></div>
+					</div>
+					<p class="user-info-email">Email:&nbsp;{{ userInfo.email }}</p>
 					<blockquote class="tool-info-desc">{{ userInfo.bio }}</blockquote>
 					<a class="btn btn-info request-author-tools" href="javascript:void(0);" role="button" data-target="{{ userInfo.name }}">查看该用户上传的工具&nbsp;&raquo;</a>
 				</div>

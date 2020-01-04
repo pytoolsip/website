@@ -95,7 +95,10 @@
     {% for toolInfo in toolInfoList %}
     <li class="col-md-4" style="padding: 10px;">
         <div class="tool-info-item">
-            <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+            <div class="tool-info-tittle">
+                <h3>{{ toolInfo.name }}</h3>
+                <p>[{{ toolInfo.category }}]</p>
+            </div>
             <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
             <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
             <p class="tool-info-detail"><a class="btn btn-default update-tool-detail-btn" href="javascript:void(0);" role="button" data-target="{{ HOME_URL }}/texteditor?ek=tool&tkey={{ toolInfo.tkey }}">更新工具详情</a></p>

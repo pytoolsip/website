@@ -19,7 +19,10 @@
             {% for toolInfo in toolInfoList %}
                 <div class="col-md-6 col-lg-4">
                     <div class="tool-info-item">
-                        <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+                        <div class="tool-info-tittle">
+                            <h3>{{ toolInfo.name }}</h3>
+                            <p>[{{ toolInfo.category }}]</p>
+                        </div>
                         <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
                         <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
                         <p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
