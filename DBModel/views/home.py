@@ -31,6 +31,8 @@ def home(request):
         "isHasNewestInstaller" : isHasNewestInstaller,
         "newestInstaller" : newestInstaller,
         "recommendData" : getRecommendData(request),
+        "toolTotalCount" : len(models.Tool.objects.all()),
+        "articleTotalCount" : len(models.Article.objects.filter(atype = ArticleType.Article.value)),
     });
 
 # 获取安装程序数据

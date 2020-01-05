@@ -80,6 +80,13 @@ footer a{
 	margin: 10px;
 	padding: 0px;
 }
+.jumbotron-ex-content {
+	margin-top: 20px;
+}
+.jumbotron-ex-content > p {
+	margin: 0px;
+	font-size: 14px;
+}
 .jumbotron-btn-group>li{
 	display: inline-block;
 	margin: 10px 40px;
