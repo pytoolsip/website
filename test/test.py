@@ -31,6 +31,37 @@ def decodePwd(pwd, code):
             increment+=1;
     return "".join(pwds);
 
+def testRand(rlStartIdx = None, total = 20):
+    limit = 9;
+    interval = int(total / limit);
+    if interval > 0:
+        tmpTotal = total + (limit - total % limit) % limit;
+        def getNextIdx(curIdx):
+            nextIdx = (curIdx + interval) % tmpTotal;
+            if nextIdx == nextIdx % interval and interval > 1:
+                nextIdx += 1;
+            while nextIdx >= total:
+                nextIdx = (nextIdx + interval) % tmpTotal;
+            return nextIdx;
+        # 获取开始下标
+        startIdx = 0;
+        if rlStartIdx and 0 <= rlStartIdx <= total:
+            startIdx = rlStartIdx;
+        # 获取返回列表
+        print("getRecommendList:", tmpTotal, interval, startIdx);
+        idxList = [];
+        while len(idxList) < limit:
+            print("getRecommendList startIdx:", startIdx, idxList);
+            if startIdx in idxList:
+                break;
+            # 添加返回信息
+            idxList.append(startIdx);
+            # 获取下一个下标
+            startIdx = getNextIdx(startIdx);
+            print("getRecommendList while:", startIdx, idxList);
+        return idxList;
+    
+
 if __name__ == '__main__':
     # code = "91"; # getEncodeCode();
     # print("==== code ====", code);
@@ -39,7 +70,8 @@ if __name__ == '__main__':
     # t = encodeStr("just test 199999");
     # print("t:", t)
     # print("result:", decodeStr(t));
-    name = "梦心DH"
-    nb = name.encode();
-    # bytes.decode()
-    print(nb, bytes.decode(nb))
+    # name = "梦心DH"
+    # nb = name.encode();
+    # # bytes.decode()
+    # print(nb, bytes.decode(nb))
+    print(testRand(14));

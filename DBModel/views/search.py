@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from website import settings
 from DBModel import models
 
+from _Global import _GG;
+
 # 搜索页请求
 @csrf_exempt
 def search(request):
