@@ -93,7 +93,7 @@ def getRecommendData(request):
                 nextIdx = (nextIdx + interval) % tmpTotal;
             return nextIdx;
         # 获取开始下标
-        startIdx = random.randint(0, interval);
+        startIdx = random.randint(0, total);
         if "rlStartIdx" in request.POST:
             try:
                 rlStartIdx = int(request.POST["rlStartIdx"]);
