@@ -62,12 +62,14 @@ def getRecommendInfoByArticle(articleInfo):
         "subTitle" : articleInfo.sub_title,
         "description" : articleInfo.sketch,
         "author" :  articleInfo.uid.name,
+        "badge" : "文章",
     };
     if articleInfo.atype == ArticleType.Tool.value:
         tools = articleInfo.tool_set.all();
         if len(tools) > 0 :
             tkey = tools[0].tkey;
             ret["url"] = settings.HOME_URL + f"/detail?t={tkey}";
+            ret["badge"] = "工具";
         else:
             _GG("Log").w(f"Invalid tool's article[id={articleInfo.id}]!");
     return ret;

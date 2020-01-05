@@ -75,8 +75,27 @@
 				background-color: #FFFFFF;
 				border-radius: 6px;
 			}
+			.tile .badge {
+				z-index:100;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				width: 100%;
+				padding: 0px;
+				background-color: rgba(0, 0, 0, 0);
+			}
+			.tile .badge > span {
+				display: inline-block;
+				width: 100px;
+				padding: 4px;
+				color: #363636;
+				background-color: white;
+				border: 1px gray solid;
+				border-top: none;
+				border-radius: 0 0 4px 4px;
+				opacity: 0.6;
+			}
 			.tile .text{
-				z-index:99;
 				position:absolute;
 				padding:30px;
 			}
@@ -90,9 +109,8 @@
 			.tile h3{
 				margin:0;
 				font-weight:bolder;
-				color: #282828;
-				text-shadow: 2px 2px 0px lightcyan;
-				opacity: 0.6;
+				color: gray;
+				text-shadow: 2px 2px 0px white;
 				overflow: hidden;
 				display: -webkit-box;
 				text-overflow: ellipsis;
@@ -127,6 +145,7 @@
 				transition: all 0.6s ease-in-out;
 			}
 			.tile:hover{
+				z-index:99;
 				box-shadow: 0px 35px 77px -17px rgba(0,0,0,0.64);
 				transform:scale(1.05);
 			}
@@ -136,11 +155,7 @@
 			.tile:hover h3{
 				color: black;
 				text-shadow: none;
-				opacity: 1;
 			}
-			/* .tile:hover h4, .tile:hover p{
-				display: -webkit-box;
-			} */
 			.tile:hover .animate-text{
 				transform:translateX(0);
 				opacity:1;
@@ -207,6 +222,9 @@
 						{% for info in recommendList %}
 						<li class="col-md-4">
 							<a class="btn-block tile" target="_blank" href="{{ info.url }}">
+								<div class="badge">
+									<span>{{ info.badge }}</span>
+								</div>
 								{% if info.thumbnail %}
 								<img src="{{ info.thumbnail }}"/>
 								{% endif %}
