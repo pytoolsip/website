@@ -1,17 +1,10 @@
-{% ifequal mkey "pt_ol_examination" %}
-<h2>工具下架</h2>
-{% else %}
-<h2>工具审核</h2>
-{% endifequal %}
+<h2>评论审核</h2>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>工具名</th>
-            <th>所属类别</th>
-            <th>工具ID</th>
-            <th>工具描述</th>
-            <th>版本号</th>
-            <th>更新日志</th>
+            <th>用户</th>
+            <th>评论工具/文章</th>
+            <th>评论内容</th>
             <th>发布时间</th>
             <th>操作</th>
         </tr>
@@ -19,38 +12,18 @@
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
-            <th>{{ olInfo.name }}</th>
-            <th>{{ olInfo.category }}</th>
-            <th>{{ olInfo.tkey }}</th>
-            <th>{{ olInfo.description }}</th>
-            <th>{{ olInfo.version }}</th>
-            <th>{{ olInfo.changelog }}</th>
+            <th>{{ olInfo.userName }}</th>
+            <th><a href="{{ olInfo.targetUrl }}" target="_blank">{{ olInfo.target }}</a></th>
+            <th>{{ olInfo.content }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>
-                {% if isManager %}
-                    {% if isReleased %}
-                        <a class="btn btn-danger examination" name="delete" data-target="{{ olInfo.id }}">下架</a>
-                    {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
-                        <a class="btn btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
-                    {% endif %}
-                {% else %}
-                    {% if isReleased %}
-                        已发布
-                    {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
-                    {% endif %}
-                {% endif %}
+                <a class="btn btn-danger examination" name="delete" data-target="{{ olInfo.id }}">删除</a>
             </th>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% ifequal mkey "pt_ol_examination" %}
-<p id="noExamingTool" class="text-center hidden">目前暂无已发布的工具版本~</p>
-{% else %}
-<p id="noExamingTool" class="text-center hidden">目前暂无需审核的工具版本~</p>
-{% endifequal %}
+<p id="noExamingTool" class="text-center hidden">目前暂无已发布的评论~</p>
 <script language="JavaScript">
 	$(function(){
         var requestManageByExamType = function(examType, id, reason, callback) {
@@ -63,10 +36,8 @@
         };
         $(".examination").on("click",function(){
             var examType = $(this).attr("name");
-            var tid = $(this).attr("data-target");
-            if (examType  == "release") {
-                requestManageByExamType(examType, tid, "", function(){});
-            } else {
+            var cid = $(this).attr("data-target");
+            if (examType  == "delete") {
                 // 创建弹窗
                 createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
                                 <h2>"+ $(this).text() +"原因</h2>\
@@ -86,7 +57,7 @@
                         },
                     },
                     submitHandler: function() {
-                        requestManageByExamType(examType, tid, $("#reasonForm input[name='reason']").val(), function(){
+                        requestManageByExamType(examType, cid, $("#reasonForm input[name='reason']").val(), function(){
                             closeDialogPage(); // 请求后关闭弹窗
                         }); // 请求后关闭弹窗
                     }

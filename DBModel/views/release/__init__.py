@@ -18,6 +18,7 @@ sys.path.append(CURRENT_PATH);
 try:
     import ptip;
     import depend;
+    import comment;
     import tool;
     import installer;
     import article;
@@ -29,7 +30,7 @@ finally:
 # 平台键值列表
 PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
 # 工具/文章键值列表
-PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article"];
+PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article", "comment_examination"];
 
 # 后台管理页请求
 @csrf_exempt
@@ -121,6 +122,8 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
         depend.uploadDepend(request, userAuth, result, isSwitchTab);
     elif mkey == "ptip_exe": # 更新平台启动/更新程序
         depend.uploadExe(request, userAuth, result, isSwitchTab);
+    elif mkey == "comment_examination": # 审核评论
+        comment.examComment(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_ol_examination": # 审核线上工具
         tool.examOlTool(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_examination": # 审核工具
