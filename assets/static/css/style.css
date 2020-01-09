@@ -61,6 +61,12 @@ footer a{
 	border: 1px #1E80FF solid;
 	opacity: 0.9;
 }
+img.main-home-icon {
+	display: inline-block;
+	height: 14px;
+	margin-top: -2px;
+	margin-right: 2px;
+}
 #user{
 	margin-bottom: 4px;
 }

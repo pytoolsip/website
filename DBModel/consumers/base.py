@@ -64,7 +64,7 @@ class BaseConsumer(WebsocketConsumer):
         pass;
 
     def notify(self, resp, msg, status = "success"):
-        _GG("Log").d("ws notify:", resp, msg, status);
+        # _GG("Log").d("ws notify:", resp, msg, status);
         self.send(text_data=json.dumps({
             "resp" : resp,
             "msg" : msg,

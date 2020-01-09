@@ -213,7 +213,7 @@ $(function(){
 						</div>\
 					</form>", function() {
 						loginWs.close(); // 关闭socket
-					});
+					}, sizeClass="col-md-4 col-md-offset-4");
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {
