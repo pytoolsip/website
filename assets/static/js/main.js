@@ -932,6 +932,28 @@ $(function(){
 		</div>", "col-md-8 col-md-offset-2");
 	});
 	
+	// 点击反馈事件
+	$("#feedback").on("click",function(){
+		// 创建弹窗
+		createDialogPage("<div>\
+		<style>\
+			.content-text p {\
+				text-align:left;\
+				padding: 0px;\
+				margin: 0px;\
+				text-indent:2em;\
+				line-height:30px;\
+			}\
+		</style>\
+		<h2 style='color:black;padding-bottom:20px;'>意见反馈</h2>\
+		<div class='content-text' style='padding: 20px 10px'>\
+			<p>感谢您愿为本网站的发展提供宝贵意见。</p>\
+			<p>在此很抱歉地告知您：目前<span style='color: darkgreen;'>仅支持通过电子邮件（<strong>15602291936@163.com</strong>）的方式</span>进行意见反馈。</p>\
+		</div>\
+		<p class='text-center'>感谢您对本网站的支持!</p>\
+		</div>", "col-md-4 col-md-offset-4");
+	});
+	
 //	// 定时弹窗
 //	if ($('.jumbotron').length > 0) {
 //		createIntervalDialog("<h2>定时弹窗</h2><p>测试...</p>", 5);
