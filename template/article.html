@@ -17,38 +17,8 @@
 				height: 100px;
 				margin-bottom: 10px;
 			}
-			.content-ex-tittle {
-				color: #A0A0A0;
-			}
 			.content-collection {
 				padding-top: 40px;
-			}
-			.content-content {
-				margin-top: 10px;
-				padding-top: 20px;
-				border-top: 2px #E1E1E1 solid;
-			}
-			.content-article {
-				margin: 20px 0px;
-				padding: 10px;
-				background-color: #F1F1F1;
-				border: 1px #E6E6E6 solid;
-			}
-			.content-comment {
-				padding-top: 40px;
-				margin-top: 40px;
-				border-top: 2px #CDCDCD solid;
-			}
-			.content-comment-list {
-				margin-top: 40px;
-				border-top: 2px #CDCDCD solid;
-			}
-			.content-comment-item {
-				margin-top: 20px;
-				padding: 20px 0px;
-				background-color: #F1F1F1;
-				border: 2px #CDCDCD solid;
-				border-radius: 4px;
 			}
 		</style>
 	</head>
@@ -113,20 +83,23 @@
 					</article>
 					<div class="content-comment">
 						<form id="commentToolForm" role="form" enctype="multipart/form-data" method="POST">
-							<textarea name="content" class="form-control" rows="3" placeholder="评论内容"></textarea>
-							<input name="score" type="number" class="rating" />
-							<input class="btn btn-primary" type="submit" value="提交评论" />
+							<div class="comment-form-score">
+								<input name="score" type="number" class="rating" />
+							</div>
+							<textarea name="content" class="form-control" rows="5" placeholder="评论内容"></textarea>
+							<p class="clearfix"><span class="pull-right commentLenLimit">0/{{ commentLenLimit }}</span></p>
+							<input class="btn btn-success" type="submit" value="提交评论" />
 						</form>
 						<ul class="row content-comment-list">
 							{% for commentInfo in commentInfoList %}
 							<li class="col-md-12 content-comment-item">
-								<div class="col-md-3 text-center">
-									<p>{{ commentInfo.user }}</p>
-									<p style="color: #A0A0A0;">{{ commentInfo.time|date:"Y-m-d H:i:s" }}</p>
+								<div class="col-md-3 text-center content-comment-item-left">
+									<h4><strong>{{ commentInfo.user }}</strong></h4>
+									<p class="content-comment-item-score">评分：<span>{{ commentInfo.score }}</span></p>
+									<p class="content-comment-item-time">{{ commentInfo.time|date:"Y-m-d H:i:s" }}</p>
 								</div>
-								<div class="col-md-9">
-									<p>评分：<span style="color: darkgoldenrod;">{{ commentInfo.score }}</span></p>
-									<p>评论内容：<span style="color: #A0A0A0;">{{ commentInfo.content }}</span></p>
+								<div class="col-md-9 content-comment-item-right">
+									<article>{{ commentInfo.content }}</article>
 								</div>
 							</li>
 							{% endfor %}
@@ -195,6 +168,18 @@
 					starCaptionClasses:function(val){
 						return "label label-info";
 					},
+				});
+				// 监听输入评论的字数限制
+				$("#commentToolForm [name='content']").keyup(function() {
+					var len = $(this).val().length;
+					var limit = parseInt("{{ commentLenLimit }}");
+					if (len > limit) {
+						$(this).val($(this).val().substring(0, limit));
+					}
+					if (len > limit) {
+						len = limit;
+					}
+					$("#commentToolForm .commentLenLimit").text(len+"/"+limit);
 				});
 				var idClipboard = new ClipboardJS("#copyID");
 				idClipboard.on('success', function(e) {

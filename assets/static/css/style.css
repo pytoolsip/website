@@ -297,3 +297,71 @@ label.error {
 	padding: 10px;
 	color: #686868;
 }
+/* detail content */
+.content-ex-tittle {
+	color: #A0A0A0;
+}
+.content-collection {
+	padding-top: 60px;
+}
+.content-content {
+	margin-top: 10px;
+	padding-top: 20px;
+	border-top: 2px #E1E1E1 solid;
+}
+.content-article {
+	margin: 20px 0px;
+	padding: 10px;
+	background-color: #F1F1F1;
+	border: 1px #E6E6E6 solid;
+}
+.content-comment {
+	padding-top: 40px;
+	margin-top: 40px;
+	border-top: 2px #CDCDCD solid;
+}
+.content-comment > form {
+	padding: 0px 10px;
+	padding-bottom: 20px;
+	background-color: lightcyan;
+	border: 1px #E1E1E1 solid;
+	border-radius: 4px;
+}
+.content-comment > form > .comment-form-score {
+	padding: 10px;
+}
+.content-comment > form > .comment-form-limit {
+	color: #898989;
+}
+.content-comment > form > .btn-success {
+	margin-top: 10px;
+}
+.content-comment-list {
+	margin-top: 40px;
+	border-top: 2px #CDCDCD solid;
+}
+.content-comment-item {
+	margin-top: 20px;
+	padding: 20px 0px;
+	background-color: #F1F1F1;
+	border: 2px #CDCDCD solid;
+	border-radius: 4px;
+}
+.content-comment-item-left {
+	border-right: 1px #CDCDCD solid;
+}
+.content-comment-item-score {
+	color:darkgreen;
+}
+.content-comment-item-score > span {
+	color:goldenrod;
+	font-size: 16px;
+}
+.content-comment-item-time {
+	color: #A0A0A0;
+}
+.content-comment-item-right > article {
+	font-size: 12px;
+	color:dimgray;
+	padding: 10px;
+}

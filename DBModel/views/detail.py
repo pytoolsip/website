@@ -82,6 +82,7 @@ def getResultByTkey(tkey):
         "HOME_TITLE": settings.HOME_TITLE,
         "HOME_URL": settings.HOME_URL,
         "HEAD_TITLE": "",
+        "commentLenLimit" : 600,
     };
     toolInfos = models.ToolDetail.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
@@ -164,6 +165,7 @@ def getResultByAid(aid):
         "HOME_TITLE": settings.HOME_TITLE,
         "HOME_URL": settings.HOME_URL,
         "HEAD_TITLE": "",
+        "commentLenLimit" : 600,
     };
     articleInfos = models.Article.objects.filter(id = aid, atype = ArticleType.Article.value).order_by('-time');
     if len(articleInfos) > 0:
