@@ -5,7 +5,7 @@ from utils import base_util;
 
 from _Global import _GG;
 
-from base import *
+from release.base import *
 
 # 上传新工具
 def uploadNew(request, userAuth, result, isSwitchTab):
@@ -100,13 +100,13 @@ def getOnlineInfoList(baseInfo):
 def searchTool(result, searchType, searchText, userAuth):
     searchNoneTips = "";
     if searchType == "name":
-        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(name__icontains = searchText, uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您未发布过名称包含为【{searchText}】工具，请重新搜索！";
     elif searchType == "tkey":
-        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(tkey = searchText, uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您未曾发布过ID为【{searchText}】工具，请重新搜索！";
     else:
-        toolInfoList = models.Tool.objects.filter(uid = userAuth.uid);
+        toolInfoList = models.Tool.objects.filter(uid = userAuth.uid).order_by('-time');
         searchNoneTips = f"您还未曾发布过工具到线上，请先上传新工具！";
     # 设置返回数据
     result["searchType"] = searchType;
@@ -122,6 +122,8 @@ def searchTool(result, searchType, searchText, userAuth):
         "score" : toolInfo.score or 0.0,
         "author" :  toolInfo.uid.name,
         "uploadTime" :  toolInfo.time,
+        "mkey" : "ol_article",
+        "aid" : toolInfo.aid.id,
     } for toolInfo in toolInfoList];
 
 # 审核工具
@@ -164,9 +166,17 @@ def releaseTool(t):
         tool.description = t.description;
         tool.time = t.time;
         tool.save();
+        # 更新工具详情
+        tool.aid.sketch = t.description;
+        tool.aid.save();
     except Exception as e:
+        # 保存工具详情
+        ac =  models.ArticleContent(content = "");
+        ac.save();
+        a = models.Article(uid = t.uid, title = t.name, sub_title = t.category, sketch = t.description, cid = ac, time = t.time, atype = ArticleType.Tool.value);
+        a.save();
         # 保存Tool
-        tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time);
+        tool = models.Tool(uid = t.uid, tkey = t.tkey, name = t.name, category = t.category, description = t.description, time = t.time, aid = a);
         tool.save();
     # 保存ToolDetail
     toolDetail = models.ToolDetail(tkey = tool, version = t.version, ip_base_version = t.ip_base_version, file_path = t.file_path, changelog = t.changelog, time = t.time);
@@ -201,6 +211,10 @@ def examOlTool(request, userAuth, result, isSwitchTab):
                 if request.POST["examType"] == "delete":
                     t.delete();
                     if len(models.ToolDetail.objects.filter(tkey = t.tkey)) == 0:
+                        # 删除正在审核的对应工具详情
+                        for a in models.ArticleExamination.objects.filter(title = t.tkey.name, sub_title = t.tkey.category):
+                            a.delete();
+                        # 删除工具
                         t.tkey.delete();
                     result["requestTips"] = f"工具【{t.tkey.tkey}，{t.version}】下架成功。";
                     # 发送邮件通知

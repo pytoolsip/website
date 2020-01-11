@@ -1,4 +1,7 @@
 {% if baseToolInfo %}
+<div style="margin-top: 10px; margin-bottom: -10px;">
+    <a id="goback" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span>返回上一级</a>
+</div>
 <h2>线上版本</h2>
 <table class="table table-striped">
     <thead>
@@ -91,16 +94,24 @@
     {% if isSearchNone %}
         <p class="text-center">{{searchNoneTips}}</p>
     {% endif %}
+    <ul>
     {% for toolInfo in toolInfoList %}
-        <div class="col-md-4 tool-info-item">
-            <div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
+    <li class="col-md-4" style="padding: 10px;">
+        <div class="tool-info-item">
+            <div class="tool-info-tittle">
+                <h3>{{ toolInfo.name }}</h3>
+                <p>[{{ toolInfo.category }}]</p>
+            </div>
             <p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
             <blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+            <p class="tool-info-detail"><a class="btn btn-default update-tool-detail-btn" href="javascript:void(0);" role="button" data-mkey="{{ toolInfo.mkey }}" data-target="{{ toolInfo.aid }}">更新工具详情</a></p>
             <p class="tool-info-detail"><a class="btn btn-info update-ol-tool-btn" href="javascript:void(0);" role="button" data-target="{{ toolInfo.tkey }}">更新工具版本</a></p>
             <p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
             <p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
         </div>
+    </li>
     {% endfor %}
+    </ul>
 </div>
 {% endif %}
 <script language="JavaScript">
@@ -145,9 +156,19 @@
         var $selectOption = $("#searchType").find("option[value='{{ searchType }}']");
         $selectOption.attr("selected",true); // 选中选项
         $("#searchText").val("{{ searchText }}"); // 搜索值
+        // 点击更新工具详情按钮
+        
+        // 点击更新文章按钮
+        $(".update-tool-detail-btn").on("click",function(){
+			requestManage({"mk" : $(this).attr("data-mkey"), "aid" : $(this).attr("data-target"), "opType" : "update"});
+		});
         // 点击更新工具按钮
         $(".update-ol-tool-btn").on("click",function(){
 			requestManage({"mk" : "{{mkey}}", "tkey" : $(this).attr("data-target")});
+        });
+        // 返回上一级
+        $("#goback").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "isSwitchTab" : "true"});
 		});
 	})
 </script>

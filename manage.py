@@ -5,11 +5,6 @@ import sys
 
 # import build; # 导入构建模块
 
-import _load as Loader;
-
-def load():
-    Loader.loadGlobalInfo(); # 加载全局变量
-
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'website.settings')
     try:
@@ -24,5 +19,4 @@ def main():
 
 
 if __name__ == '__main__':
-    load()
     main()

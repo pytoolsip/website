@@ -6,12 +6,27 @@ from django.http import JsonResponse
 from website import settings
 from DBModel import models
 
+from _Global import _GG;
+
 # 搜索页请求
 @csrf_exempt
 def search(request):
     select = request.POST.get("searchSelect", "name");
     text = request.POST.get("searchText", "");
-    result = {"HOME_URL": settings.HOME_URL, "isSearchNone" : False, "searchSelect" : select, "searchText" : text, "searchObject" : "工具", "toolInfoList" : [], "userInfoList" : []};
+    result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "搜索工具",
+        "isSearchNone" : False,
+        "searchSelect" : select,
+        "searchText" : text,
+        "searchObject" : "工具",
+        "toolInfoList" : [],
+        "userInfoList" : [],
+    };
     # 校验提交的数据
     if "searchSelect" not in request.POST:
         return render(request, "toollist.html", result);
@@ -45,7 +60,7 @@ def search(request):
 
 # 根据tkey获取工具信息
 def getToolInfoByTKey(tkey):
-    toolInfos = models.Tool.objects.filter(tkey = tkey);
+    toolInfos = models.Tool.objects.filter(tkey = tkey).order_by('-time');
     if len(toolInfos) > 0:
         toolInfo = toolInfos[0];
         return True, {
@@ -64,7 +79,7 @@ def getToolInfoByTKey(tkey):
 def getToolInfoListByUserName(name):
     userInfos = models.User.objects.filter(name = name);
     if len(userInfos) > 0:
-        toolInfoList = models.Tool.objects.filter(uid = userInfos[0]);
+        toolInfoList = models.Tool.objects.filter(uid = userInfos[0]).order_by('-time');
         return True, [{
             "name" : toolInfo.name,
             "category" : toolInfo.category,
@@ -79,17 +94,19 @@ def getToolInfoListByUserName(name):
 
 # 根据userName搜索玩家信息列表
 def serachUserInfoListByName(name):
-    userInfoList = models.User.objects.filter(name__icontains = name);
+    userInfoList = models.User.objects.filter(name__icontains = name).order_by('-time');
     if len(userInfoList) > 0:
         return True, [{
             "name" : userInfo.name,
             "email" : userInfo.email,
+            "img" : userInfo.img.url,
+            "bio" : userInfo.bio,
         } for userInfo in userInfoList];
     return False, [];
 
 # 根据toolName搜索工具信息列表
 def serachToolInfoListByName(name):
-    toolInfoList = models.Tool.objects.filter(name__icontains = name);
+    toolInfoList = models.Tool.objects.filter(name__icontains = name).order_by('-time');
     if len(toolInfoList) > 0:
         return True, [{
             "name" : toolInfo.name,

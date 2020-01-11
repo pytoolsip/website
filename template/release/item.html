@@ -1,6 +1,7 @@
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+<div id="allList" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
 	<div id="alertList">
 	</div>
+    <a id="sidebarToggleButton" class="sidebarToggle" href="javascript:void(0);"><span class="glyphicon glyphicon-menu-hamburger"></span>菜单栏</a>
 	<div id="contentList">
 		{% ifequal mkey "ptip_examination" %}
 			{% include "release/ptip_examination.html" %}
@@ -20,6 +21,9 @@
 		{% ifequal mkey "depend_lib" %}
 			{% include "release/ptip_depend.html" %}
 		{% endifequal %}
+		{% ifequal mkey "comment_examination" %}
+			{% include "release/comment_examination.html" %}
+		{% endifequal %}
 		{% ifequal mkey "pt_ol_examination" %}
 			{% include "release/tool_examination.html" %}
 		{% endifequal %}
@@ -32,6 +36,16 @@
 		{% endifequal %}
 		{% ifequal mkey "pt_ol_script" %}
 			{% include "release/ol_tool.html" %}
+		{% endifequal %}
+		
+		{% ifequal mkey "article_examination" %}
+			{% include "release/article/examination.html" %}
+		{% endifequal %}
+		{% ifequal mkey "article" %}
+			{% include "release/article/article_form.html" %}
+		{% endifequal %}
+		{% ifequal mkey "ol_article" %}
+			{% include "release/article/ol_article.html" %}
 		{% endifequal %}
 	</div>
 </div>
@@ -81,5 +95,17 @@
 				$(".manager-options").addClass("hidden");
 			}
 		}
-	})
+		// 切换左侧菜单栏的线上
+		$("#sidebarToggleButton").on("click", function(){
+			if ($("#sidebar").hasClass("hidden")) {
+				$("#sidebar").removeClass("hidden");
+				$("#allList").attr("class", "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2");
+				$("#contentList").attr("class", "");
+			} else {
+				$("#sidebar").addClass("hidden");
+				$("#allList").attr("class", "col-md-12");
+				$("#contentList").attr("class", "col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1");
+			}
+		});
+	});
 </script>

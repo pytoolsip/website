@@ -1,14 +1,40 @@
-<div class='container'>
-	<div class='row'>
-		<div class='dialog-background col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4'>
-			<form id='loginForm' class='login-form dialog-content' role='form' enctype='multipart/form-data'>
+<div class="container">
+	<div class="row">
+		<div id="alertList">
+		</div>
+		<div class="dialog-background col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+			<form id="loginForm" class="login-form dialog-content" role="form" enctype="multipart/form-data">
 				<h2>登陆PTIP发布后台</h2>
-				<input name='name' class='form-control' type='text' placeholder='用户名' required autofocus />
-				<input name='password' class='form-control' type='password' placeholder='密码' required />
-				<button class='btn btn-lg btn-success btn-block form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;登陆</button>
-				<div class='login-link clearfix'>
-					<a id='registerDialog' class='pull-left' href='javascript:void(0)'>注册用户</a>
-					<a id='resetDialog' class='pull-right' href='javascript:void(0)'>重置密码</a>
+				<ul id="loginNavTabs" class="nav nav-tabs nav-justified" role="tablist">
+					<li role="presentation" class="active"><a href="#pwdLogin" role="tab" data-toggle="tab">账号登陆</a></li>
+					<li role="presentation"><a href="#qrCodeLogin" role="tab" data-toggle="tab">二维码登陆</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="pwdLogin" class="tab-pane fade in active login-form" style="margin-top: 30px;">
+						<input name="name" class="form-control" type="text" placeholder="用户名" required autofocus />
+						<input name="password" class="form-control" type="password" placeholder="密码" required />
+						<label id="loginRemember"><input type="checkbox">&nbsp;记住用户</label>
+						<button class="btn btn-lg btn-success btn-block form-control" type="submit"><span class="glyphicon glyphicon-log-in"></span>&nbsp;登陆</button>
+					</div>
+					<div id="qrCodeLogin" class="tab-pane fade login-form" style="margin: 30px 0px;">
+						<div class="qrCodeContent">
+							<div class="qrCodeContentItem hidden" data-target="valid" style="margin: 40px 0px;">
+								<img id="qrCodeLoginImg" class="center-block" src="" alt="正在刷新二维码" width="80%" />
+								<p class="text-center" style="margin-top: 20px;color: #ABABAB;font-size: 10px;">*&nbsp;请打开【APP】，在【我的】页中点击扫描二维码。</p>
+							</div>
+							<div class="qrCodeContentItem hidden" data-target="invalid" style="margin: 100px 0px;">
+								<p class="text-center" style="margin: 20px 0px;color: #686868;"><span class="glyphicon glyphicon-warning-sign"></span>二维码已过期！</p>
+								<button id="qrCodeUpdateBtn" class="btn btn-md btn-default center-block" type="button"><span class="glyphicon glyphicon-refresh"></span>&nbsp;点击刷新</button>
+							</div>
+							<div class="qrCodeContentItem" data-target="loading" style="margin: 120px 0px;">
+								<p class="text-center" style="color: #686868;font-size: 14px;"><span class="glyphicon glyphicon-repeat"></span>正在加载二维码...</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="login-link clearfix">
+					<a id="registerDialog" class="pull-left" href="javascript:void(0)">注册用户</a>
+					<a id="resetDialog" class="pull-right" href="javascript:void(0)">重置密码</a>
 				</div>
 			</form>
 		</div>
@@ -16,10 +42,22 @@
 </div>
 <script language="JavaScript">
 	$(function(){
+		// 显示弹出信息
+		var showAlert = function(type, text) {
+			$("#alertList").append("<div class='alert alert-"+ type +"' role='alert'>\
+					<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>\
+					<span class='alertContent'>"+ text +"</span>\
+				</div>");
+		}
 		var tips = "{{requestFailedTips}}";
 		if (tips != "") {
-			logoutManage(); // 登陆发布后台
-			alert(tips);
+			logoutManage(); // 登出发布后台
+			showAlert("danger", tips);
+		} else {
+			tips = "{{requestTips}}";
+			if (tips != "") {
+				showAlert("success", tips);
+			}
 		}
 		// 更新用户名
 		$("#userName").text("用户名");
@@ -31,6 +69,8 @@
 		if (!$("#sidebar").hasClass("hidden")) {
 			$("#sidebar").addClass("hidden");
 		}
+		// 新建登陆Socket
+		var loginWs = createLoginSocket();
 		// 登陆校验
 		$("#loginForm").validate({
 			rules: {
@@ -50,18 +90,15 @@
 				},
 			},
 			submitHandler: function() {
-				loginIP(window.location.href, "loginForm", false, function(){
+				loginIP("loginForm", function(){
 					requestManage({});
+					if (loginWs != null) {
+						loginWs.close(); // 关闭socket
+					}
 				});
 			}
 		});
-		// 绑定注册超链接的点击事件
-		$("#registerDialog").on("click",function(){
-			createRegisterDialog();
-		});
-		// 绑定更新密码超链接的点击事件
-		$("#resetDialog").on("click",function(){
-			createResetDialog();
-		});
+		// 初始化登陆事件
+		initLoginEvent(loginWs);
 	})
 </script>

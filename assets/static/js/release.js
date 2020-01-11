@@ -1,9 +1,6 @@
 $(function(){
     // 请求管理后台
     requestCallback = function(data, callback){
-        var userInfo = getUserLoginInfo();
-        data.uname = userInfo.name;
-        data.upwd = encodeStr(userInfo.pwd);
         $.post(window.location.href, data, function(data, status){
             if (status == "success") {
                 $("#mainContent").html(data);
@@ -43,8 +40,9 @@ $(function(){
     // 登出管理后台
     logoutManage = function(){
         // 重置玩家的登录信息
-        setUserLoginInfo(null, null, 0);
-        requestManage({});
+        logoutIP(null, function(){
+            requestManage({});
+        });
     }
     // 点击登出
     $("#logoutButton").on("click",function(){

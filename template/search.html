@@ -1,46 +1,59 @@
 
-<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
-	<div class="row">
-		<div class="col-md-6 col-md-offset-3">
-			<h4 class="text-center">PyToolsIP Tools Search</h4>
-			<form id="searchForm" class="input-group" role="form" enctype="multipart/form-data">
-				<div class="input-group-btn form-group">
-					<select id="searchSelect" name="searchSelect" class="form-control" style="width: auto;">
-						<option value="name">名称</option>
-						<option value="id">ID</option>
-						<option value="author">作者</option>
-					</select>
-				</div>
-				<input name="searchText" type="text" placeholder="Search" class="form-control" value="{{searchText}}">
-				<div class="input-group-btn">
-					<button type="submit" class="btn btn-success">Search</button>
-				</div>
-			</form>
+<div id="allList" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 content">
+    <a id="sidebarToggleButton" class="sidebarToggle" href="javascript:void(0);"><span class="glyphicon glyphicon-menu-hamburger"></span>菜单栏</a>
+    <div id="contentList">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<h4 class="text-center">PyToolsIP Tools Search</h4>
+				<form id="searchForm" class="input-group" role="form" enctype="multipart/form-data">
+					<div class="input-group-btn form-group">
+						<select id="searchSelect" name="searchSelect" class="form-control" style="width: auto;">
+							<option value="name">名称</option>
+							<option value="id">ID</option>
+							<option value="author">作者</option>
+						</select>
+					</div>
+					<input name="searchText" type="text" placeholder="Search" class="form-control" value="{{searchText}}">
+					<div class="input-group-btn">
+						<button type="submit" class="btn btn-success">Search</button>
+					</div>
+				</form>
+			</div>
 		</div>
-	</div>
-	
-	<div id="searchResult">
-		{% if isSearchNone %}
-			<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
-		{% endif %}
-		{% for toolInfo in toolInfoList %}
-			<div class="col-md-4">
-				<div class="tool-info-item">
-					<div class="tool-info-tittle"><h3>{{ toolInfo.name }}</h3><span>&nbsp;[{{ toolInfo.category }}]</span></div>
-					<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
-					<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
-					<p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
-					<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
-					<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+		
+		<div id="searchResult">
+			{% if isSearchNone %}
+				<p class="text-center">未搜索到[<b id="searchSelectOption"></b>]为&nbsp;<span style="color: red;">{{searchText}}</span>&nbsp;的{{searchObject}}&nbsp;~</p>
+			{% endif %}
+			{% for toolInfo in toolInfoList %}
+				<div class="col-md-6 col-lg-4">
+					<div class="tool-info-item">
+						<div class="tool-info-tittle">
+							<h3>{{ toolInfo.name }}</h3>
+							<p>[{{ toolInfo.category }}]</p>
+						</div>
+						<p class="tool-info-id">ID:&nbsp;<span>{{ toolInfo.tkey }}</span></p>
+						<blockquote class="tool-info-desc">{{ toolInfo.description }}</blockquote>
+						<p class="tool-info-detail"><a class="btn btn-info" href="{{ HOME_URL }}/detail?t={{ toolInfo.tkey }}" target="_blank" role="button">点击查看详情&nbsp;&raquo;</a></p>
+						<p class="tool-info-ex-info"><span>下载量：{{ toolInfo.downloadCount }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>评分：{{ toolInfo.score }}</span></p>
+						<p class="tool-info-ex-info"><span>上传者：{{ toolInfo.author }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span>上传时间：{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</span></p>
+					</div>
 				</div>
-			</div>
-		{% endfor %}
-		{% for userInfo in userInfoList %}
-			<div class="col-md-4 tool-info-item">
-				<div class="tool-info-tittle"><h3>{{ userInfo.name }}</h3><span>&nbsp;[{{ userInfo.email }}]</span></div>
-				<a class="btn btn-info request-author-tools" href="javascript:void(0);" role="button" data-target="{{ userInfo.name }}">查看该用户上传的工具&nbsp;&raquo;</a>
-			</div>
-		{% endfor %}
+			{% endfor %}
+			{% for userInfo in userInfoList %}
+				<div class="col-md-6 col-lg-4 tool-info-item">
+					<div class="user-info-tittle">
+						{% if userInfo.img %}
+						<img class="user-info-img img-responsive" src="{{userInfo.img}}" />
+						{% endif %}
+						<div class="user-info-name"><strong>{{ userInfo.name }}</strong></div>
+					</div>
+					<p class="user-info-email">Email:&nbsp;{{ userInfo.email }}</p>
+					<blockquote class="tool-info-desc">{{ userInfo.bio }}</blockquote>
+					<a class="btn btn-info request-author-tools" href="javascript:void(0);" role="button" data-target="{{ userInfo.name }}">查看该用户上传的工具&nbsp;&raquo;</a>
+				</div>
+			{% endfor %}
+		</div>
 	</div>
 </div>
 <script language="JavaScript">
@@ -64,6 +77,18 @@
 				"searchSelect" : "author",
 				"searchText" : $(this).attr("data-target"),
 			});
+		});
+		// 切换左侧菜单栏的线上
+		$("#sidebarToggleButton").on("click", function(){
+			if ($("#sidebar").hasClass("hidden")) {
+				$("#sidebar").removeClass("hidden");
+				$("#allList").attr("class", "col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2");
+				$("#contentList").attr("class", "");
+			} else {
+				$("#sidebar").addClass("hidden");
+				$("#allList").attr("class", "col-md-12");
+				$("#contentList").attr("class", "col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1");
+			}
 		});
 	})
 </script>

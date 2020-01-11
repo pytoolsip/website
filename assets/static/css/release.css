@@ -4,13 +4,21 @@ a{
 a:hover{
     color: #428BCA;
 }
+.sidebarToggle {
+    position: fixed;
+    top: 58px;
+    z-index: 1000;
+    display: block;
+    color: #ABABAB;
+}
 .sidebar {
     position: fixed;
-    top: 51px;
+    top: 52px;
     bottom: 0;
     z-index: 1000;
     display: block;
     padding: 20px;
+    padding-top: 30px;
     overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
     background-color: #F5F5F5;
     border-right: 1px solid #EEEEEE;

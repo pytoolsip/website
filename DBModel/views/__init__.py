@@ -4,6 +4,11 @@ from django.http import JsonResponse
 
 from DBModel import models
 
+# 加载全局变量
+import _load as Loader;
+Loader.loadGlobalInfo();
+
+
 import os,sys;
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__));
@@ -14,11 +19,12 @@ __all__ = ["home", "search", "detail", "userinfo", "release", "reqinfo", "toolli
 try:
     from home import home;
     from search import search;
-    from detail import detail;
-    from userinfo import userinfo;
+    from detail import detail, article;
+    from userinfo import userinfo, checkLogined;
     from release import release;
     from reqinfo import reqinfo;
     from toollist import toollist;
+    from articlelist import articlelist;
 
 except Exception as e:
 	raise e;

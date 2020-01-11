@@ -1,4 +1,6 @@
 
+from django.core.cache import cache
+import django.utils.timezone as timezone
 from django.core.mail import send_mail
 from DBModel import models
 from website import settings
@@ -6,6 +8,11 @@ from website import settings
 from _Global import _GG;
 
 from enum import Enum;
+
+# 上传状态穷举值
+class ArticleType(Enum):
+    Article = 0 # 文章
+    Tool    = 1 # 工具详情
 
 # 上传状态穷举值
 class Status(Enum):
@@ -27,3 +34,52 @@ def sendToEmails(msg, emails):
     except Exception as e:
         _GG("Log").e("邮件发送失败!", e);
     return False;
+
+def sendNotice(user, opUser, opType, msg, article = None):
+    # 保存通知数据
+    n = models.Notice(uid = user, opuid = opUser, optype = opType, content = msg, time = timezone.now(), aid = article);
+    n.save();
+    # 更新最新通知
+    updateLatestNotice(n);
+    # 发送通知
+    appIdKey = f"pytoolsip_app_id_{user.id}";
+    if cache.has_key(appIdKey):
+        appId = cache.get(appIdKey);
+        consumer = _GG("ConsumerMgr").getAppConsumer(appId);
+        if consumer != None:
+            result = {
+                "noticeType": "ptip",
+                "opUser": {
+                    "name" : opUser.name,
+                    "img" : opUser.img and opUser.img.url or "/pytoolsip/static/img/dzjh-icon.png",
+                },
+                "content": msg,
+            };
+            if article:
+                if article.atype == ArticleType.Tool.value:
+                    result["noticeType"] = "tool";
+                    result["tool"] = {
+                        
+                    };
+                else:
+                    result["noticeType"] = "article";
+                    result["article"] = {
+
+                    };
+            consumer.notice();
+    pass;
+
+# 更新最新通知
+def updateLatestNotice(notice):
+    targetId = -1;
+    if notice.aid:
+        targetId = notice.aid.id;
+    latestNotices = models.NoticeLatest.objects.filter(uid = notice.uid, tgid = targetId);
+    if len(latestNotices) > 0:
+        for latestNotice in latestNotices:
+            latestNotice.latest_nid = notice;
+            latestNotice.save();
+    else:
+        n = models.NoticeLatest(uid = notice.uid, tgid = targetId, latest_nid = notice, time = timezone.now());
+        n.save();
+    pass;

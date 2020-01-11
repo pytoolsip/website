@@ -1,56 +1,37 @@
-{% ifequal mkey "pt_ol_examination" %}
-<h2>工具下架</h2>
-{% else %}
-<h2>工具审核</h2>
-{% endifequal %}
+<h2>文章审核</h2>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>工具名</th>
-            <th>所属类别</th>
-            <th>工具ID</th>
-            <th>工具描述</th>
-            <th>版本号</th>
-            <th>更新日志</th>
+            <th>标题</th>
+            <th>内容</th>
             <th>发布时间</th>
-            <th>操作</th>
+            <th>确认审核</th>
         </tr>
     </thead>
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
-            <th>{{ olInfo.name }}</th>
-            <th>{{ olInfo.category }}</th>
-            <th>{{ olInfo.tkey }}</th>
-            <th>{{ olInfo.description }}</th>
-            <th>{{ olInfo.version }}</th>
-            <th>{{ olInfo.changelog }}</th>
+            <th><a class="article-detail" href="javascript:void(0);" data-target="{{ olInfo.id }}" title="{{ olInfo.title }}" style="text-decoration: underline;">
+                {{ olInfo.title }}
+                {% if articleInfo.subTitle %}
+                [{{ articleInfo.subTitle }}]
+                {% endif %}
+            </a></th>
+            <th>{{ olInfo.sketch }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>
                 {% if isManager %}
-                    {% if isReleased %}
-                        <a class="btn btn-danger examination" name="delete" data-target="{{ olInfo.id }}">下架</a>
-                    {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
-                        <a class="btn btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
-                    {% endif %}
+                    <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
+                    <a class="btn btn-success examination" name="release" data-target="{{ olInfo.id }}">发布</a>
                 {% else %}
-                    {% if isReleased %}
-                        已发布
-                    {% else %}
-                        <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
-                    {% endif %}
+                    <a class="btn btn-danger examination" name="withdraw" data-target="{{ olInfo.id }}">撤回</a>
                 {% endif %}
             </th>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{% ifequal mkey "pt_ol_examination" %}
-<p id="noExamingTool" class="text-center hidden">目前暂无已发布的工具版本~</p>
-{% else %}
-<p id="noExamingTool" class="text-center hidden">目前暂无需审核的工具版本~</p>
-{% endifequal %}
+<p id="noExamination" class="text-center hidden">目前暂无已发布的文章~</p>
 <script language="JavaScript">
 	$(function(){
         var requestManageByExamType = function(examType, id, reason, callback) {
@@ -95,7 +76,7 @@
         });
         // 判断是否显示无审核版本的提示
         if ($(".table>tbody>tr").length == 0) {
-            $("#noExamingTool").removeClass("hidden");
+            $("#noExamination").removeClass("hidden");
         }
 	});
 </script>

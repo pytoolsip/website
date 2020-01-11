@@ -18,8 +18,10 @@ sys.path.append(CURRENT_PATH);
 try:
     import ptip;
     import depend;
+    import comment;
     import tool;
     import installer;
+    import article;
 except Exception as e:
 	raise e;
 finally:
@@ -27,30 +29,34 @@ finally:
 
 # 平台键值列表
 PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
-# 工具键值列表
-PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script"];
+# 工具/文章键值列表
+PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article", "comment_examination"];
 
 # 后台管理页请求
 @csrf_exempt
+@userinfo.checkLogined
 def release(request):
-    _GG("Log").d("release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
+    _GG("Log").d(request.method, "release get :", request.GET, "release post :", request.POST, "release files :", request.FILES);
     # 判断是否校验
     if "isVerify" in request.POST:
         return verify(request);
-    # 登陆平台
-    loginInfo = loginIP(request);
-    if loginInfo != None:
-        return loginInfo;
+    # 返回消息
+    ret = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
+        "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "PyToolsIP-发布平台",
+    };
     # 判断是否已登陆
-    if "uname" not in request.POST or "upwd" not in request.POST:
-        return render(request, "release/index.html", {"HOME_URL": settings.HOME_URL});
+    if request.method == 'GET':
+        return render(request, "release/index.html", ret);
     # 获取登陆玩家
-    userAuth = userinfo.getLoginUserAuth(request.POST["uname"], request.POST["upwd"]);
+    userAuth = request.userAuth;
     if not userAuth:
         # 返回登陆页面信息
-        ret = {"HOME_URL": settings.HOME_URL};
-        if request.POST["uname"] and request.POST["upwd"]:
-            ret = {"requestFailedTips" : "登陆信息已过期！"};
+        ret["HEAD_TITLE"] = "PyToolsIP-登陆发布平台";
         return render(request, "release/login.html", ret);
     # 是否切换Tab
     isSwitchTab = base_util.getPostAsBool(request, "isSwitchTab");
@@ -66,14 +72,6 @@ def release(request):
         isSwitchTab = True;
     # 返回管理项的内容
     return render(request, "release/item.html", getReleaseResult(request, userAuth, mkey, isSwitchTab));
-
-# 登陆平台
-def loginIP(request):
-    # 判断是否请求登陆
-    if base_util.getPostAsBool(request, "isLogin"):
-        loginInfo = userinfo.getLoginInfo(request.POST.get("uname", ""), upwd = request.POST.get("upwd", ""), isLogin = True);
-        return JsonResponse(loginInfo);
-    return None;
 
 # 校验逻辑
 def verify(request):
@@ -98,7 +96,12 @@ def verify(request):
 def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     # 返回页面内容
     result = {
+        "MAIN_HOME_TITLE":settings.MAIN_HOME_TITLE,
+        "MAIN_HOME_URL":settings.MAIN_HOME_URL,
+        "RESOURCE_URL" : settings.RESOURCE_URL,
+        "HOME_TITLE": settings.HOME_TITLE,
         "HOME_URL": settings.HOME_URL,
+        "HEAD_TITLE": "PyToolsIP-发布平台",
         "mkey" : mkey,
         "userInfo" : { # 用户信息
             "name":userAuth.uid.name,
@@ -119,6 +122,8 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
         depend.uploadDepend(request, userAuth, result, isSwitchTab);
     elif mkey == "ptip_exe": # 更新平台启动/更新程序
         depend.uploadExe(request, userAuth, result, isSwitchTab);
+    elif mkey == "comment_examination": # 审核评论
+        comment.examComment(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_ol_examination": # 审核线上工具
         tool.examOlTool(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_examination": # 审核工具
@@ -128,8 +133,14 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
     elif mkey == "pt_ol_script": # 更新线上工具脚本
         tkey = request.POST.get("tkey", "");
         if tkey:
-            tool.uploadOl(request, userAuth, tkey, result, isSwitchTab)
+            tool.uploadOl(request, userAuth, tkey, result, isSwitchTab);
         else:
             # 搜索工具信息数据
             tool.searchTool(result, request.POST.get("searchType", ""), request.POST.get("searchText", ""), userAuth);
+    elif mkey == "article": # 发布文章
+        article.uploadArticle(request, userAuth, result, isSwitchTab);
+    elif mkey == "article_examination": # 审核文章
+        article.examArticle(request, userAuth, result, isSwitchTab);
+    elif mkey == "ol_article": # 更新/下线已发布文章/工具详情
+        article.updateOlArticle(request, userAuth, result, isSwitchTab);
     return result;

@@ -1,0 +1,104 @@
+{% if isEdit %}
+    <div style="padding: 0px 20px;">
+        <a id="goback" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span>返回上一级</a>
+    </div>
+    {% include "release/article/article_form.html" %}
+{% else %}
+<form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;搜索您所发布的&nbsp;文章/工具详情&nbsp;-
+    </h3>
+    <div class="input-group">
+        <input id="searchText" name="searchText" type="text" placeholder="搜索文章名/工具名" class="form-control">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+    </div>
+</form>
+<div id="searchResult" class="col-sm-12 col-md-offset-1 col-md-10" style="margin-bottom: 20px;">
+    {% if isSearchNone %}
+        <p class="text-center">{{searchNoneTips}}</p>
+    {% endif %}
+    <ul>
+    {% for articleInfo in onlineInfoList %}
+        <li class="col-md-4" style="padding: 10px;">
+            <div class="tool-info-item">
+                <h3 class="tool-info-tittle">{{ articleInfo.title }}</h3>
+                {% if articleInfo.subTitle %}
+                <p class="tool-info-id">[{{ articleInfo.subTitle }}]</p>
+                {% endif %}
+                <div class="tool-info-description">
+                    <img class="img-responsive center-block" src="{{articleInfo.thumbnail}}" />
+                    <blockquote class="tool-info-desc mixed-height">{{ articleInfo.sketch }}</blockquote>
+                </div>
+                {% ifequal articleInfo.atype 0 %}
+                <p class="tool-info-detail"><a class="btn btn-danger delete-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">删除文章</a></p>
+                {% endifequal %}
+                {% ifequal articleInfo.atype 1 %}
+                <p class="tool-info-detail"><a class="btn btn-info update-ol-article-btn" href="javascript:void(0);" role="button" data-target="{{ articleInfo.id }}">更新工具详情</a></p>
+                {% endifequal %}
+                <p class="tool-info-ex-info">
+                    &nbsp;
+                    <span>
+                        [
+                        {% ifequal articleInfo.atype 0 %}
+                        文章
+                        {% endifequal %}
+                        {% ifequal articleInfo.atype 1 %}
+                        工具
+                        {% endifequal %}
+                        ]
+                    </span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>上传者：{{ articleInfo.author }}</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i" }}</span>
+                </p>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+<script language="JavaScript">
+	$(function(){
+        // 搜索表单
+        $("#searchForm").validate({
+            submitHandler: function() {
+                uploadManageForm($("#searchForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        // 搜索值
+        $("#searchText").val("{{ searchText }}");
+        // 点击删除文章按钮
+        $(".delete-ol-article-btn").on("click",function(){
+            var aid = $(this).attr("data-target");
+            // 创建弹窗
+            createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
+                            <h2>是否确认删除？</h2>\
+                            <blockquote style='color: red;'>注意：删除后无法还原，请谨慎操作！</blockquote>\
+                            <div class='clearfix'>\
+                                <button id='cancelOperation' class='btn btn-lg btn-default pull-left'>取消</button>\
+                                <button id='submitOperation' class='btn btn-lg btn-info pull-right'>确定</button>\
+                            </div>\
+                        </form>");
+            $("#cancelOperation").on("click",function(){
+                closeDialogPage(); // 关闭弹窗
+            });
+            $("#submitOperation").on("click",function(){
+                requestManage({"mk" : "{{mkey}}", "aid" : aid, "opType" : "delete"});
+                closeDialogPage(); // 关闭弹窗
+            });
+		});
+        // 点击更新文章按钮
+        $(".update-ol-article-btn").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "aid" : $(this).attr("data-target"), "opType" : "update"});
+		});
+        // 返回上一级
+        $("#goback").on("click",function(){
+			requestManage({"mk" : "{{mkey}}", "isSwitchTab" : "true"});
+		});
+	})
+</script>

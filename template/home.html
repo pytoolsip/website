@@ -6,21 +6,53 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="PyToolsIP[Python工具集成平台]">
-		<meta name="author" content="JimDreamHeart">
-		<title>PyToolsIP</title>
+		<meta name="author" content="JDreamHeart">
+		<title>{{ HEAD_TITLE }}</title>
 		<link rel="shortcut icon" href={% static "icon/dzjh.ico" %} type="image/x-icon" />
-		<link rel="stylesheet" href="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" href={% static "css/style.css" %} />
 		<style>
-			.col-md-12>h2{
-				padding: 10px 0px;
-				margin-bottom: 20px;
-				background-color: #CDCDCD;
-			}
-			#downloadList{
-				padding-bottom: 20px;
+			.recommend-content {
+				padding: 0px;
+				padding-bottom: 40px;
 				margin-bottom: 40px;
-				border-bottom: 1px #DCDCDC solid;
+				background-color: #F1F1F1;
+			}
+			.recommend-content > h2 {
+				font-weight: bolder;
+				color: darkgreen;
+				margin-top: 0px;
+				padding: 10px 4px;
+				margin-bottom: 40px;
+				border-bottom: 4px #DCDCDC solid;
+				background-color: #FFFFFF;
+			}
+			.recommend-content > h2 > a {
+				margin-top: 10px;
+				padding: 2px 4px;
+				font-size: 12px;
+			}
+			#ptipVersionList {
+				margin-top: 40px;
+				padding: 0px;
+				border: 2px #CDCDCD solid;
+				border-radius: 4px;
+			}
+			#ptipVersionList > h2 {
+				margin: 0px;
+				padding: 16px 4px;
+				margin-bottom: 20px;
+				font-weight: bolder;
+				color: darkgreen;
+				background-color: #CDCDCD;
+				border-bottom: 1px #BCBCBC solid;
+				border-radius: 2px 2px 0px 0px;
+			}
+			.recommend-content li {
+				padding: 20px;
+			}
+			.recommend-content li > a, .recommend-content li > a:hover, .recommend-content li > a:link, .recommend-content li > a:visited, .recommend-content li > a:active {
+				color: #000000;
 			}
 		</style>
 	</head>
@@ -28,22 +60,21 @@
 		<header id = "header">
 			<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 				<div class="ptip-navbar">
-					<a class="navbar-brand" href="http://jimdreamheart.club" title="DzjH">DzjH</a>
+					<a class="navbar-brand" href="{{ MAIN_HOME_URL }}" title="{{ MAIN_HOME_TITLE }}"><img class="main-home-icon img-responsive" src={% static "img/home-icon.png" %} />{{ MAIN_HOME_TITLE }}</a>
 					<a class="navbar-brand pull-right" href="{{ HOME_URL }}/release" target="_blank" title="发布后台">发布后台</a>
 				</div>
 				<div class="container">
 					<div class="container-fluid navbar-header">
-						<a class="navbar-brand" href="{{ HOME_URL }}" title="首页">PyToolsIP</a>
+						<a class="navbar-brand" href="{{ HOME_URL }}" title="{{ HOME_TITLE }}">{{ HOME_TITLE }}</a>
 						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#searchNavCollapse">
 							<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
 						</button>
 					</div>
 					<div id="searchNavCollapse" class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
-							<li><a href="{{ HOME_URL }}/toollist?k=all" title="所有工具">所有工具</a></li>
-							<li><a href="{{ HOME_URL }}/toollist?k=development" title="开发工具">开发工具</a></li>
-							<li><a href="{{ HOME_URL }}/toollist?k=product" title="产品工具">产品工具</a></li>
-							<li><a href="{{ HOME_URL }}/toollist?k=entertainment" title="娱乐工具">娱乐工具</a></li>
+							<li><a href="#ptipVersionList" title="平台版本">平台版本</a></li>
+							<li><a href="{{ HOME_URL }}/toollist" title="工具列表">工具列表</a></li>
+							<li><a href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a></li>
 						</ul>
 						<form action="{{ HOME_URL }}/toollist?k=all" class="navbar-form navbar-right" method="POST">
 							<input name="searchText" type="text" placeholder="搜索工具名称" class="form-control">
@@ -58,6 +89,9 @@
 					<div class="jumbotron-content">
 						<p>本平台基于<a href="https://wxpython.org/" target="_blank" title="wxpython"><b>wxPython</b></a>框架开发，包含<b>Python3.7</b>版本运行库，旨在提供用户以可视化界面来使用<b>Python工具</b>。</p>
 						<p>在使用工具时，除了可使用本平台自带的工具外，还允许<b>用户开发自定义功能</b>的工具，而用户可选择将所开发的工具上传到本平台，以共享给其他人下载使用。</p>
+						<div class="jumbotron-ex-content">
+							<p><span>工具数：{{ toolTotalCount }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span>文章数：{{ articleTotalCount }}</span></p>
+						</div>
 					</div>
 					<ul class="jumbotron-btn-group">
 						{% if isHasNewestInstaller %}
@@ -69,14 +103,25 @@
 						{% else %}
 						<li><a class="btn btn-primary btn-lg" href="javascript:void(0);" role="button" title="" disabled>暂无安装程序下载</a></li>
 						{% endif %}
-						<li><a class="btn btn-default btn-lg" href="http://jimdreamheart.club/pytoolsip/wiki" target="_blank" role="button"><span class="glyphicon glyphicon-book"></span>&nbsp;平台文档</a></li>
+						<li><a class="btn btn-default btn-lg" href="{{ WIKI_URL }}" target="_blank" role="button"><span class="glyphicon glyphicon-book"></span>&nbsp;平台文档</a></li>
 					</ul>
 				</div>
 			</div>
 		</header>
 		<div id="mainContent" class="container">
 			<div class="row">
-				<div class="col-md-12">
+				<div class="col-md-12 recommend-content">
+					<h2 class="clearfix">
+						今日推荐
+						<a id="refreshRecommendList" class="btn btn-default pull-right" href="javascript:void(0)">换一批&nbsp;<span class="glyphicon glyphicon-refresh"></span></a>
+					</h2>
+					<ul id="recommendList">
+						{% if recommendData.htmlData %}
+							{{ recommendData.htmlData | safe }}
+						{% endif %}
+					</ul>
+				</div>
+				<div id="ptipVersionList" class="col-md-12">
 					<h2>平台版本列表</h2>
 					<div class="table-responsive">
 						<table class="table table-striped">
@@ -102,22 +147,43 @@
 			</div>
 		</div>
 		<div class="fixdRight">
+			<div id="feedback"><a class="btn btn-default text-center" href="javascript:void(0);" title="反馈">反馈</a></div>
 			<div id="user"><a class="btn btn-default text-center" href="javascript:void(0);" title="个人中心"><span class="glyphicon glyphicon-user"></span></a></div>
 			<div id="toTop"><a href="javascript:void(0);" title="回到顶部">╱╲</a></div>
 		</div>
 		<footer>
 			<div class="container">
 				<span>Copyright &copy; 2019 </span>
-				<a href="https://github.com/JimDreamHeart" title="关于JimDreamHeart">梦心DH</a>
+				<a id="aboutDzjH" href="javascript:void(0);" title="关于JDreamHeart">梦心DH</a>
 			</div>
 		</footer>
-		<script src="http://jimdreamheart.club/resource/jquery/jquery-3.4.0.min.js"></script>
-		<script src="http://jimdreamheart.club/resource/jquery/jquery.cookie.js"></script>
-		<script src="http://jimdreamheart.club/resource/jquery/jquerysession.js"></script>
-		<script src="http://jimdreamheart.club/resource/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-        <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
-        <script src="http://jimdreamheart.club/resource/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
-		<script src="http://jimdreamheart.club/resource/jsencrypt/jsencrypt.min.js"></script>
+		<script src="{{ RESOURCE_URL }}/jquery/jquery-3.4.0.min.js"></script>
+		<script src="{{ RESOURCE_URL }}/jquery/jquery.cookie.js"></script>
+		<script src="{{ RESOURCE_URL }}/jquery/jquerysession.js"></script>
+		<script src="{{ RESOURCE_URL }}/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+        <script src="{{ RESOURCE_URL }}/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+        <script src="{{ RESOURCE_URL }}/jquery-validation-1.14.0/dist/localization/messages_zh.js"></script>
+		<script src="{{ RESOURCE_URL }}/jsencrypt/jsencrypt.min.js"></script>
 		<script src={% static "js/main.js" %}></script>
+        <script src={% static "js/ws.js" %}></script>
+		<script language="JavaScript">
+			$(function(){
+				if (typeof onInitCompleteFunc == "function") {
+                    onInitCompleteFunc();
+                }
+				var rlStartIdx = "{{ recommendData.startIdx }}";
+				$("#refreshRecommendList").on("click", function(){
+					$.post(window.location.href, {
+						isGetRecommendData : true,
+						rlStartIdx : rlStartIdx,
+					}, function(data, status){
+						if (status == "success") {
+							$("#recommendList").html(data.htmlData);
+							rlStartIdx = data.startIdx;
+						}
+					});
+				});
+			});
+		</script>
 	</body>
 </html>

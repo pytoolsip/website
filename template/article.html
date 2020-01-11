@@ -12,6 +12,15 @@
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-3.3.7-dist/css/bootstrap.min.css" />	
 		<link rel="stylesheet" href="{{ RESOURCE_URL }}/bootstrap-star-rating/css/star-rating.min.css" />
 		<link rel="stylesheet" href= {% static "css/style.css" %} />
+		<style>
+			.content-img {
+				height: 100px;
+				margin-bottom: 10px;
+			}
+			.content-collection {
+				padding-top: 40px;
+			}
+		</style>
 	</head>
 	<body>
 		<header id = "header">
@@ -29,8 +38,8 @@
 					</div>
 					<div id="searchNavCollapse" class="navbar-collapse collapse">
 						<ul class="nav navbar-nav">
-							<li><a href="{{ HOME_URL }}/toollist" title="工具列表">工具列表</a></li>
-							<li><a href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a></li>
+                            <li><a href="{{ HOME_URL }}/toollist" title="工具列表">工具列表</a></li>
+                            <li><a href="{{ HOME_URL }}/articlelist" title="文章列表">文章列表</a></li>
 						</ul>
 						<form action="{{ HOME_URL }}/toollist?k=all" class="navbar-form navbar-right" method="POST">
 							<input name="searchText" type="text" placeholder="搜索工具名称" class="form-control">
@@ -42,28 +51,23 @@
 		</header>
 		
 		<div id="mainContainer" class="container">
-			{% if hasTool %}
+			{% if hasArticle %}
 			<div class="row">
 				<div class="col-md-8">
 					<div class="content-title">
-						<h2>{{ baseInfo.name }}</h2>
-						<p>[{{ baseInfo.category }}]</p>
+                        <h2>{{ articleInfo.title }}</h2>
+                        {% if articleInfo.subTitle %}
+                        <p>[{{ articleInfo.subTitle }}]</p>
+                        {% endif %}
+                    </div>
+					<div class="col-md-12">
+						<img class="content-img img-responsive thumbnail" src="{{ articleInfo.thumbnail }}"/>
 					</div>
-					<h4>
-						ID:&nbsp;&nbsp;
-						<span id="IDText" style="color: green;">{{ baseInfo.tkey }}</span>
-						<button id="copyID" class="btn btn-xs btn-default" data-clipboard-target="#IDText">复制</button>
-					</h4>
-					<blockquote>{{ baseInfo.description }}</blockquote>
 					<p class="content-ex-tittle">
-						<span>上传者：{{ baseInfo.author }}</span>
+						<span>上传者：{{ articleInfo.author }}</span>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>评分：{{ baseInfo.score }}</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>总下载量：{{ baseInfo.downloadCount }}</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span>最近上传时间：{{ baseInfo.time|date:"Y-m-d H:i:s" }}</span>
-					</p>
+						<span>上传时间：{{ articleInfo.time|date:"Y-m-d H:i:s" }}</span>
+                    </p>
 				</div>
 				<div class="col-md-4 text-center content-collection">
 					<a id="collectTool" class="btn btn-lg btn-primary hidden" href="javascript:void(0);" title="点击收藏">
@@ -75,32 +79,8 @@
 				</div>
 				<div class="col-md-12 content-content">
 					<article class="content-article">
-						{{ baseInfo.content | safe }}
+                        {{ articleInfo.content | safe }}
 					</article>
-					<div class="table-responsive">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>版本号</th>
-									<th>平台基础版本</th>
-									<th>更新日志</th>
-									<th>上传时间</th>
-									<th>下载</th>
-								</tr>
-							</thead>
-							<tbody>
-								{% for toolInfo in toolInfoList %}
-								<tr>
-									<td>{{ toolInfo.version }}</td>
-									<td>{{ toolInfo.IPBaseVersion }}</td>
-									<td>{{ toolInfo.changelog }}</td>
-									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
-									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
-								</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
 					<div class="content-comment">
 						<form id="commentToolForm" role="form" enctype="multipart/form-data" method="POST">
 							<div class="comment-form-score">
@@ -124,7 +104,7 @@
 							</li>
 							{% endfor %}
 						</ul>
-					</div>
+					</div class="content-article">
 				</div>
 			</div>
 			{% else %}
@@ -220,7 +200,7 @@
 						var content = $("#commentToolForm textarea[name='content']").val();
 						var score = $("#commentToolForm input[name='score']").val();
 						requestArticleDetailForm($("#commentToolForm"), [
-							{"key":"submit", "val":"comment", "type":"text"}
+							{"key":"submit", "val":"comment", "type":"text"},
 						], function(data){
 							if (data.isSuccess) {
 								window.location.href = window.location.href
