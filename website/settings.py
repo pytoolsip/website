@@ -131,20 +131,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Project name
-PROJECT_NAME = 'pytoolsip'
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = f'/{PROJECT_NAME}/static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets/static'),
 )
 
 # Media files (Upload Files)
-MEDIA_URL = f'/{PROJECT_NAME}/media/'
+MEDIA_URL = '/media/'
 
 MEDIA_ROOT = (
     os.path.join(BASE_DIR, 'assets/media')
@@ -203,8 +200,8 @@ ASGI_APPLICATION = "website.routing.application"
 
 # home url
 MAIN_HOME_TITLE = config.get("MAIN_HOME_TITLE", "JDreamHeart")
-MAIN_HOME_URL = config.get("MAIN_HOME_URL", "http://jimdreamheart.club")
-WIKI_URL = config.get("WIKI_URL", "http://jimdreamheart.club/pytoolsip/wiki")
+MAIN_HOME_URL = config.get("MAIN_HOME_URL", "https://jdreamheart.com")
+WIKI_URL = config.get("WIKI_URL", "https://ptip.jdreamheart.com/wiki")
 HOME_TITLE = config.get("HOME_TITLE", "PyToolsIP")
 HOME_URL = config.get("HOME_URL", "http://localhost:8008")
-RESOURCE_URL = config.get("RESOURCE_URL", "http://jimdreamheart.club/resource")
+RESOURCE_URL = config.get("RESOURCE_URL", "https://jdreamheart.com/resource")
