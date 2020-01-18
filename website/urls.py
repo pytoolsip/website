@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^toollist$', views.toollist),
     url(r'^articlelist$', views.articlelist),
     url(r'^article$', views.article),
-    url(r'^pytoolsip/media/(?P<path>.*)', serve, {"document_root":settings.MEDIA_ROOT}),
+    url(r'^media/(?P<path>.*)', serve, {"document_root":settings.MEDIA_ROOT}),
     url(r'^ckeditor/upload/', csrf_exempt(views.checkLogined(ckeditorView.upload)), name='ckeditor_upload'),
     url(r'^ckeditor/browse/', never_cache(views.checkLogined(ckeditorView.browse)), name='ckeditor_browse'),
 ]

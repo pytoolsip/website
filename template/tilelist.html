@@ -138,7 +138,9 @@
     onInitCompleteFunc = function() {
         $(".tile").height($(".tile").width());
     }
-    $(function(){
-        onInitCompleteFunc();
-    });
+    if (typeof($) != "undefined") {
+        $(function(){
+            onInitCompleteFunc();
+        });
+    }
 </script>

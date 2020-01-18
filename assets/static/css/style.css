@@ -29,9 +29,9 @@ footer{
 	margin-top: 60px;
 	margin-bottom: 10px;
 }
-/* footer span{
-	font-size: 14px;
-} */
+footer span{
+	font-size: 12px;
+}
 footer a{
 	font-size: 8px;
 }
