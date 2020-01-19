@@ -125,7 +125,6 @@ BaseWS.prototype.unregister = function(name, fid) {
 };
 $(function(){
 	// 首页链接
-	// var HOME_URL = "jimdreamheart.club/pytoolsip";
 	var HOME_URL = "ws://localhost:8008";
 	// 用户信息链接
 	var wsUrl = HOME_URL+"/ws";

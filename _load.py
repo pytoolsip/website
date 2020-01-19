@@ -42,7 +42,8 @@ def _loadGlobal_():
 	_loadPath_(); # 加载全局路径
 	_loadLogger_(); # 加载日志类变量
 	_loadRsaDecode_(); # 加载rsa密钥解码方法
-	_consumerClass_(); # 加载websocket类
+	_updateWsJSFile_(); # 更新websocket文件
+	_loadConsumerMgr_(); # 加载websocket消费者管理类
 
 # 加载全局路径
 def _loadPath_():
@@ -66,7 +67,7 @@ def _loadRsaDecode_():
 	# 加载rsa密钥编解码方法
 	_G.setGlobalVarTo_Global("EncodeStr", encodeStr);
 	_G.setGlobalVarTo_Global("DecodeStr", decodeStr);
-	# 更新main.js的公钥
+	# 更新main.js的公钥和首页地址
 	publicKey = getPublicKey();
 	publicKey = publicKey.replace("\n", "")
 	mainJSFile, content = os.path.join(CURRENT_PATH, "assets", "static", "js", "main.js"), "";
@@ -91,5 +92,21 @@ def _loadRsaDecode_():
 	with open(mainJSFile, "w", encoding = "utf-8") as f:
 		f.write(content);
 
-def _consumerClass_():
+# 更新websocket文件
+def _updateWsJSFile_():
+	# 更新首页地址
+	wsJSFile, content = os.path.join(CURRENT_PATH, "assets", "static", "js", "ws.js"), "";
+	with open(wsJSFile, "r", encoding = "utf-8") as f:
+		isPking = False;
+		for line in f.readlines():
+			# 更新HOME_URL
+			if re.search("var HOME_URL.*=.*\".*\"", line):
+				homeUrl = re.sub("https?", "ws", HOME_URL);
+				line = re.sub("\".*\";?", f"\"{homeUrl}\";", line);
+			content += line;
+	with open(wsJSFile, "w", encoding = "utf-8") as f:
+		f.write(content);
+
+# 加载websocket消费者管理类
+def _loadConsumerMgr_():
 	_G.setGlobalVarTo_Global("ConsumerMgr", ConsumerMgr());
