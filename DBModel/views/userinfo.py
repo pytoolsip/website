@@ -235,20 +235,20 @@ def detail(request):
                     userAuth.password = pwd_util.encodePassword(userAuth.salt, _GG("DecodeStr")(newPwd));
                     userAuth.save();
                     tips = "用户密码更新成功。";
-                # 更新用户扩展信息
-                newImg = request.FILES.get("newImg", None);
-                newBio = request.POST.get("newBio", "");
-                if newImg or newBio:
-                    if newImg:
-                        user.img = newImg;
-                    user.bio = newBio;
-                    user.save();
-                    tips = "用户信息更新成功。";
+            # 更新用户扩展信息
+            newImg = request.FILES.get("newImg", None);
+            newBio = request.POST.get("newBio", "");
+            if newImg or newBio:
+                if newImg:
+                    user.img = newImg;
+                user.bio = newBio;
+                user.save();
+                tips = "用户信息更新成功。";
         return JsonResponse({
             "isSuccess" : True,
             "name" : user.name,
             "email" : user.email,
-            "img" : user.img and user.img.url or "/pytoolsip/static/img/dzjh-icon.png",
+            "img" : user.img and user.img.url or "/static/img/dzjh-icon.png",
             "bio" : user.bio or "",
             "tips" : tips,
         });
