@@ -101,7 +101,10 @@ def _updateWsJSFile_():
 		for line in f.readlines():
 			# 更新HOME_URL
 			if re.search("var HOME_URL.*=.*\".*\"", line):
-				homeUrl = re.sub("https?", "ws", HOME_URL);
+				if HOME_URL.find("https") >= 0:
+					homeUrl = re.sub("https", "wss", HOME_URL);
+				else:
+					homeUrl = re.sub("http", "ws", HOME_URL);
 				line = re.sub("\".*\";?", f"\"{homeUrl}\";", line);
 			content += line;
 	with open(wsJSFile, "w", encoding = "utf-8") as f:
