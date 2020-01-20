@@ -416,6 +416,9 @@ $(function(){
 					url : userInfoUrl+"?k=detail",
 					type : "post",
 					data : new FormData($form[0]),
+					xhrFields : {
+						withCredentials: true,
+					},
 					processData : false,
 					contentType : false,
 					success : function(data){
@@ -616,6 +619,9 @@ $(function(){
             url : window.location.href,
             type : "post",
             data : new FormData(form[0]),
+			xhrFields : {
+				withCredentials: true,
+			},
             processData : false,
             contentType : false,
             success : function(data){
