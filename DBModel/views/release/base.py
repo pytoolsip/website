@@ -51,7 +51,7 @@ def sendNotice(user, opUser, opType, msg, article = None):
                 "noticeType": "ptip",
                 "opUser": {
                     "name" : opUser.name,
-                    "img" : opUser.img and opUser.img.url or "/pytoolsip/static/img/dzjh-icon.png",
+                    "img" : opUser.img and opUser.img.url or "/static/img/user-icon.png",
                 },
                 "content": msg,
             };

@@ -248,7 +248,7 @@ def detail(request):
             "isSuccess" : True,
             "name" : user.name,
             "email" : user.email,
-            "img" : user.img and user.img.url or "/static/img/dzjh-icon.png",
+            "img" : user.img and user.img.url or "/static/img/user-icon.png",
             "bio" : user.bio or "",
             "tips" : tips,
         });
