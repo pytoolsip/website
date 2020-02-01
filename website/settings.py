@@ -28,7 +28,7 @@ if os.path.exists(configFilePath):
 SECRET_KEY = '=q)!)fo0*0)ykad)lxhl3aw3qyv7!chv!#k(h)xsigp2(f_5w5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.get("DEBUG", True);
 
 ALLOWED_HOSTS = config.get("ALLOWED_HOSTS", []);
 
