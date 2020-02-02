@@ -303,7 +303,11 @@ $(function(){
 		}
 	};
 	// 创建用户信息弹窗
-	var createUserInfoDialog = function(data){
+	var createUserInfoDialog = function(data, isAllowLogout){
+		var logoutBtnCtx = "<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>";
+		if (!isAllowLogout) {
+			logoutBtnCtx = "";
+		}
 		// 创建弹窗
 		createDialogPage("<div id='userinfoContent' class='userinfoContent'>\
 							<h2 class='text-center'>用户信息</h2>\
@@ -326,7 +330,7 @@ $(function(){
 										</p>\
 										<p>个性签名：<span>" + data.bio + "</span></p>\
 									</div>\
-									<button id='logoutButton' class='btn btn-default btn-block' type='button' style='margin-top:30px;'><span class='glyphicon glyphicon-log-out'></span>&nbsp;退出账号</button>\
+									"+ logoutBtnCtx +"\
 								</div>\
 								<div id='changeUserInfo' class='tab-pane fade'>\
 									<div class='tab-pane-sub'>\
@@ -423,7 +427,7 @@ $(function(){
 					contentType : false,
 					success : function(data){
 						if (data.isSuccess) {
-							createUserInfoDialog(data);
+							createUserInfoDialog(data, isAllowLogout);
 							showAlert(null, "success", data.tips || "更改成功。");
 						} else {
 							showAlert(null, "danger", data.tips || "更改失败，请重试！");
@@ -571,18 +575,22 @@ $(function(){
 			onClickChangeBtn($(this).attr("data-target"));
 		})
 	}
+	// 显示用户信息弹窗
+	showUserInfoDialog = function(isAllowLogout=true) {
+		$.post(userInfoUrl+"?k=detail", {}, function(data, status){
+			if (status == "success" && data.isSuccess) {
+				createUserInfoDialog(data, isAllowLogout);
+			} else {
+				createLoginDialog();
+			}
+		});
+	}
 	// 点击用户事件
 	$("#user").on("click",function(){
 		if (!checkIsLogined()) {
 			createLoginDialog();
 		} else {
-			$.post(userInfoUrl+"?k=detail", {}, function(data, status){
-				if (status == "success" && data.isSuccess) {
-					createUserInfoDialog(data);
-				} else {
-					createLoginDialog();
-				}
-			});
+			showUserInfoDialog();
 		}
 	});
     // 添加input到form中
