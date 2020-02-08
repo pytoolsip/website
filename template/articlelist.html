@@ -19,7 +19,6 @@
             <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
                 <div class="ptip-navbar">
                     <a class="navbar-brand" href="{{ MAIN_HOME_URL }}" title="{{ MAIN_HOME_TITLE }}"><img class="main-home-icon img-responsive" src={% static "img/home-icon.png" %} />{{ MAIN_HOME_TITLE }}</a>
-                    <a class="navbar-brand pull-right" href="{{ HOME_URL }}/release" target="_blank" title="发布后台">发布后台</a>
                 </div>
                 <div class="container">
                     <div class="container-fluid navbar-header">
@@ -31,6 +30,9 @@
                     <div id="searchNavCollapse" class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="{{ HOME_URL }}/toollist" title="工具列表">工具列表</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="{{ HOME_URL }}/release" target="_blank" title="发布后台">发布后台</a></li>
                         </ul>
                         <form action="{{ HOME_URL }}/toollist?k=all" class="navbar-form navbar-right" method="POST">
                             <input name="searchText" type="text" placeholder="搜索工具名称" class="form-control">
