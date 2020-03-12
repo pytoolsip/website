@@ -30,7 +30,7 @@ finally:
 # 平台键值列表
 PtipKeyList = ["ptip_examination", "ptip_script", "ptip_installer", "ptip_exe", "depend_lib", "pt_ol_examination"];
 # 工具/文章键值列表
-PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article", "comment_examination"];
+PtKeyList = ["pt_examination", "pt_new_script", "pt_ol_script", "article", "article_examination", "ol_article", "comment_examination", "comment_switch"];
 
 # 后台管理页请求
 @csrf_exempt
@@ -124,6 +124,8 @@ def getReleaseResult(request, userAuth, mkey, isSwitchTab):
         depend.uploadExe(request, userAuth, result, isSwitchTab);
     elif mkey == "comment_examination": # 审核评论
         comment.examComment(request, userAuth, result, isSwitchTab);
+    elif mkey == "comment_switch": # 审核开关
+        comment.switchComment(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_ol_examination": # 审核线上工具
         tool.examOlTool(request, userAuth, result, isSwitchTab);
     elif mkey == "pt_examination": # 审核工具

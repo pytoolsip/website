@@ -1,10 +1,22 @@
-<h2>评论审核</h2>
+<form id="searchForm" class="col-sm-8 col-sm-offset-2 col-md-offset-3 col-md-6 form-group" role="form" enctype="multipart/form-data">
+    <h3 class="text-center">
+        -&nbsp;搜索已发布的&nbsp;评论&nbsp;-
+    </h3>
+    <div class="input-group">
+        <input id="searchText" name="searchText" type="text" placeholder="搜索评论内容" class="form-control">
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+        </div>
+    </div>
+</form>
+<h2 class="col-sm-12 col-md-12">评论列表</h2>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>用户</th>
-            <th>评论工具/文章</th>
             <th>评论内容</th>
+            <th>发布者</th>
+            <th>所属工具/文章</th>
+            <th>类型</th>
             <th>发布时间</th>
             <th>操作</th>
         </tr>
@@ -12,9 +24,10 @@
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
+            <th>{{ olInfo.content }}</th>
             <th>{{ olInfo.userName }}</th>
             <th><a href="{{ olInfo.targetUrl }}" target="_blank">{{ olInfo.target }}</a></th>
-            <th>{{ olInfo.content }}</th>
+            <th>{{ olInfo.type }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>
                 <a class="btn btn-danger examination" name="delete" data-target="{{ olInfo.id }}">删除</a>
@@ -23,9 +36,21 @@
         {% endfor %}
     </tbody>
 </table>
-<p id="noExamingTool" class="text-center hidden">目前暂无已发布的评论~</p>
+{% if isSearchNone %}
+    <p class="text-center">{{searchNoneTips}}</p>
+{% endif %}
 <script language="JavaScript">
 	$(function(){
+        // 搜索表单
+        $("#searchForm").validate({
+            submitHandler: function() {
+                uploadManageForm($("#searchForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"}
+                ]);
+            }
+        });
+        $("#searchText").val("{{ searchText }}"); // 更新搜索值
+        // 请求审核
         var requestManageByExamType = function(examType, id, reason, callback) {
             requestCallback({
                 "mk" : "{{mkey}}",
@@ -64,9 +89,5 @@
                 });
             }
         });
-        // 判断是否显示无审核版本的提示
-        if ($(".table>tbody>tr").length == 0) {
-            $("#noExamingTool").removeClass("hidden");
-        }
 	});
 </script>

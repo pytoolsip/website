@@ -115,13 +115,19 @@ def getResultByTkey(tkey):
             "uploadTime" :  toolInfo.time,
         } for toolInfo in toolInfos];
         # 评论信息
-        commentInfos = baseInfo.aid.comment_set.all().order_by("-time");
-        result["commentInfoList"] = [{
-            "user" : commentInfo.uid.name,
-            "time" : commentInfo.time,
-            "score" : commentInfo.score,
-            "content" : commentInfo.content,
-        } for commentInfo in commentInfos];
+        cfg = models.Appconfig.objects.filter(ckey = "close_all_common");
+        if len(cfg) > 0 and cfg[0].cval == "true":
+            result["isCloseComment"] = True;
+        elif baseInfo.aid.comment_state == CommentType.Close.value:
+            result["isCloseComment"] = True;
+        else:
+            commentInfos = baseInfo.aid.comment_set.all().order_by("-time");
+            result["commentInfoList"] = [{
+                "user" : commentInfo.uid.name,
+                "time" : commentInfo.time,
+                "score" : commentInfo.score,
+                "content" : commentInfo.content,
+            } for commentInfo in commentInfos];
     return result;
 
 # 文章页
@@ -186,11 +192,17 @@ def getResultByAid(aid):
         if len(collections) > 0:
             result["isCollect"] = True;
         # 评论信息
-        commentInfos = articleInfo.comment_set.all().order_by("-time");
-        result["commentInfoList"] = [{
-            "user" : commentInfo.uid.name,
-            "time" : commentInfo.time,
-            "score" : commentInfo.score,
-            "content" : commentInfo.content,
-        } for commentInfo in commentInfos];
+        cfg = models.Appconfig.objects.filter(ckey = "close_all_common");
+        if len(cfg) > 0 and cfg[0].cval == "true":
+            result["isCloseComment"] = True;
+        elif articleInfo.comment_state == CommentType.Close.value:
+            result["isCloseComment"] = True;
+        else:
+            commentInfos = articleInfo.comment_set.all().order_by("-time");
+            result["commentInfoList"] = [{
+                "user" : commentInfo.uid.name,
+                "time" : commentInfo.time,
+                "score" : commentInfo.score,
+                "content" : commentInfo.content,
+            } for commentInfo in commentInfos];
     return result;

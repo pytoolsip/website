@@ -4,7 +4,18 @@ from django.dispatch.dispatcher import receiver
 from django.db import models
 from django.conf import settings
 import hashlib;
-import os
+import os;
+
+
+class Appconfig(models.Model):
+    id = models.IntegerField(primary_key=True)
+    ckey = models.CharField(max_length=255)   
+    cval = models.CharField(max_length=255)   
+    description = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'appconfig'
 
 # 图片文件路径
 def pic_directory_path(instance, filename):
@@ -19,6 +30,7 @@ class Article(models.Model):
     time = models.DateTimeField()
     atype = models.IntegerField()
     reading_volume = models.IntegerField(blank=True, null=True)
+    comment_state = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

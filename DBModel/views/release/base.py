@@ -20,6 +20,11 @@ class Status(Enum):
     Released = 1  # 已发布
     Withdrew = 2  # 已撤回
 
+# 评论状态穷举值
+class CommentType(Enum):
+    Open    = 0 # 开启
+    Close   = 1 # 关闭
+
 # 发送消息给所有管理员
 def sendMsgToAllMgrs(msg):
     managers = models.UserAuthority.objects.filter(authority = 1); # 获取有管理员权限的用户
