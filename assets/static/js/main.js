@@ -901,6 +901,9 @@ $(function(){
 	   });
 	}
 
+	// 微信公众号信息图片
+	var wechatImg = "/static/img/wechat-cmg.png";
+
 	// 显示关于弹窗
 	$("#aboutDzjH").on("click", function(){
 		// 创建弹窗
@@ -934,7 +937,10 @@ $(function(){
 			<p>本网站是基于<strong>个人兴趣</strong>而制作的，主要目的是为了将自己平时一些想法或见闻，以程序或其他方式进行实现，最终集合到该网站。</p>\
 			<p>这个网站的设计及其内容，可能杂揉了我的许多个人主观思想。当你发现存在奇怪或者不合理的地方时，请通过<strong>邮件联系</strong>，并一起探讨合适设计方式或结果。</p>\
 			<p>而我仅作为一名开发者，对于思考问题的方式，有时难免会走进自己都没意识到的误区之中。再加上我自身的开发经验和技术实力，都还太弱，因此设计出来的作品也许并不总让人满意。所以，如果可以的话，希望能得到你们的指导，与我一起完善这个网站及相关内容。</p>\
-			<p>谢谢。</p>\
+			<p>欲实时了解更多内容，请关注以下<strong style='color: darkgreen;'>微信公众号</strong>。</p>\
+		</div>\
+		<div style='padding: 0px 20px'>\
+			<img class='img-responsive' src='"+wechatImg+"' />\
 		</div>\
 		<div class='content-ex-text'>\
 			<span>联系方式：15602291936</span>\
@@ -962,7 +968,10 @@ $(function(){
 		<h2 style='color:black;padding-bottom:20px;'>意见反馈</h2>\
 		<div class='content-text' style='padding: 20px 10px'>\
 			<p>感谢您愿为本网站的发展提供宝贵意见。</p>\
-			<p>在此很抱歉地告知您：目前<span style='color: darkgreen;'>仅支持通过电子邮件（<strong>manager@jdreamheart.com</strong>）的方式</span>进行意见反馈。</p>\
+			<p>可通过发送反馈意见至官方邮箱<span style='color: darkgreen;'>manager@jdreamheart.com</span>，或关注以下<span style='color: darkgreen;'>微信公众号</span>进行私信。</p>\
+			<div>\
+				<img class='img-responsive' src='"+wechatImg+"' />\
+			</div>\
 		</div>\
 		<p class='text-center'>感谢您对本网站的支持!</p>\
 		</div>", "col-md-4 col-md-offset-4");
