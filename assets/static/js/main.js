@@ -943,8 +943,6 @@ $(function(){
 			<img class='img-responsive' src='"+wechatImg+"' />\
 		</div>\
 		<div class='content-ex-text'>\
-			<span>联系方式：15602291936</span>\
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\
 			<span>邮箱：manager@jdreamheart.com</span>\
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\
 			<span>GitHub：<a href='https://github.com/JDreamHeart' title='JDreamHeart'>https://github.com/JDreamHeart</a></span>\
@@ -968,7 +966,7 @@ $(function(){
 		<h2 style='color:black;padding-bottom:20px;'>意见反馈</h2>\
 		<div class='content-text' style='padding: 20px 10px'>\
 			<p>感谢您愿为本网站的发展提供宝贵意见。</p>\
-			<p>可通过发送反馈意见至官方邮箱<span style='color: darkgreen;'>manager@jdreamheart.com</span>，或关注以下<span style='color: darkgreen;'>微信公众号</span>进行私信。</p>\
+			<p>可通过发送反馈意见至官方邮箱<strong style='color: darkgreen;'>manager@jdreamheart.com</strong>，或关注以下<strong style='color: darkgreen;'>微信公众号</strong>进行私信。</p>\
 			<div>\
 				<img class='img-responsive' src='"+wechatImg+"' />\
 			</div>\
