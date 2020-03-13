@@ -102,6 +102,7 @@ class Depend(models.Model):
     file_key = models.CharField(max_length=255)
     description = models.TextField()
     time = models.DateTimeField()
+    status = models.IntegerField()
 
     class Meta:
         managed = False

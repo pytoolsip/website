@@ -6,6 +6,8 @@
             <th>版本号</th>
             <th>更新日志</th>
             <th>发布时间</th>
+            <th>程序</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>
@@ -15,6 +17,10 @@
             <th>{{ olInfo.version }}</th>
             <th>{{ olInfo.changelog }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <td><a href="{{ olInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
+            <th>
+                <a class="btn btn-danger operate" name="delete" data-target="{{ olInfo.id }}">下架</a>
+            </th>
         </tr>
         {% endfor %}
     </tbody>
@@ -162,5 +168,45 @@
             checkIsUploadNew();
         });
         checkIsUploadNew();
+        // 审核内容
+        var requestManageByOpType = function(opType, id, reason, callback) {
+            requestCallback({
+                "mk" : "{{mkey}}",
+                "opType" : opType,
+                "id" : id,
+                "reason" : reason,
+            }, callback);
+        };
+        $(".operate").on("click",function(){
+            var opType = $(this).attr("name");
+            var did = $(this).attr("data-target");
+            var text = $(this).text();
+            if (opType  == "delete") {
+                // 创建弹窗
+                createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
+                                <h2>"+text+"原因</h2>\
+                                <input name='reason' class='form-control' type='text' placeholder='请填写"+text+"原因' required autofocus />\
+                                <button class='btn btn-lg btn-success form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;提交</button>\
+                            </form>");
+                // 登陆校验
+                $("#reasonForm").validate({
+                    rules: {
+                        reason: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        reason: {
+                            required: "请填写"+text+"原因",
+                        },
+                    },
+                    submitHandler: function() {
+                        requestManageByOpType(opType, did, $("#reasonForm input[name='reason']").val(), function(){
+                            closeDialogPage(); // 请求后关闭弹窗
+                        });
+                    }
+                });
+            }
+        });
 	})
 </script>

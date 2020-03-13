@@ -122,7 +122,7 @@ def getOlExeInfoList():
 
 # 获取线上依赖环境信息
 def getOlEnvInfoList():
-    envInfoList = models.Depend.objects.all().order_by('-time');
+    envInfoList = models.Depend.objects.filter(status = Status.Released.value).order_by('-time');
     if len(envInfoList) > 0:
         return [{"name" : envInfo.name} for envInfo in envInfoList];
     return [];

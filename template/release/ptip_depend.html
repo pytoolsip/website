@@ -5,6 +5,8 @@
             <th>名称</th>
             <th>描述</th>
             <th>发布时间</th>
+            <th>库源</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>
@@ -13,10 +15,42 @@
             <th>{{ olInfo.name }}</th>
             <th>{{ olInfo.description }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <td><a href="{{ olInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
+            <th>
+                <a class="btn btn-danger examination" name="delete" data-target="{{ olInfo.id }}">下架</a>
+            </th>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% if examInfoList %}
+<h2>审核版本</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>名称</th>
+            <th>描述</th>
+            <th>发布时间</th>
+            <th>更新包</th>
+            <th>确认审核</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for examInfo in examInfoList %}
+        <tr>
+            <th>{{ examInfo.name }}</th>
+            <th>{{ examInfo.description }}</th>
+            <th>{{ examInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <td><a href="{{ examInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
+            <th>
+                <a class="btn btn-danger examination" name="delete" data-target="{{ examInfo.id }}">撤回</a>
+                <a class="btn btn-success examination" name="release" data-target="{{ examInfo.id }}">发布</a>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
 <h2>上传版本</h2>
 <form id="uploadForm" class="col-sm-3 col-sm-offset-3 col-md-4 form-group" role="form" enctype="multipart/form-data">
     <h3 class="text-center">
@@ -96,30 +130,14 @@
                 description: "请输入描述信息",
             },
             submitHandler: function() {
+                var name = $("select[name='olName']").val();
                 if ($("#isUploadNew").is(":checked")) {
-                    var name = $("input[name='newName']").val();
-                    uploadManageForm($("#uploadForm"), [
-                        {"key":"mk", "val":"{{mkey}}", "type":"text"},
-                        {"key":"name", "val":name, "type":"text"}
-                    ]);
-                }else{
-                    var name = $("select[name='olName']").val();
-                    // 创建弹窗
-                    createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
-                                    <h2>更新线上依赖库</h2>\
-                                    <p class='text-center' style='color: red;'>是否确认更新依赖库到线上？</p>\
-                                    <p class='text-center'>（注意：上传后不能撤回）</p>\
-                                    <button id='confirmBtn' class='btn btn-lg btn-danger form-control' type='button'>确认上传更新包</button>\
-                                </form>");
-                    $("#confirmBtn").on("click", function(){
-                        uploadManageForm($("#uploadForm"), [
-                            {"key":"mk", "val":"{{mkey}}", "type":"text"},
-                            {"key":"name", "val":name, "type":"text"}
-                        ]);
-                        // 请求后关闭弹窗
-                        closeDialogPage();
-                    });
+                    name = $("input[name='newName']").val();
                 }
+                uploadManageForm($("#uploadForm"), [
+                    {"key":"mk", "val":"{{mkey}}", "type":"text"},
+                    {"key":"name", "val":name, "type":"text"}
+                ]);
             }
         });
         // 检测工具名变换
@@ -150,5 +168,58 @@
             checkIsUploadNew();
         });
         checkIsUploadNew();
+        // 审核内容
+        var requestManageByExamType = function(examType, id, reason, callback) {
+            requestCallback({
+                "mk" : "{{mkey}}",
+                "examType" : examType,
+                "id" : id,
+                "reason" : reason,
+            }, callback);
+        };
+        $(".examination").on("click",function(){
+            var examType = $(this).attr("name");
+            var did = $(this).attr("data-target");
+            var text = $(this).text();
+            if (examType  == "release") {
+                // 创建弹窗
+                createDialogPage("<form class='login-form' role='form' enctype='multipart/form-data'>\
+                                <h2>更新线上依赖库</h2>\
+                                <p class='text-center' style='color: red;'>是否确认更新依赖库到线上？</p>\
+                                <p class='text-center'>（注意：上传后不能撤回）</p>\
+                                <button id='confirmBtn' class='btn btn-lg btn-danger form-control' type='button'>确认上传更新包</button>\
+                            </form>");
+                $("#confirmBtn").on("click", function(){
+                    requestManageByExamType(examType, did, "", function(){
+                        closeDialogPage(); // 请求后关闭弹窗
+                    });
+                });
+            } else {
+                // 创建弹窗
+                createDialogPage("<form id='reasonForm' class='login-form' role='form' enctype='multipart/form-data'>\
+                                <h2>"+text+"原因</h2>\
+                                <input name='reason' class='form-control' type='text' placeholder='请填写"+text+"原因' required autofocus />\
+                                <button class='btn btn-lg btn-success form-control' type='submit'><span class='glyphicon glyphicon-log-in'></span>&nbsp;提交</button>\
+                            </form>");
+                // 登陆校验
+                $("#reasonForm").validate({
+                    rules: {
+                        reason: {
+                            required: true,
+                        },
+                    },
+                    messages: {
+                        reason: {
+                            required: "请填写"+text+"原因",
+                        },
+                    },
+                    submitHandler: function() {
+                        requestManageByExamType(examType, did, $("#reasonForm input[name='reason']").val(), function(){
+                            closeDialogPage(); // 请求后关闭弹窗
+                        });
+                    }
+                });
+            }
+        });
 	})
 </script>
