@@ -312,8 +312,11 @@ label.error {
 .content-article {
 	margin: 20px 0px;
 	padding: 10px;
-	background-color: #F1F1F1;
-	border: 1px #E6E6E6 solid;
+	background-color: #FCFCFC;
+	border: 1px #E3E3E3 solid;
+}
+.content-article img {
+	max-width: 100%;
 }
 .content-comment {
 	padding-top: 40px;

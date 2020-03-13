@@ -76,9 +76,6 @@
 					</a>
 				</div>
 				<div class="col-md-12 content-content">
-					<article class="content-article">
-						{{ baseInfo.content | safe }}
-					</article>
 					<div class="table-responsive">
 						<table class="table table-striped">
 							<thead>
@@ -87,7 +84,6 @@
 									<th>平台基础版本</th>
 									<th>更新日志</th>
 									<th>上传时间</th>
-									<th>下载</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -97,12 +93,14 @@
 									<td>{{ toolInfo.IPBaseVersion }}</td>
 									<td>{{ toolInfo.changelog }}</td>
 									<td>{{ toolInfo.uploadTime|date:"Y-m-d H:i:s" }}</td>
-									<td><a href="{{ toolInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
 								</tr>
 								{% endfor %}
 							</tbody>
 						</table>
 					</div>
+					<article class="content-article">
+						{{ baseInfo.content | safe }}
+					</article>
 					<div class="content-comment">
 						{% if isCloseComment %}
 						<h4 class="text-center">-&nbsp;该工具的评论功能已关闭&nbsp;-</h4>

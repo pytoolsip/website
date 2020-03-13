@@ -1,8 +1,8 @@
-<h2>文章审核</h2>
+<h2>文章/工具详情审核</h2>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>标题</th>
+            <th>文章标题/工具名</th>
             <th>内容</th>
             <th>发布时间</th>
             <th>确认审核</th>
@@ -11,12 +11,12 @@
     <tbody>
         {% for olInfo in onlineInfoList %}
         <tr>
-            <th><a class="article-detail" href="javascript:void(0);" data-target="{{ olInfo.id }}" title="{{ olInfo.title }}" style="text-decoration: underline;">
+            <th>
                 {{ olInfo.title }}
                 {% if articleInfo.subTitle %}
                 [{{ articleInfo.subTitle }}]
                 {% endif %}
-            </a></th>
+            </th>
             <th>{{ olInfo.sketch }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
             <th>

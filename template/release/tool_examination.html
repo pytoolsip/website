@@ -13,6 +13,7 @@
             <th>版本号</th>
             <th>更新日志</th>
             <th>发布时间</th>
+            <th>工具包</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -26,6 +27,7 @@
             <th>{{ olInfo.version }}</th>
             <th>{{ olInfo.changelog }}</th>
             <th>{{ olInfo.time|date:"Y-m-d H:i:s" }}</th>
+            <td><a href="{{ olInfo.url }}" target="_blank" title=""><span class="glyphicon glyphicon-download-alt"></span>下载</a></td>
             <th>
                 {% if isManager %}
                     {% if isReleased %}

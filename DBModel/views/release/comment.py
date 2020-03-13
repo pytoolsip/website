@@ -1,6 +1,6 @@
 from django.db.models import Q;
 import django.utils.timezone as timezone;
-from website import settings
+from website import settings;
 from DBModel import models;
 
 from _Global import _GG;

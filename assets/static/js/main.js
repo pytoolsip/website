@@ -974,6 +974,10 @@ $(function(){
 		<p class='text-center'>感谢您对本网站的支持!</p>\
 		</div>", "col-md-4 col-md-offset-4");
 	});
+
+	// 处理文章图片
+	$(".content-article img").addClass("img-responsive");
+	$(".content-article img").css("height", "auto");
 	
 //	// 定时弹窗
 //	if ($('.jumbotron').length > 0) {

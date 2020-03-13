@@ -93,7 +93,6 @@ def getOnlineInfoList(baseInfo):
         "version" : ptInfo.version,
         "time" : ptInfo.time,
         "changelog" : ptInfo.changelog,
-        "url" : ptInfo.file_path.url,
     } for ptInfo in ptInfoList];
 
 # 搜索工具信息数据
