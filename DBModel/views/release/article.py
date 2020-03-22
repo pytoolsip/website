@@ -93,8 +93,8 @@ def examArticle(request, userAuth, result, isSwitchTab):
                 userIdentity, opMsg = "用户", "完成";
                 if userAuth.authority == 1:
                     userIdentity, opMsg = "管理员", "被管理员";
-                sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**文章【{ae.title}】。");
-                sendToEmails(f"您在（{ae.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的文章【{ae.title}】，于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [ae.uid.email]);
+                sendMsgToAllMgrs(f"{userIdentity}【{userAuth.uid.name}】于{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}，成功**{msg}**文章【{ae.title}】。");
+                sendToEmails(f"您在（{ae.time.strftime('%Y-%m-%d %H:%M:%S')}）上传的文章【{ae.title}】，于（{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}）成功{msg}。\n{reasonMsg}", [ae.uid.email]);
             except Exception as e:
                 _GG("Log").w(e);
                 result["requestFailedTips"] = f"未找到文章【{aid}】，审核失败！";

@@ -144,7 +144,7 @@ def releasePtip(request, userAuth, result):
                 msg, reasonMsg = "撤回", f"【撤回原因：{request.POST.get('reason', '无。')}】";
             result["requestTips"] = f"PTIP平台【{p.version}】成功{msg}。";
             # 发送邮件通知
-            sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于（{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}），成功{msg}了平台脚本【{p.version}】。\n{reasonMsg}");
+            sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于（{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}），成功{msg}了平台脚本【{p.version}】。\n{reasonMsg}");
         except Exception as e:
             _GG("Log").w(e);
             result["requestTips"] = f"平台【{p.version}】审核失败！";

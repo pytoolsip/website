@@ -21,7 +21,7 @@ def uploadExe(request, userAuth, result, isSwitchTab):
                     exeDetail.eid.delete();
                 result["requestTips"] =  f"依赖程序【{exeDetail.eid.name}，{exeDetail.version}】成功下架！";
                 # 发送邮件通知
-                sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，下架了【{exeDetail.eid.name}，{exeDetail.version}】依赖程序。");
+                sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}，下架了【{exeDetail.eid.name}，{exeDetail.version}】依赖程序。");
             except Exception as e:
                 _GG("Log").w(e);
                 result["requestFailedTips"] = f"依赖程序【{edid}】下架失败。";
@@ -124,7 +124,7 @@ def examDepend(request, userAuth, result):
                     delText = "下架";
                 result["requestTips"] =  f"依赖库【{did}，{depend.name}，{depend.file_key}，{depend.time}】成功{delText}！";
                 # 发送邮件通知
-                sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}，{delText}了【{did}，{depend.name}，{depend.file_key}，{depend.time}】依赖库。");
+                sendMsgToAllMgrs(f"管理员【{userAuth.uid.name}】于{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}，{delText}了【{did}，{depend.name}，{depend.file_key}，{depend.time}】依赖库。");
         except Exception as e:
             _GG("Log").w(e);
             result["requestFailedTips"] = f"依赖库【{did}】发布/撤回/下架失败。";
