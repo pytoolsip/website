@@ -110,6 +110,10 @@ img.main-home-icon {
 }
 .tool-info-tittle{
 	display: block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .tool-info-tittle>h2{
 	display: inline-block;
