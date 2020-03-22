@@ -598,9 +598,9 @@ $(function(){
         var $input = item.find("input[name='" + name + "']");
         if ($input.length > 0) {
             $input.val(value);
-            if ($input.attr("type") != type) {
-                $input.attr("type", type)
-            }
+            // if ($input.attr("type") != type) {
+            //     $input.attr("type", type)
+            // }
         } else {
             item.append("<input name='" + name + "' class='hidden' type='" + type + "' value='" + value + "' />");
         }
