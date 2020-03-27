@@ -34,10 +34,10 @@ $(function(){
 	// 公钥
 	var PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDYeNBCn22B90arUKX7Tmgrg6dVZN20e+6u+KChIByh/ozfVJkL21xx36tcLdnKH0TFHu5HEVlo7TonUGSuQZoYRNvCprWIdf9SHwlID1pm3/D3ZrAQsVPmEZUharShAEqGe1fkOPzzRfae/MIwvrZji1RSgzCW69kMTv/70+wXIQIDAQAB-----END PUBLIC KEY-----";
 	// 编码字符串
-	encodeStr = function(s) {
+	encodeStr = function(s, rc = "") {
 		var ec = new JSEncrypt();
 		ec.setPublicKey(PUBLIC_KEY);
-		return ec.encrypt(s);
+		return ec.encrypt(s + rc);
 	}
 	// 获取提示文档
 	var getAlertTips = function(type, tips) {
@@ -46,31 +46,47 @@ $(function(){
 			<span class='alertContent'>"+ tips +"</span>\
 		</div>";
 	}
-    // 获取用户登录信息
+    // 判断用户是否登录过
     var checkIsLogined = function(){
 		return $.cookie("is_logined") == "logined";
+	}
+    // 获取用户已登录的Token
+    var getUserLoginedToken = function(){
+		return $.cookie("pytoolsip_token");
 	}
 	// 登陆平台
     loginIP = function(formId, callback){
 		var name = $("#"+formId+" input[name='name']").val();
 		var pwd = $("#"+formId+" input[name='password']").val();
 		var isRemember = $("#loginRemember>input[type='checkbox']").is(":checked");
-		$.post(loginUrl, {
-			isLogin : true,
-			uname : name,
-			upwd : encodeStr(pwd),
-			isRemember : isRemember,
-		}, function(data, status){
+		$.post(registerUrl, {
+			isGetRandomCode: true,
+		}, function(rcData, status){
 			if (status == "success") {
-				if (!data.isSuccess) {
-					$("#"+formId).prepend(getAlertTips("danger", data.tips));
+				if (!rcData.isSuccess) {
+					$("#"+formId).prepend(getAlertTips("danger", rcData.tips));
 					return;
 				}
-				console.log("登陆成功。");
-				// 登陆成功回调
-				callback();
+				$.post(loginUrl, {
+					isLogin : true,
+					uname : name,
+					upwd : encodeStr(pwd, rcData.randomCode),
+					isRemember : isRemember,
+				}, function(data, status){
+					if (status == "success") {
+						if (!data.isSuccess) {
+							$("#"+formId).prepend(getAlertTips("danger", data.tips));
+							return;
+						}
+						console.log("登陆成功。");
+						// 登陆成功回调
+						callback();
+					} else {
+						alert("登陆失败！");
+					}
+				});
 			} else {
-				alert("登陆失败！")
+				alert("登陆失败！");
 			}
 		});
     }
@@ -547,22 +563,34 @@ $(function(){
 					if (!checkIsLogined()) {
 						createLoginDialog();
 					} else {
-						var pwd = $("#changeUserBasicInfoForm input[name='password']").val();
-						var sendData = {
-							isBase: true,
-							isChange: true,
-							upwd : encodeStr(pwd),
-						};
-						sendData[data.name] = $("#changeUserBasicInfoForm input[name='"+ data.name +"']").val();
-						if (data.name == "newPwd") {
-							sendData[data.name] = encodeStr(sendData[data.name]);
-						}
-						$.post(userInfoUrl+"?k=detail", sendData, function(data, status){
-							if (status == "success" && data.isSuccess) {
-								createLoginDialog();
-								if (data.tips != "") {
-									showAlert($("#loginForm"), "success", (data.tips || "更改成功。") + "请重新登陆。");
+						$.post(registerUrl, {
+							isGetRandomCode: true,
+						}, function(rcData, status){
+							if (status == "success") {
+								if (!rcData.isSuccess) {
+									showAlert($("#changeUserBasicInfo"), "danger", data.tips || "更改失败，请重试！");
+									return;
 								}
+								var pwd = $("#changeUserBasicInfoForm input[name='password']").val();
+								var sendData = {
+									isBase: true,
+									isChange: true,
+									upwd : encodeStr(pwd, rcData.randomCode),
+								};
+								sendData[data.name] = $("#changeUserBasicInfoForm input[name='"+ data.name +"']").val();
+								if (data.name == "newPwd") {
+									sendData[data.name] = encodeStr(sendData[data.name], rcData.randomCode);
+								}
+								$.post(userInfoUrl+"?k=detail", sendData, function(data, status){
+									if (status == "success" && data.isSuccess) {
+										createLoginDialog();
+										if (data.tips != "") {
+											showAlert($("#loginForm"), "success", (data.tips || "更改成功。") + "请重新登陆。");
+										}
+									} else {
+										showAlert($("#changeUserBasicInfo"), "danger", data.tips || "更改失败，请重试！");
+									}
+								});
 							} else {
 								showAlert($("#changeUserBasicInfo"), "danger", data.tips || "更改失败，请重试！");
 							}
@@ -778,26 +806,38 @@ $(function(){
 				var uname = $("#registerForm input[name='name']").val();
 				var upwd = $("#registerForm input[name='password']").val();
 				$.post(registerUrl, {
-					isRegister : true,
-					uname : uname,
-					upwd : encodeStr(upwd),
-					email : $("#registerForm input[name='email']").val(),
-					verifyCode : $("#registerForm input[name='verifyCode']").val(),
-				}, function(data, status){
+					isGetRandomCode: true,
+				}, function(rcData, status){
 					if (status == "success") {
-						if (!data.isSuccess) {
+						if (!rcData.isSuccess) {
 							$("#registerForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						// 创建注册成功的弹窗
-						createIntervalDialog("<h2>注册成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
-							// 创建登陆界面
-							createLoginDialog();
-							$("#loginForm input[name='name']").val(uname);
-							$("#loginForm input[name='password']").val(upwd);
+						$.post(registerUrl, {
+							isRegister : true,
+							uname : uname,
+							upwd : encodeStr(upwd, rcData.randomCode),
+							email : $("#registerForm input[name='email']").val(),
+							verifyCode : $("#registerForm input[name='verifyCode']").val(),
+						}, function(data, status){
+							if (status == "success") {
+								if (!data.isSuccess) {
+									$("#registerForm").prepend(getAlertTips("danger", data.tips));
+									return;
+								}
+								// 创建注册成功的弹窗
+								createIntervalDialog("<h2>注册成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
+									// 创建登陆界面
+									createLoginDialog();
+									$("#loginForm input[name='name']").val(uname);
+									$("#loginForm input[name='password']").val(upwd);
+								});
+							} else {
+								alert("注册失败！");
+							}
 						});
 					} else {
-						alert("注册失败！")
+						alert("注册失败！");
 					}
 				});
 			}
@@ -873,24 +913,37 @@ $(function(){
                 }
             },
             submitHandler: function() {
+				var email = $("#resetPwdForm input[name='email']").val();
 				$.post(registerUrl, {
-					isResetPwd : true,
-					upwd : encodeStr($("#resetPwdForm input[name='password']").val()),
-					email : $("#resetPwdForm input[name='email']").val(),
-					verifyCode : $("#resetPwdForm input[name='verifyCode']").val(),
-				}, function(data, status){
+					isGetRandomCode: true,
+				}, function(rcData, status){
 					if (status == "success") {
-						if (!data.isSuccess) {
+						if (!rcData.isSuccess) {
 							$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
 							return;
 						}
-						// 创建登录成功的弹窗
-						createIntervalDialog("<h2>密码更新成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
-							// 创建登陆界面
-							createLoginDialog();
+						$.post(registerUrl, {
+							isResetPwd : true,
+							upwd : encodeStr($("#resetPwdForm input[name='password']").val(), rcData.randomCode),
+							email : email,
+							verifyCode : $("#resetPwdForm input[name='verifyCode']").val(),
+						}, function(data, status){
+							if (status == "success") {
+								if (!data.isSuccess) {
+									$("#resetPwdForm").prepend(getAlertTips("danger", data.tips));
+									return;
+								}
+								// 创建登录成功的弹窗
+								createIntervalDialog("<h2>密码更新成功!</h2><p>即将跳转登陆界面...</p>", 2, function(){
+									// 创建登陆界面
+									createLoginDialog();
+								});
+							} else {
+								alert("重置密码失败！")
+							}
 						});
 					} else {
-						alert("注册失败！")
+						alert("重置密码失败！")
 					}
 				});
 			}

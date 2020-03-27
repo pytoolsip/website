@@ -34,7 +34,7 @@ def login(request):
     if isLogin:
         uname, upwd = request.POST.get("uname", ""), request.POST.get("upwd", "");
         isRemember = base_util.getPostAsBool(request, "isRemember")
-        token, expires = getLoginToken(result, uname, _GG("DecodeStr")(upwd), isRemember);
+        token, expires = getLoginToken(result, uname, decodePwd(upwd), isRemember);
         resp = JsonResponse(result);
         if result["isSuccess"]:
             resp.set_cookie("pytoolsip_token", _GG("EncodeStr")(token), expires);
@@ -123,6 +123,9 @@ def register(request):
     # 重置用户密码
     if base_util.getPostAsBool(request, "isResetPwd"):
         return resetUserPwd(request);
+    # 获取用户随机码
+    if base_util.getPostAsBool(request, "isGetRandomCode"):
+        return getRandomCode(request);
     return JsonResponse({});
 
 # 校验逻辑
@@ -145,7 +148,7 @@ def getVerifyCode(request):
     email = request.POST.get("email", "");
     if not email:
         return JsonResponse({"isSuccess" : False, "tips" : "邮箱信息不能为空！"});
-    # 生成8位随机验证码
+    # 生成随机验证码
     verifyCode = random_util.randomNum(6); # 6位随机码
     # 缓存验证码
     expires = 2*60; # 缓存2分钟
@@ -157,6 +160,26 @@ def getVerifyCode(request):
         _GG("Log").w(e, f"-> verifyCode[{verifyCode}]");
         return JsonResponse({"isSuccess" : False, "tips" : "验证码发送失败，请检查邮箱是否正确！"});
     return JsonResponse({"isSuccess" : True, "expires" : expires});
+
+# 获取随机码
+def getRandomCode(request):
+    # 生成随机验证码
+    randomCode = random_util.randomMulti(8) + "|" + str(timezone.now().timestamp());
+    # 缓存验证码
+    expires = 10; # 缓存时间（秒）
+    cache.set(randomCode, randomCode, expires);
+    return JsonResponse({"isSuccess" : True, "randomCode" : "||&~&||" + randomCode});
+
+# 解码密码
+def decodePwd(upwd):
+    splitStr = "||&~&||";
+    pwdStr = _GG("DecodeStr")(upwd);
+    if splitStr not in pwdStr:
+        return "";
+    pwd, randomCode = pwdStr.split(splitStr);
+    if not cache.has_key(randomCode) or cache.get(randomCode) != randomCode:
+        return "";
+    return pwd;
 
 # 注册玩家
 def registerUser(request):
@@ -172,7 +195,7 @@ def registerUser(request):
     if cache.get("|".join(["verify_code", "register", email])) != verifyCode:
         return JsonResponse({"isSuccess" : False, "tips" : "验证码不正确！"});
     # 保存用户信息
-    pwd = _GG("DecodeStr")(upwd);
+    pwd = decodePwd(upwd);
     salt = random_util.randomMulti(32);
     password = pwd_util.encodePassword(salt, pwd);
     user = models.User(name = uname, email = email);
@@ -201,7 +224,7 @@ def resetUserPwd(request):
         _GG("Log").w(e);
         return JsonResponse({"isSuccess" : False, "tips" : "用户邮箱异常！"});
     # 更新密码及salt值
-    pwd = _GG("DecodeStr")(upwd);
+    pwd = decodePwd(upwd);
     userAuth.salt = random_util.randomMulti(32);
     userAuth.password = pwd_util.encodePassword(userAuth.salt, pwd);
     userAuth.save();
@@ -216,7 +239,7 @@ def detail(request):
         tips = "";
         if "isChange" in request.POST:
             upwd = request.POST.get("upwd", "");
-            userAuth = getLoginUserAuth(request.user.name, _GG("DecodeStr")(upwd), request.POST.get("isBase", False));
+            userAuth = getLoginUserAuth(request.user.name, decodePwd(upwd), request.POST.get("isBase", False));
             if userAuth:
                 # 更新用户基础信息
                 newName = request.POST.get("newName", "");
@@ -232,7 +255,7 @@ def detail(request):
                     tips = "用户邮箱更新成功。";
                 if newPwd: # 更新密码及salt值
                     userAuth.salt = random_util.randomMulti(32);
-                    userAuth.password = pwd_util.encodePassword(userAuth.salt, _GG("DecodeStr")(newPwd));
+                    userAuth.password = pwd_util.encodePassword(userAuth.salt, decodePwd(newPwd));
                     userAuth.save();
                     tips = "用户密码更新成功。";
             # 更新用户扩展信息
